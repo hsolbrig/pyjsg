@@ -1,5 +1,5 @@
 # Auto generated from jsg/NodeConstraint.jsg by PyJSG version 0.1.0-DEV
-# Generation date: 2017-03-22 13:51
+# Generation date: 2017-03-22 18:52
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
@@ -25,8 +25,8 @@ class NodeConstraint(JSGObject):
     def __init__(self,
                  nodeKind: Optional[_A1] = None,
                  datatype: Optional[IRI] = None,
-                 **_: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT)
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
         self.nodeKind = nodeKind
         self.datatype = datatype
 

@@ -1,5 +1,5 @@
 # Auto generated from jsg/OneOf.jsg by PyJSG version 0.1.0-DEV
-# Generation date: 2017-03-22 13:51
+# Generation date: 2017-03-22 18:52
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
@@ -32,15 +32,15 @@ class _A1(JSGString):
 
 class EachOf(JSGObject):
     def __init__(self,
-                 **_: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT)
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
         
 
 
 class TripleConstraint(JSGObject):
     def __init__(self,
-                 **_: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT)
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
         
 
 
@@ -50,8 +50,8 @@ class OneOf(JSGObject):
                  expressions: List[Union[EachOf, OneOft_, IRI, BNODE]] = None,
                  min: Optional[INTEGER] = None,
                  max: Optional[Union[_A1, INTEGER]] = None,
-                 **_: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT)
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
         self.id = id
         self.expressions = expressions
         self.min = min

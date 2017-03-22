@@ -1,5 +1,5 @@
 # Auto generated from jsg/listcardinalities.jsg by PyJSG version 0.1.0-DEV
-# Generation date: 2017-03-22 13:51
+# Generation date: 2017-03-22 18:52
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
@@ -26,8 +26,8 @@ class list_eval(JSGObject):
                  two_or_more: List[INT] = None,
                  three_or_four: List[INT] = None,
                  one_or_more_v2: List[INT] = None,
-                 **_: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT)
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
         self.req = req
         self.opt = opt
         self.zero_or_more = zero_or_more
