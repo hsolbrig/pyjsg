@@ -1,0 +1,15 @@
+
+# TYPE.append("type")
+# TYPE_EXCEPTIONS.append("ObjectLiteral")
+# TYPE_EXCEPTIONS.append("labeledShapeOr")
+# TYPE_EXCEPTIONS.append("labeledShapeAnd")
+# TYPE_EXCEPTIONS.append("labeledShapeNot")
+# TYPE_EXCEPTIONS.append("labeledNodeConstraint")
+# TYPE_EXCEPTIONS.append("labeledShape")
+# TYPE_EXCEPTIONS.append("labeledShapeExternal")
+# IGNORE.append("This")
+# IGNORE.append("That")
+
+
+.TYPE type - ObjectLiteral labeledShapeOr labeledShapeAnd labeledShapeNot labeledNodeConstraint labeledShape labeledShapeExternal ;
+.IGNORE This That ;

@@ -1,0 +1,3 @@
+doc { street:[(NAME | "*" | TEMPLATE){2,}] }
+NAME : .*;
+TEMPLATE : '{' .* '}';

@@ -1,0 +1,12 @@
+INTEGER : [0-9]* ;
+DECIMAL : [0-9]* ;
+DOUBLE : [0-9]* ;
+STRING : [A-Z]* ;
+
+xsFacet          = stringFacet | numericFacet ;
+stringFacet      = (length|minlength|maxlength):INTEGER | pattern:STRING flags:STRING? ;
+numericFacet     = (mininclusive|minexclusive|maxinclusive|maxexclusive):DOUBLE
+                 | (totaldigits|fractiondigits):INTEGER ;
+
+labeledNodeConstraint   { first:INTEGER? xsFacet* last:STRING+}
+

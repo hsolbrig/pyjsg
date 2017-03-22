@@ -1,0 +1,7 @@
+choices        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
+
+single = choices ;
+
+foo = a:X b:Y;
+
+bar {}

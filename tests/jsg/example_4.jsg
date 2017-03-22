@@ -1,0 +1,6 @@
+# This raises a lexer token error on NAME
+
+#doc { street:nameOrTemplate }
+#nameOrTemplate {NAME | TEMPLATE }
+#NAME : .*;
+#TEMPLATE : '{' .* '}';

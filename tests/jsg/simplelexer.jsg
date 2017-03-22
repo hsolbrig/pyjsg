@@ -1,0 +1,3 @@
+HEX              : [0-9] | [A-F] | [a-f] ;
+EXPONENT 	     : [eE] [+-]? [0-9]+ ;
+LANGTAG          : '@' [a-zA-Z] + ('-' [a-zA-Z0-9] +)* ;

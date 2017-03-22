@@ -1,0 +1,13 @@
+labeledShapeExpr        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
+labeledShapeNot         { type:"ShapeNot"       id:shapeExprLabel shapeExpr:shapeExpr }
+
+# Shape Expressions
+shapeExpr        = ShapeOr | ShapeAnd | ShapeNot | NodeConstraint | Shape | shapeExprLabel | ShapeExternal;
+ShapeOr          { shapeExprs:[shapeExpr{2,}] }
+ShapeAnd         { shapeExprs:[shapeExpr{2,}] }
+ShapeNot         { shapeExpr:shapeExpr }
+ShapeExternal    {  }
+
+NodeConstraint {}
+Shape {}
+shapeExprLabel : [a-z]+ ;

@@ -1,0 +1,5 @@
+
+
+NodeConstraint   { nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? }
+
+IRI : [0-9] ;

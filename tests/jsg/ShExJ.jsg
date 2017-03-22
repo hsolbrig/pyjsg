@@ -1,0 +1,89 @@
+# This is a JSON Grammar (JSG) file for the ShEx JSON format.
+# The form "OBJNAME  { property:PROPTYPE ... }" matches an object of type OBJTYPE
+# The form "RULENAME = NAME1 | NAME2 ..." matches any of NAMEn.
+# the form "TERMNAME : "RegExp" matches any literal matching RegExp
+# A PROPTYPE can be:
+#   TERMINAL - a terminal, all caps in this example.
+#   [PROPTYPE] - an array of PROPTYPE.
+#   {TERMINAL->PROPTYPE} - a map from TERMINAL to PROPTYPE.
+#   (PROPTYPE1|PROPTYPE2...) - any of PROPTYPEn.
+
+.TYPE type - ObjectLiteral labeledShapeOr labeledShapeAnd labeledShapeNot labeledNodeConstraint labeledShape labeledShapeExternal ;
+.IGNORE id ;
+
+# All objects have a type property corresponding to the production name, e.g. "Schema"
+
+Schema           {
+    "@context":"http://shex.io/context.jsonld"
+startActs:[SemAct+]? start:(shapeExpr|labeledShapeExpr)? shapes:[labeledShapeExpr+]? }
+
+# labeled Shape Expressions
+labeledShapeExpr        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
+labeledShapeOr          { type:"ShapeOr"        id:shapeExprLabel shapeExprs:[shapeExpr{2,}] }
+labeledShapeAnd         { type:"ShapeAnd"       id:shapeExprLabel shapeExprs:[shapeExpr{2,}] }
+labeledShapeNot         { type:"ShapeNot"       id:shapeExprLabel shapeExpr:shapeExpr }
+labeledNodeConstraint   { type:"NodeConstraint" id:shapeExprLabel nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet* values:[valueSetValue+]? }
+labeledShape            { type:"Shape"          id:shapeExprLabel virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? }
+labeledShapeExternal    { type:"ShapeExternal"  id:shapeExprLabel  }
+
+# Shape Expressions
+shapeExpr        = ShapeOr | ShapeAnd | ShapeNot | NodeConstraint | Shape | shapeExprLabel | ShapeExternal;
+ShapeOr          { shapeExprs:[shapeExpr{2,}] }
+ShapeAnd         { shapeExprs:[shapeExpr{2,}] }
+ShapeNot         { shapeExpr:shapeExpr }
+NodeConstraint   { nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet* values:[valueSetValue+]? }
+Shape            { virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? }
+ShapeExternal    {  }
+
+# Triple Expressions
+tripleExpr       = EachOf | OneOf | TripleConstraint | tripleExprLabel ;
+EachOf           { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:(INTEGER|"unbounded")? semActs:[SemAct+]? annotations:[Annotation+]? }
+OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:(INTEGER|"unbounded")? semActs:[SemAct+]? annotations:[Annotation+]? }
+TripleConstraint { id:tripleExprLabel? inverse:BOOL? negated:BOOL? predicate:IRI valueExpr:shapeExpr? min:INTEGER? max:(INTEGER|"unbounded")? semActs:[SemAct+]? annotations:[Annotation+]? }
+
+# XML Schema facets
+xsFacet          = stringFacet | numericFacet ;
+stringFacet      = (length|minlength|maxlength):INTEGER | pattern:STRING flags:STRING? ;
+numericFacet     = (mininclusive|minexclusive|maxinclusive|maxexclusive):numericLiteral
+                 | (totaldigits|fractiondigits):INTEGER ;
+
+# Value Sets
+valueSetValue    = objectValue|Stem|StemRange ;
+objectValue      = IRI|ObjectLiteral ;
+Stem             { stem:IRI } # StemRange with exclusions
+StemRange        { stem:(IRI|Wildcard) exclusions:[objectValue|Stem +]? }
+Wildcard         {  }
+
+SemAct           { name:IRI code:STRING? }
+Annotation       { predicate:IRI object:objectValue }
+
+shapeExprLabel   = IRI|BNODE ;
+tripleExprLabel  = IRI|BNODE ;
+numericLiteral   = INTEGER|DECIMAL|DOUBLE ;
+RDFLiteral       = SIMPLE_LITERAL|DATATYPE_LITERAL|LANG_LITERAL ;
+ObjectLiteral    { value:STRING language:STRING? type:STRING? }
+
+# Terminals used in productions:
+IRI              : (PN_CHARS | '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&' | UCHAR)* ; # <http://www.w3.org/TR/turtle/#grammar-production-IRIREF> - "<>"s
+BNODE            : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; # <http://www.w3.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>
+BOOL             : "true" | "false" ; # JSON boolean tokens
+INTEGER          : [+-]? [0-9] + ; # <http://www.w3.org/TR/turtle/#grammar-production-INTEGER>
+DECIMAL          : [+-]? [0-9]* '.' [0-9] + ; # <http://www.w3.org/TR/turtle/#grammar-production-DECIMAL>
+DOUBLE           : [+-]? ([0-9] + '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT) ; # <http://www.w3.org/TR/turtle/#grammar-production-DOUBLE>
+STRING           : .* ;
+
+# Terminals use only in other terminals:
+PN_PREFIX        : PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)? ;
+PN_CHARS_BASE    : [A-Z] | [a-z] | [\u00C0-\u00D6] | [\u00D8-\u00F6]
+                 | [\u00F8-\u02FF] | [\u0370-\u037D] | [\u037F-\u1FFF]
+                 | [\u200C-\u200D] | [\u2070-\u218F] | [\u2C00-\u2FEF]
+                 | [\u3001-\uD7FF] | [\uF900-\uFDCF] | [\uFDF0-\uFFFD]
+                 | [\u10000-\uEFFFF] ;
+PN_CHARS         : PN_CHARS_U | '-' | [0-9] | '\u00B7' | [\u0300-\u036F] | [\u203F-\u2040] ;
+PN_CHARS_U       : PN_CHARS_BASE | '_' ;
+UCHAR            : '\\u' HEX HEX HEX HEX
+                 | '\\U' HEX HEX HEX HEX HEX HEX HEX HEX ;
+HEX              : [0-9] | [A-F] | [a-f] ;
+EXPONENT 	 : [eE] [+-]? [0-9]+ ;
+LANGTAG          : '@' [a-zA-Z] + ('-' [a-zA-Z0-9] +)* ;
+
