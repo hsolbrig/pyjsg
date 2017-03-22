@@ -68,7 +68,7 @@ class NAME(JSGString):
 
 
 class TEMPLATE(JSGString):
-    pattern = JSGPattern(r'\{.*\}')
+    pattern = JSGPattern(r'\{.*\}'<br/>
 
 class doc(JSGObject):
     def __init__(self,
