@@ -27,11 +27,12 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional, List, Union, Set
 
-from parser.jsgParser import *
-from parser.jsgParserVisitor import jsgParserVisitor
-from parser_impl.jsg_doc_context import JSGDocContext
-from parser_impl.jsg_propertytype_parser import JSGPropertyType
-from .parser_utils import is_valid_python, map_ebnf, flatten, as_set
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl.jsg_propertytype_parser import JSGPropertyType
+
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from .parser_utils import is_valid_python, map_ebnf, flatten
 
 
 class JSGPropertyOrGroup(jsgParserVisitor):

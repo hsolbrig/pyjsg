@@ -27,14 +27,14 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional, Union, List, Set
 
-from parser.jsgParserVisitor import jsgParserVisitor
-from parser.jsgParser import *
-from parser_impl.jsg_doc_context import JSGDocContext
-from parser_impl.jsg_objectexprdef_parser import JSGObjectExprDef
-from parser_impl.jsg_particle_parser import JSGParticle
-from .parser_utils import as_token
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl.jsg_objectexprdef_parser import JSGObjectExprDef
+from pyjsg.parser_impl.jsg_particle_parser import JSGParticle
+from pyjsg.parser_impl.jsg_propertytype_parser import JSGPropertyType
 
-from parser_impl.jsg_propertytype_parser import JSGPropertyType
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from .parser_utils import as_token
 
 
 _object_template = """    def __init__(self{opts_list},

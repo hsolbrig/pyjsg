@@ -1,23 +1,16 @@
-# Auto generated from jsg/ShExJ.jsg by PyJSG version 0.1.0-DEV
-# Generation date: 2017-03-22 18:52
+# Auto generated from jsg/ShExJ.jsg by PyJSG version 0.1.2
+# Generation date: 2017-03-29 14:02
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
-from jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
+from pyjsg.jsglib.typing_patch import fix_forwards
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
 
 _CONTEXT.TYPE = "type"
 _CONTEXT.TYPE_EXCEPTIONS.append("ObjectLiteral")
-_CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeOr")
-_CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeAnd")
-_CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeNot")
-_CONTEXT.TYPE_EXCEPTIONS.append("labeledNodeConstraint")
-_CONTEXT.TYPE_EXCEPTIONS.append("labeledShape")
-_CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeExternal")
-_CONTEXT.IGNORE.append("id")
 
 
 EachOft_ = _ForwardRef('EachOf')
@@ -31,22 +24,6 @@ TripleConstraintt_ = _ForwardRef('TripleConstraint')
 
 class _A1(JSGString):
     pattern = JSGPattern(r'iri|bnode|nonliteral|literal')
-
-
-class _A2(JSGString):
-    pattern = JSGPattern(r'iri|bnode|nonliteral|literal')
-
-
-class _A3(JSGString):
-    pattern = JSGPattern(r'unbounded')
-
-
-class _A4(JSGString):
-    pattern = JSGPattern(r'unbounded')
-
-
-class _A5(JSGString):
-    pattern = JSGPattern(r'unbounded')
 
 
 class BOOL(JSGString):
@@ -98,22 +75,15 @@ class PN_CHARS(JSGString):
 
 
 class IRI(JSGString):
-    pattern = JSGPattern(r'({PN_CHARS}|\.|\:|\/|\\\\|\#|\@|\%|\&|{UCHAR})*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))
+    pattern = JSGPattern(r'({PN_CHARS}|\.|\:|\/|\\\\|\#|\@|\%|\&|{UCHAR})*'.format(UCHAR=UCHAR.pattern, PN_CHARS=PN_CHARS.pattern))
 
 
 class BNODE(JSGString):
-    pattern = JSGPattern(r'_\:({PN_CHARS_U}|[0-9])(({PN_CHARS}|\.)*{PN_CHARS})?'.format(PN_CHARS_U=PN_CHARS_U.pattern, PN_CHARS=PN_CHARS.pattern))
+    pattern = JSGPattern(r'_\:({PN_CHARS_U}|[0-9])(({PN_CHARS}|\.)*{PN_CHARS})?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
 
 
 class PN_PREFIX(JSGString):
     pattern = JSGPattern(r'{PN_CHARS_BASE}(({PN_CHARS}|\.)*{PN_CHARS})?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))
-
-class ShapeExternal(JSGObject):
-    def __init__(self,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        
-
 
 class Wildcard(JSGObject):
     def __init__(self,
@@ -134,22 +104,56 @@ class ObjectLiteral(JSGObject):
         self.type = type
 
 
-class labeledShapeExternal(JSGObject):
+class LiteralStem(JSGObject):
     def __init__(self,
-                 type: str = None,
-                 id: Union[IRI, BNODE] = None,
+                 stem: ObjectLiteral = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "ShapeExternal"
+        self.stem = stem
+
+
+class LanguageStem(JSGObject):
+    def __init__(self,
+                 stem: ObjectLiteral = None,
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.stem = stem
+
+
+class ShapeExternal(JSGObject):
+    def __init__(self,
+                 id: Optional[Union[IRI, BNODE]] = None,
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
         self.id = id
 
 
-class Stem(JSGObject):
+class IriStem(JSGObject):
     def __init__(self,
                  stem: IRI = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
         self.stem = stem
+
+
+class LiteralStemRange(JSGObject):
+    def __init__(self,
+                 stem: Union[ObjectLiteral, Wildcard] = None,
+                 exclusions: Optional[List[Union[IRI, ObjectLiteral, LiteralStem]]] = None,
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.stem = stem
+        self.exclusions = exclusions
+
+
+class LanguageStemRange(JSGObject):
+    def __init__(self,
+                 stem: Union[ObjectLiteral, Wildcard] = None,
+                 exclusions: Optional[List[Union[IRI, ObjectLiteral, LanguageStem]]] = None,
+                 **_extra: Dict[str, object]):
+        JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.stem = stem
+        self.exclusions = exclusions
 
 
 class SemAct(JSGObject):
@@ -172,30 +176,9 @@ class Annotation(JSGObject):
         self.object = object
 
 
-class labeledShape(JSGObject):
-    def __init__(self,
-                 type: str = None,
-                 id: Union[IRI, BNODE] = None,
-                 virtual: Optional[BOOL] = None,
-                 closed: Optional[BOOL] = None,
-                 extra: Optional[List[IRI]] = None,
-                 expression: Optional[Union[EachOft_, OneOft_, TripleConstraintt_, IRI, BNODE]] = None,
-                 inherit: Optional[List[Union[IRI, BNODE]]] = None,
-                 semActs: Optional[List[SemAct]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "Shape"
-        self.id = id
-        self.virtual = virtual
-        self.closed = closed
-        self.extra = extra
-        self.expression = expression
-        self.inherit = inherit
-        self.semActs = semActs
-
-
 class Shape(JSGObject):
     def __init__(self,
+                 id: Optional[Union[IRI, BNODE]] = None,
                  virtual: Optional[BOOL] = None,
                  closed: Optional[BOOL] = None,
                  extra: Optional[List[IRI]] = None,
@@ -204,6 +187,7 @@ class Shape(JSGObject):
                  semActs: Optional[List[SemAct]] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.id = id
         self.virtual = virtual
         self.closed = closed
         self.extra = extra
@@ -217,7 +201,7 @@ class EachOf(JSGObject):
                  id: Optional[Union[IRI, BNODE]] = None,
                  expressions: List[Union[EachOft_, OneOft_, TripleConstraintt_, IRI, BNODE]] = None,
                  min: Optional[INTEGER] = None,
-                 max: Optional[Union[_A3, INTEGER]] = None,
+                 max: Optional[INTEGER] = None,
                  semActs: Optional[List[SemAct]] = None,
                  annotations: Optional[List[Annotation]] = None,
                  **_extra: Dict[str, object]):
@@ -235,7 +219,7 @@ class OneOf(JSGObject):
                  id: Optional[Union[IRI, BNODE]] = None,
                  expressions: List[Union[EachOft_, OneOft_, TripleConstraintt_, IRI, BNODE]] = None,
                  min: Optional[INTEGER] = None,
-                 max: Optional[Union[_A4, INTEGER]] = None,
+                 max: Optional[INTEGER] = None,
                  semActs: Optional[List[SemAct]] = None,
                  annotations: Optional[List[Annotation]] = None,
                  **_extra: Dict[str, object]):
@@ -248,20 +232,19 @@ class OneOf(JSGObject):
         self.annotations = annotations
 
 
-class StemRange(JSGObject):
+class IriStemRange(JSGObject):
     def __init__(self,
                  stem: Union[IRI, Wildcard] = None,
-                 exclusions: Optional[List[Union[IRI, ObjectLiteral, Stem]]] = None,
+                 exclusions: Optional[List[Union[IRI, ObjectLiteral, IriStem]]] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
         self.stem = stem
         self.exclusions = exclusions
 
 
-class labeledNodeConstraint(JSGObject):
+class NodeConstraint(JSGObject):
     def __init__(self,
-                 type: str = None,
-                 id: Union[IRI, BNODE] = None,
+                 id: Optional[Union[IRI, BNODE]] = None,
                  nodeKind: Optional[_A1] = None,
                  datatype: Optional[IRI] = None,
                  length: Optional[INTEGER] = None,
@@ -275,10 +258,9 @@ class labeledNodeConstraint(JSGObject):
                  maxexclusive: Optional[Union[INTEGER, DECIMAL, DOUBLE]] = None,
                  totaldigits: Optional[INTEGER] = None,
                  fractiondigits: Optional[INTEGER] = None,
-                 values: Optional[List[Union[IRI, ObjectLiteral, Stem, StemRange]]] = None,
+                 values: Optional[List[Union[IRI, ObjectLiteral, IriStem, IriStemRange, LiteralStem, LiteralStemRange, LanguageStem, LanguageStemRange]]] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "NodeConstraint"
         self.id = id
         self.nodeKind = nodeKind
         self.datatype = datatype
@@ -296,97 +278,46 @@ class labeledNodeConstraint(JSGObject):
         self.values = values
 
 
-class NodeConstraint(JSGObject):
+class Schema(JSGObject):
     def __init__(self,
-                 nodeKind: Optional[_A2] = None,
-                 datatype: Optional[IRI] = None,
-                 length: Optional[INTEGER] = None,
-                 minlength: Optional[INTEGER] = None,
-                 maxlength: Optional[INTEGER] = None,
-                 pattern: Optional[STRING] = None,
-                 flags: Optional[STRING] = None,
-                 mininclusive: Optional[Union[INTEGER, DECIMAL, DOUBLE]] = None,
-                 minexclusive: Optional[Union[INTEGER, DECIMAL, DOUBLE]] = None,
-                 maxinclusive: Optional[Union[INTEGER, DECIMAL, DOUBLE]] = None,
-                 maxexclusive: Optional[Union[INTEGER, DECIMAL, DOUBLE]] = None,
-                 totaldigits: Optional[INTEGER] = None,
-                 fractiondigits: Optional[INTEGER] = None,
-                 values: Optional[List[Union[IRI, ObjectLiteral, Stem, StemRange]]] = None,
+                 startActs: Optional[List[SemAct]] = None,
+                 start: Optional[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]] = None,
+                 shapes: Optional[List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]]] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.nodeKind = nodeKind
-        self.datatype = datatype
-        self.length = length
-        self.minlength = minlength
-        self.maxlength = maxlength
-        self.pattern = pattern
-        self.flags = flags
-        self.mininclusive = mininclusive
-        self.minexclusive = minexclusive
-        self.maxinclusive = maxinclusive
-        self.maxexclusive = maxexclusive
-        self.totaldigits = totaldigits
-        self.fractiondigits = fractiondigits
-        self.values = values
-
-
-class labeledShapeOr(JSGObject):
-    def __init__(self,
-                 type: str = None,
-                 id: Union[IRI, BNODE] = None,
-                 shapeExprs: List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "ShapeOr"
-        self.id = id
-        self.shapeExprs = shapeExprs
-
-
-class labeledShapeAnd(JSGObject):
-    def __init__(self,
-                 type: str = None,
-                 id: Union[IRI, BNODE] = None,
-                 shapeExprs: List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "ShapeAnd"
-        self.id = id
-        self.shapeExprs = shapeExprs
-
-
-class labeledShapeNot(JSGObject):
-    def __init__(self,
-                 type: str = None,
-                 id: Union[IRI, BNODE] = None,
-                 shapeExpr: Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "ShapeNot"
-        self.id = id
-        self.shapeExpr = shapeExpr
+        setattr(self, '@context', "http://www.w3.org/ns/shex.jsonld")
+        self.startActs = startActs
+        self.start = start
+        self.shapes = shapes
 
 
 class ShapeOr(JSGObject):
     def __init__(self,
+                 id: Optional[Union[IRI, BNODE]] = None,
                  shapeExprs: List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.id = id
         self.shapeExprs = shapeExprs
 
 
 class ShapeAnd(JSGObject):
     def __init__(self,
+                 id: Optional[Union[IRI, BNODE]] = None,
                  shapeExprs: List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.id = id
         self.shapeExprs = shapeExprs
 
 
 class ShapeNot(JSGObject):
     def __init__(self,
+                 id: Optional[Union[IRI, BNODE]] = None,
                  shapeExpr: Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal] = None,
                  **_extra: Dict[str, object]):
         JSGObject.__init__(self, _CONTEXT, **_extra)
+        self.id = id
         self.shapeExpr = shapeExpr
 
 
@@ -398,7 +329,7 @@ class TripleConstraint(JSGObject):
                  predicate: IRI = None,
                  valueExpr: Optional[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal]] = None,
                  min: Optional[INTEGER] = None,
-                 max: Optional[Union[_A5, INTEGER]] = None,
+                 max: Optional[INTEGER] = None,
                  semActs: Optional[List[SemAct]] = None,
                  annotations: Optional[List[Annotation]] = None,
                  **_extra: Dict[str, object]):
@@ -412,19 +343,6 @@ class TripleConstraint(JSGObject):
         self.max = max
         self.semActs = semActs
         self.annotations = annotations
-
-
-class Schema(JSGObject):
-    def __init__(self,
-                 startActs: Optional[List[SemAct]] = None,
-                 start: Optional[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shapet_, IRI, BNODE, ShapeExternal, labeledShapeOr, labeledShapeAnd, labeledShapeNot, labeledNodeConstraint, labeledShape, IRI, BNODE, labeledShapeExternal]] = None,
-                 shapes: Optional[List[Union[labeledShapeOr, labeledShapeAnd, labeledShapeNot, labeledNodeConstraint, labeledShape, IRI, BNODE, labeledShapeExternal]]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        setattr(self, '@context', "http://shex.io/context.jsonld")
-        self.startActs = startActs
-        self.start = start
-        self.shapes = shapes
 
 
 fix_forwards(globals())

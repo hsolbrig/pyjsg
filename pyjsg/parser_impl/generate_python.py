@@ -32,10 +32,10 @@ from typing import Optional, Union
 from antlr4 import CommonTokenStream
 from antlr4 import FileStream, InputStream
 from antlr4.error.ErrorListener import ErrorListener
+from pyjsg.parser.jsgParser import jsgParser
 
-from parser.jsgLexer import jsgLexer
-from parser.jsgParser import jsgParser
-from parser_impl.jsg_doc_parser import JSGDocParser
+from pyjsg.parser.jsgLexer import jsgLexer
+from pyjsg.parser_impl.jsg_doc_parser import JSGDocParser
 
 
 class ParseErrorListener(ErrorListener):
@@ -124,7 +124,8 @@ def genargs() -> ArgumentParser:
 def generate(argv) -> bool:
     opts = genargs().parse_args(argv)
     if not opts.outfile:
-        opts.outfile = os.path.dirname(opts.infile) + str(os.path.basename(opts.infile).rsplit('.', 1)[0]) + ".py"
+        opts.outfile = os.path.join(os.path.dirname(opts.infile),
+                                    str(os.path.basename(opts.infile).rsplit('.', 1)[0]) + ".py")
     if do_parse(opts.infile, opts.outfile):
         print("Output written to {}".format(opts.outfile))
         if opts.evaluate:

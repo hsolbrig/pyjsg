@@ -25,14 +25,45 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import List
+from typing import Optional, List, Set
 
-from parser_impl.jsg_objectexprdef_parser import JSGObjectExprDef
-from parser_impl.parser_utils import flatten
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl.jsg_particle_parser import JSGParticle
+
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from .parser_utils import flatten
 
 
-class JSGNonObjectExprDef(JSGObjectExprDef):
+class JSGObjectExprDef(jsgParserVisitor):
+    def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.ObjectExprDefContext] = None):
+        self._context = context
+        self._choices = []                  # List[List[JSGParticle]]
+        if ctx:
+            self.visit(ctx)
+
+    def __str__(self):
+        return "objectExprDef({})".format(id(self))
+
+    def is_object(self):
+        """ Return true if this expression needs to be represented as an object. False as a simple type def """
+        return any([any([e.is_object for e in elist]) for elist in self._choices])
 
     def signature(self) -> List[str]:
         """ Return a list of __init__ signatures in the form of id = type"""
-        return flatten([[c.signature(all_are_optional=len(self._choices) > 1) for c in clist] for clist in self._choices])
+        return flatten([[c.signature() for c in clist] for clist in self._choices])
+
+    def initializer(self) -> List[str]:
+        return flatten([[c.initializer() for c in clist] for clist in self._choices])
+
+    def dependency_list(self) -> List[str]:
+        return flatten([[c.dependency_list() for c in clist] for clist in self._choices])
+
+    def dependencies(self) -> Set[str]:
+        return set(self.dependency_list())
+
+    def visitObjectExprDef(self, ctx: jsgParser.ObjectExprDefContext):
+        """ objectExprDef: particle+ (BAR particleOpt)* """
+        self._choices.append([JSGParticle(self._context, p) for p in ctx.particle()])
+        for opt in ctx.particleOpt():
+            self._choices.append([JSGParticle(self._context, p) for p in opt.particle()])

@@ -26,12 +26,14 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional, List, Set
-from parser.jsgParserVisitor import jsgParserVisitor
-from parser.jsgParser import *
-from parser_impl.jsg_doc_context import JSGDocContext
+
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl.jsg_propertytype_parser import JSGPropertyType
+
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
 from .parser_utils import flatten
 
-from parser_impl.jsg_propertytype_parser import JSGPropertyType
 
 # TODO: Implement array cardinality
 

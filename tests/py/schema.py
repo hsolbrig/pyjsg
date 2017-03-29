@@ -1,10 +1,10 @@
 # Auto generated from jsg/schema.jsg by PyJSG version 0.1.0-DEV
 # Generation date: 2017-03-19 12:05
 #
-from typing import Optional, Dict, List, Union, _ForwardRef
+from typing import Optional, Dict, Union
 
-from jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
-from jsglib.typing_patch import fix_forwards
+from jsglib import JSGObject, JSGContext
+from jsglib import fix_forwards
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()

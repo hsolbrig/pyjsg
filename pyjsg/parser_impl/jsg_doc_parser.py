@@ -28,18 +28,16 @@
 import datetime
 from typing import List
 
-from parser.jsgParser import *
-from parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl import __version__
+from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
+from pyjsg.parser_impl.jsg_lexerrule_parser import JSGLexerRule
+from pyjsg.parser_impl.jsg_nonobjectexprdef_parser import JSGNonObjectExprDef
+from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
 
-from parser_impl import __version__
-from parser_impl.jsg_doc_context import JSGDocContext
-from parser_impl.jsg_nonobjectexprdef_parser import JSGNonObjectExprDef
-from parser_impl.jsg_objectexprdef_parser import JSGObjectExprDef
-from parser_impl.jsg_objectexpr_parser import JSGObjectExpr
-from parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
-from parser_impl.jsg_lexerrule_parser import JSGLexerRule
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
 from .parser_utils import as_token, as_tokens
-
 
 # Outermost python template
 #
@@ -48,8 +46,8 @@ _jsg_python_template = '''# Auto generated from {infile} by PyJSG version {versi
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
-from jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
+from pyjsg.jsglib.typing_patch import fix_forwards
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()

@@ -5,5 +5,5 @@
 #       to make a local copy if we want the output in the
 #       parser directory
 cp ../grammar/jsg*.g4 .
-antlr4 -Dlanguage=Python3 -package parser -o ../parser -no-listener -visitor  jsgParser.g4 jsgLexer.g4
+antlr4 -Dlanguage=Python3 -package parser -o ../pyjsg/parser -no-listener -visitor  jsgParser.g4 jsgLexer.g4
 rm jsg*.g4

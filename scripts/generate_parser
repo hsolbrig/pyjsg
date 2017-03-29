@@ -5,5 +5,5 @@ import sys
 
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), '..'))
-    from parser_impl.generate_python import generate
+    from pyjsg.parser_impl.generate_python import generate
     generate(sys.argv[1:])

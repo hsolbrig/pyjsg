@@ -25,14 +25,14 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import Optional, Union, List, Set
 import re
+from typing import Optional, Union, List, Set
 
-from parser.jsgParserVisitor import jsgParserVisitor
-from parser.jsgParser import *
-from parser_impl.jsg_doc_context import JSGDocContext
-from parser_impl.jsg_lexerrule_parser import JSGLexerRule
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl.jsg_lexerrule_parser import JSGLexerRule
 
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
 from .parser_utils import as_tokens, as_token, flatten
 
 
@@ -91,12 +91,12 @@ class JSGPropertyType(jsgParserVisitor):
 
     def visitPropertyTypeObjectExpr(self, ctx: jsgParser.PropertyTypeObjectExprContext):
         """ propertyType: objectExpr -- an anonymous object """
-        from parser_impl.jsg_objectexpr_parser import JSGObjectExpr
+        from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
         self._context.grammarelts[self._context.anon_id()] = JSGObjectExpr(self._context, ctx.objectExpr())
 
     def visitPropertyTypeArrayExpr(self, ctx: jsgParser.PropertyTypeArrayExprContext):
         """ propertyType: objectExpr -- an array """
-        from parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
+        from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
         self._arraytypeid = JSGArrayExpr(self._context, ctx.arrayExpr())
 
     def visitPropertyTypeChoice(self, ctx: jsgParser.PropertyTypeChoiceContext):

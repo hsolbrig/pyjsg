@@ -141,9 +141,9 @@ class JSGDocContext:
 
             Within each category, items are returned alphabetically
         """
-        from parser_impl.jsg_lexerrule_parser import JSGLexerRule
-        from parser_impl.jsg_objectexpr_parser import JSGObjectExpr
-        from parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
+        from pyjsg.parser_impl.jsg_lexerrule_parser import JSGLexerRule
+        from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
+        from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
 
         state = 0
         depth_map = {}

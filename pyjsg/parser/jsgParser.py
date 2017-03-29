@@ -1,4 +1,4 @@
-# Generated from jsgParser.g4 by ANTLR 4.6
+# Generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/grammar/jsgParser.g4 by ANTLR 4.6
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO

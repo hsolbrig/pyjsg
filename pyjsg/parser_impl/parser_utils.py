@@ -25,11 +25,13 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-import keyword
 import ast
-from typing import List, Union, Set, Optional
-from parser.jsgParser import jsgParser, ParserRuleContext
+import keyword
 from collections import Iterable
+from typing import List, Union, Set, Optional
+
+from pyjsg.parser.jsgParser import jsgParser, ParserRuleContext
+
 
 def flatten(l: Iterable) -> List:
     """

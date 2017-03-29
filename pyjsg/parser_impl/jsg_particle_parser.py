@@ -27,13 +27,13 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional, List, Set
 
-from parser.jsgParserVisitor import jsgParserVisitor
-from parser_impl.jsg_lexerrule_parser import JSGLexerRule
-from parser.jsgParser import *
-from parser_impl.jsg_doc_context import JSGDocContext
-from parser_impl.jsg_propertyOrGroup_parser import JSGPropertyOrGroup
+from pyjsg.parser.jsgParser import *
+from pyjsg.parser_impl.jsg_lexerrule_parser import JSGLexerRule
+from pyjsg.parser_impl.jsg_propertyOrGroup_parser import JSGPropertyOrGroup
 
-from .parser_utils import as_token, map_ebnf
+from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from .parser_utils import as_token
 
 
 class JSGParticle(jsgParserVisitor):

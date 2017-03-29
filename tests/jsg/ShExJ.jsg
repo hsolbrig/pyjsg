@@ -8,38 +8,30 @@
 #   {TERMINAL->PROPTYPE} - a map from TERMINAL to PROPTYPE.
 #   (PROPTYPE1|PROPTYPE2...) - any of PROPTYPEn.
 
-.TYPE type - ObjectLiteral labeledShapeOr labeledShapeAnd labeledShapeNot labeledNodeConstraint labeledShape labeledShapeExternal ;
-.IGNORE id ;
+.TYPE type - ObjectLiteral
 
-# All objects have a type property corresponding to the production name, e.g. "Schema"
+; # All objects have a type property corresponding to the production name, e.g. "Schema"
 
 Schema           {
-    "@context":"http://shex.io/context.jsonld"
-startActs:[SemAct+]? start:(shapeExpr|labeledShapeExpr)? shapes:[labeledShapeExpr+]? }
+  "@context":"http://www.w3.org/ns/shex.jsonld"
+startActs:[SemAct+]? start:shapeExpr? shapes:[shapeExpr+]? }
 
-# labeled Shape Expressions
-labeledShapeExpr        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
-labeledShapeOr          { type:"ShapeOr"        id:shapeExprLabel shapeExprs:[shapeExpr{2,}] }
-labeledShapeAnd         { type:"ShapeAnd"       id:shapeExprLabel shapeExprs:[shapeExpr{2,}] }
-labeledShapeNot         { type:"ShapeNot"       id:shapeExprLabel shapeExpr:shapeExpr }
-labeledNodeConstraint   { type:"NodeConstraint" id:shapeExprLabel nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet* values:[valueSetValue+]? }
-labeledShape            { type:"Shape"          id:shapeExprLabel virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? }
-labeledShapeExternal    { type:"ShapeExternal"  id:shapeExprLabel  }
+
 
 # Shape Expressions
 shapeExpr        = ShapeOr | ShapeAnd | ShapeNot | NodeConstraint | Shape | shapeExprLabel | ShapeExternal;
-ShapeOr          { shapeExprs:[shapeExpr{2,}] }
-ShapeAnd         { shapeExprs:[shapeExpr{2,}] }
-ShapeNot         { shapeExpr:shapeExpr }
-NodeConstraint   { nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet* values:[valueSetValue+]? }
-Shape            { virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? }
-ShapeExternal    {  }
+ShapeOr          {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
+ShapeAnd         {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
+ShapeNot         {id:shapeExprLabel? shapeExpr:shapeExpr }
+NodeConstraint   {id:shapeExprLabel? nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet* values:[valueSetValue+]? }
+Shape            {id:shapeExprLabel? virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? }
+ShapeExternal    {id:shapeExprLabel?  }
 
 # Triple Expressions
 tripleExpr       = EachOf | OneOf | TripleConstraint | tripleExprLabel ;
-EachOf           { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:(INTEGER|"unbounded")? semActs:[SemAct+]? annotations:[Annotation+]? }
-OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:(INTEGER|"unbounded")? semActs:[SemAct+]? annotations:[Annotation+]? }
-TripleConstraint { id:tripleExprLabel? inverse:BOOL? negated:BOOL? predicate:IRI valueExpr:shapeExpr? min:INTEGER? max:(INTEGER|"unbounded")? semActs:[SemAct+]? annotations:[Annotation+]? }
+EachOf           { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:INTEGER? semActs:[SemAct+]? annotations:[Annotation+]? }
+OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:INTEGER? semActs:[SemAct+]? annotations:[Annotation+]? }
+TripleConstraint { id:tripleExprLabel? inverse:BOOL? negated:BOOL? predicate:IRI valueExpr:shapeExpr? min:INTEGER? max:INTEGER? semActs:[SemAct+]? annotations:[Annotation+]? }
 
 # XML Schema facets
 xsFacet          = stringFacet | numericFacet ;
@@ -48,10 +40,14 @@ numericFacet     = (mininclusive|minexclusive|maxinclusive|maxexclusive):numeric
                  | (totaldigits|fractiondigits):INTEGER ;
 
 # Value Sets
-valueSetValue    = objectValue|Stem|StemRange ;
+valueSetValue    = objectValue | IriStem | IriStemRange | LiteralStem | LiteralStemRange | LanguageStem | LanguageStemRange ;
 objectValue      = IRI|ObjectLiteral ;
-Stem             { stem:IRI } # StemRange with exclusions
-StemRange        { stem:(IRI|Wildcard) exclusions:[objectValue|Stem +]? }
+IriStem          { stem:IRI } # IriStemRange with exclusions
+IriStemRange     { stem:(IRI|Wildcard) exclusions:[objectValue|IriStem +]? }
+LiteralStem      { stem:ObjectLiteral } # LiteralStemRange with exclusions
+LiteralStemRange { stem:(ObjectLiteral|Wildcard) exclusions:[objectValue|LiteralStem +]? }
+LanguageStem     { stem:ObjectLiteral } # LanguageStemRange with exclusions
+LanguageStemRange{ stem:(ObjectLiteral|Wildcard) exclusions:[objectValue|LanguageStem +]? }
 Wildcard         {  }
 
 SemAct           { name:IRI code:STRING? }

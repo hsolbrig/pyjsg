@@ -26,25 +26,32 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import os
-import unittest
 import types
+import unittest
 from typing import Optional
-import requests
-from jsonasobj import loads as jao_loads
-from dict_compare import compare_dicts
 
-from jsglib.jsg import loads as jsg_loads
+import requests
+from dict_compare import compare_dicts
+from jsonasobj import loads as jao_loads
+
+import ShExJ
 from jsglib.logger import Logger
+from jsglib.jsg import loads as jsg_loads
 from parser_impl.generate_python import parse
 from tests.memlogger import MemLogger
-import ShExJ
 
-shexJSGSource = "https://api.github.com/repos/shexSpec/shexTest/contents/doc/ShExJ.jsg"
-shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas"
+shexJSGSource = "https://api.github.com/repos/hsolbrig/shexTest/contents/doc/ShExJ.jsg"
+shexTestRepository = "https://api.github.com/repos/hsolbrig/shexTest/contents/schemas"
+#shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/master/schemas/1val1DECIMAL.json"
+shexTestJson = None
 
 # If there is a path here, we use the local ShExJ.jsg rather than the one on the github site
-LOCAL_PARSER_IMAGE = os.path.join('jsg', 'ShExJ.jsg')
-USE_STATIC_SHEXJ = True
+# LOCAL_PARSER_IMAGE = os.path.join('jsg', 'ShExJ.jsg')
+LOCAL_PARSER_IMAGE = None
+USE_STATIC_SHEXJ = False
+
+# Files to skip until we reintroduce a manifest reader
+skip = ['coverage.json', 'manifest.json']
 
 
 def compare_json(j1: str, j2: str, log: Logger) -> bool:
@@ -76,13 +83,17 @@ def validate_shexj_json(json_str: str, input_fname: str, module: types.ModuleTyp
 
 
 def validate_file(download_url: str, module: types.ModuleType) -> bool:
-    print("Downloading {}".format(download_url))
-    resp = requests.get(download_url)
-    if resp.ok:
-        return validate_shexj_json(resp.text, download_url, module)
-    else:
-        print("Error {}: {}".format(resp.status_code, resp.reason))
-        return False
+    fname = download_url.rsplit('/', 1)[1]
+    if fname not in skip:
+        print("Testing {}".format(download_url))
+        resp = requests.get(download_url)
+        if resp.ok:
+            return validate_shexj_json(resp.text, download_url, module)
+        else:
+            print("Error {}: {}".format(resp.status_code, resp.reason))
+            return False
+    print("Skipping {}".format(download_url))
+    return True
 
 
 def download_github_file(github_url: str) -> Optional[str]:
@@ -102,10 +113,12 @@ def download_github_file(github_url: str) -> Optional[str]:
 
 
 def validate_shex_schemas(module: types.ModuleType) -> bool:
-    resp = requests.get(shexTestRepository)
-    if resp.ok:
-        return all([validate_file(f['download_url'], module) for f in resp.json() if f['name'].endswith('.json')])
-
+    if not shexTestJson:
+        resp = requests.get(shexTestRepository)
+        if resp.ok:
+            return all([validate_file(f['download_url'], module) for f in resp.json() if f['name'].endswith('.json')])
+    else:
+        return validate_file(shexTestJson, module)
     print("Error {}: {}".format(resp.status_code, resp.reason))
     return False
 

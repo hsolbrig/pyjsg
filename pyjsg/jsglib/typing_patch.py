@@ -27,6 +27,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import sys
 from typing import GenericMeta, _ForwardRef, Dict, Any
+
 if sys.version_info < (3, 6):
     from typing import Union
 else:
@@ -38,7 +39,9 @@ from collections import Iterable
 # TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
 
 def conforms(element, typ) -> bool:
-    if is_forward(typ):
+    if element == '_context':
+        return True
+    elif is_forward(typ):
         ns = {}
         typ = typ._eval_type(ns, ns)        # All forwards have to already be fixed
     if is_union(typ):
