@@ -116,7 +116,7 @@ def genargs() -> ArgumentParser:
     """
     parser = ArgumentParser()
     parser.add_argument("infile", help="Input JSG specification")
-    parser.add_argument("-o", "--outfile", help="Output python file (Default: {infile}.jsg)")
+    parser.add_argument("-o", "--outfile", help="Output python file (Default: {infile}.py)")
     parser.add_argument("-e", "--evaluate", help="Evaluate resulting python file as a test", action="store_true")
     return parser
 

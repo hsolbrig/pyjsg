@@ -116,7 +116,7 @@ def validate_shex_schemas(module: types.ModuleType) -> bool:
     if not shexTestJson:
         resp = requests.get(shexTestRepository)
         if resp.ok:
-            return all([validate_file(f['download_url'], module) for f in resp.json() if f['name'].endswith('.json')])
+            return all(validate_file(f['download_url'], module) for f in resp.json() if f['name'].endswith('.json'))
     else:
         return validate_file(shexTestJson, module)
     print("Error {}: {}".format(resp.status_code, resp.reason))

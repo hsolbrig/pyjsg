@@ -24,7 +24,7 @@ ShapeOr          {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
 ShapeAnd         {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
 ShapeNot         {id:shapeExprLabel? shapeExpr:shapeExpr }
 NodeConstraint   {id:shapeExprLabel? nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet* values:[valueSetValue+]? }
-Shape            {id:shapeExprLabel? virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? }
+Shape            {id:shapeExprLabel? virtual:BOOL? closed:BOOL? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? annotations:[Annotation+]? }
 ShapeExternal    {id:shapeExprLabel?  }
 
 # Triple Expressions
