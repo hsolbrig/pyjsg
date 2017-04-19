@@ -99,7 +99,7 @@ def is_iterable(typ) -> bool:
 def union_conforms(element, typ) -> bool:
     if is_union(typ):
         union_vals = typ.__union_params__ if sys.version_info < (3, 6) else typ.__args__
-        return any([conforms(element, t) for t in union_vals])
+        return any(conforms(element, t) for t in union_vals)
     return False
 
 
@@ -114,14 +114,14 @@ def as_union(element, typ) -> object:
 def dict_conforms(element, typ) -> bool:
     if is_dict(typ) and isinstance(element, dict):
         kt, vt = typ.__args__
-        return all([conforms(k, kt) and conforms(v, vt) for k, v in element.items()])
+        return all(conforms(k, kt) and conforms(v, vt) for k, v in element.items())
     return False
 
 
 def iterable_conforms(element, typ) -> bool:
     if is_iterable(typ) and isinstance(element, Iterable):
         vt = typ.__args__[0]
-        return all([conforms(e, vt) for e in element])
+        return all(conforms(e, vt) for e in element)
     return False
 
 
