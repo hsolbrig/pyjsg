@@ -5,68 +5,91 @@ parser grammar jsgParser;
 
 options {tokenVocab = jsgLexer; }
 
+doc					: typeDirective? ignoreDirective* grammarElt* lexerRules? EOF ;
+typeDirective       : TYPE name typeExceptions? SEMI ;
+typeExceptions      : DASH idref+ ;
+ignoreDirective	    : IGNORE name* SEMI ;                          // references to objects, arrays
 
-doc					: directive* grammarElt* EOF ;
-directive			: '.TYPE' ID (DASH typeExceptions)? SEMI    #typeDirective
-					| '.IGNORE' ID* SEMI                        #ignoreDirective
-					;
-typeExceptions      : ID+ ;
 grammarElt			: objectDef
                     | arrayDef
-                    | nonObject
-                    | lexerRuleSpec
+                    | objectMacro
+                    | valueTypeMacro
                     ;
-objectDef			: ID objectExpr ;
-objectExpr			: OBRACE objectExprDef? CBRACE               #objectExprObj
-					| OBRACE ID '->' propertyType CBRACE         #objectExprMap
-					;
-objectExprDef       : particle+ (BAR particleOpt)* ;
-particleOpt         : particle* ;
-arrayDef			: ID arrayExpr ;
-arrayExpr			: '[' propertyType (BAR propertyType)* ebnfSuffix? ']' ;
-particle			: ID ebnfSuffix? COMMA?
-					| propertyOrGroup COMMA?
-					;
-propertyOrGroup		: (ID|STRING) COLON propertyType ebnfSuffix?                  #propertyOrGroupSimple
-					| OPREN ID (BAR ID)+ CPREN COLON propertyType ebnfSuffix?     #propertyOrGroupShorthand
-					| OPREN propertyOrGroupList (BAR propertyOrGroupList)+ CPREN  #propertyOrGroupChoice
-					;
-propertyOrGroupList : propertyOrGroup+ ;
-propertyType		: ID                            #propertyTypeID
-					| STRING                        #propertyTypeSTRING
-					| objectExpr                    #propertyTypeObjectExpr
-					| arrayExpr                     #propertyTypeArrayExpr
-					| OPREN typeAlternatives CPREN  #propertyTypeChoice
-					| DOT                           #propertyTypeAny
-					;
-typeAlternatives	: (ID|STRING) (BAR (ID|STRING))+ ;
-nonObject			: ID EQUALS objectExprDef SEMI ;
 
-ebnfSuffix			: QMARK
+// JSON object definition
+objectDef			: ID objectExpr ;
+objectExpr			: OBRACE membersDef? CBRACE
+					| OBRACE (LEXER_ID_REF | JSON_STRING | ANY) MAPSTO valueType ebnfSuffix? CBRACE
+					;
+
+// JSON object members
+membersDef          : (pairDef COMMA?)+ (BAR altMembersDef)* ;
+altMembersDef       : (pairDef COMMA?)* ;
+
+
+// JSON pair definition
+pairDef     		: name COLON valueType ebnfSuffix?                  // name : value [cardinality]
+                    | idref ebnfSuffix?                                 // Must reference an objectDef or objectMacro
+					| OPREN name+ CPREN COLON valueType ebnfSuffix?     // shorthand for above
+					;
+name                : ID|STRING ;
+
+
+// JSON array definition
+arrayDef			: ID arrayExpr ;
+arrayExpr			: OBRACKET valueType ebnfSuffix? CBRACKET;
+
+// Substitution parameters
+objectMacro         : ID EQUALS membersDef SEMI;
+valueTypeMacro      : ID EQUALS nonRefValueType (BAR nonRefValueType)* SEMI;
+
+builtinValueType    : JSON_STRING
+                    | JSON_NUMBER
+                    | JSON_INT
+                    | JSON_BOOL
+                    | JSON_NULL
+                    | JSON_ARRAY
+                    | JSON_OBJECT
+                    ;
+valueType  		    : idref                             // reference to objectDef, arrayDef or valueTypeMacro
+                    | nonRefValueType
+                    ;
+nonRefValueType  	: LEXER_ID_REF                      // string / number / bool constraint
+					| STRING                            // fixed value string
+					| builtinValueType                  // builtin json type
+					| objectExpr                        // unnamed objectDef
+					| arrayExpr                         // unnamed arrayDef
+					| OPREN typeAlternatives CPREN      // choice of any of the above
+					| ANY                               // any value
+					;
+typeAlternatives    : valueType (BAR valueType)+ ;
+
+idref               : ID ;
+
+// Cardinality -- {n} == {n,n}, {n,} == {n,*}
+ebnfSuffix          : QMARK
 					| STAR
 					| PLUS
 					| OBRACE INT (COMMA (INT|STAR)?)? CBRACE
 					;
 
-// lexer rules from https://github.com/antlr/grammars-v4/raw/master/antlr4/ANTLRv4Parser.g4
-lexerRuleSpec		: ID COLON lexerRuleBlock LSEMI ;
-lexerebnf			: LQMARK
-					| LSTAR
-					| LPLUS
-					| LOBRACE LINT (LCOMMA (LINT|LSTAR)?)? LCBRACE
-					;
-lexerRuleBlock   	: lexerAltList ;
-lexerAltList     	: lexerAlt (LBAR lexerAlt)* ;
+
+// JSON string / number / bool / null constraints
+lexerRules          : TERMINALS lexerRuleSpec* ;
+lexerRuleSpec		: LEXER_ID COLON lexerRuleBlock SEMI ;
+lexerRuleBlock   	: lexerAltList (builtinValueType)? ;
+lexerAltList     	: lexerAlt (BAR lexerAlt)* ;
 lexerAlt         	: lexerElements | ;
 lexerElements    	: lexerElement+ ;
-lexerElement     	: lexerAtom lexerebnf?
-					| lexerBlock lexerebnf?
+lexerElement     	: lexerAtom ebnfSuffix?
+					| lexerBlock ebnfSuffix?
 					;
-lexerBlock       	: LOPREN lexerAltList LCPREN ;
-lexerAtom        	: terminal              #lexerAtomTerminal
-					| LEXER_CHAR_SET        #lexerAtomCharSet
-					| LDOT                  #lexerAtomDot
+lexerBlock       	: OPREN lexerAltList CPREN ;
+lexerAtom        	: lexerTerminal
+					| LEXER_CHAR_SET
+					| ANY
 					;
-terminal         	: LEXER_ID              #lexerTerminalID
-					| LEXER_STRING          #lexerTerminalString
+lexerTerminal       : LEXER_ID
+					| STRING
 					;
+

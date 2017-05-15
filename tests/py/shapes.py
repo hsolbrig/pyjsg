@@ -1,80 +1,101 @@
-# Auto generated from jsg/shapes.jsg by PyJSG version 0.1.1
-# Generation date: 2017-03-29 13:55
+# Auto generated from jsg/shapes.jsg by PyJSG version 1.0.0
+# Generation date: 2017-05-15 11:10
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
+from pyjsg.jsglib.jsg import *
 from pyjsg.jsglib.typing_patch import fix_forwards
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
-
-
-
-
 ShapeAndt_ = _ForwardRef('ShapeAnd')
 ShapeNott_ = _ForwardRef('ShapeNot')
 ShapeOrt_ = _ForwardRef('ShapeOr')
+shapeExprt_ = _ForwardRef('shapeExpr')
 
 
-class shapeExprLabel(JSGString):
-    pattern = JSGPattern(r'[a-z]+')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'ShapeNot')
 
 class ShapeExternal(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        super().__init__(self._context, **_kwargs)
 
 
 class NodeConstraint(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        super().__init__(self._context, **_kwargs)
 
 
 class Shape(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        super().__init__(self._context, **_kwargs)
 
+
+shapeExprLabel = String
 
 class labeledShapeNot(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 type: str = None,
+                 type: _Anon1 = None,
                  id: shapeExprLabel = None,
-                 shapeExpr: Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shape, shapeExprLabel, ShapeExternal] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.type = "ShapeNot"
+                 shapeExpr: shapeExprt_ = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        self.type = type
         self.id = id
         self.shapeExpr = shapeExpr
+        super().__init__(self._context, **_kwargs)
 
+
+shapeExpr = Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shape, shapeExprLabel, ShapeExternal]
 
 class ShapeOr(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 shapeExprs: List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shape, shapeExprLabel, ShapeExternal]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 shapeExprs: List[shapeExprt_] = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
         self.shapeExprs = shapeExprs
+        super().__init__(self._context, **_kwargs)
 
 
 class ShapeAnd(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 shapeExprs: List[Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shape, shapeExprLabel, ShapeExternal]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 shapeExprs: List[shapeExprt_] = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
         self.shapeExprs = shapeExprs
+        super().__init__(self._context, **_kwargs)
 
 
 class ShapeNot(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 shapeExpr: Union[ShapeOrt_, ShapeAndt_, ShapeNott_, NodeConstraint, Shape, shapeExprLabel, ShapeExternal] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 shapeExpr: shapeExprt_ = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
         self.shapeExpr = shapeExpr
+        super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(globals())
+labeledShapeExpr = Union[labeledShapeNot, shapeExprLabel]
+
+fix_forwards(locals())

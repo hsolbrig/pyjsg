@@ -5,16 +5,16 @@
 # Second - triplExprLabel isn't reconciled when it occurs after the OneOf definition (why?)
 #   (The issue is premature resolution -- see repr() call in jsg_proptype_parser line 59
 
-IRI : [0-9] ;
-BNODE : [0-9] ;
-INTEGER : [0-9] ;
 
-
-
-tripleExpr       = EachOf | OneOf | tripleExprLabel ;
+tripleExpr       = (EachOf | OneOf | tripleExprLabel) ;
 EachOf           { }
 OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:INTEGER? max:(INTEGER|"unbounded")? }
 TripleConstraint {  }
 
 
 tripleExprLabel  = IRI|BNODE ;
+
+@terminals
+IRI : @string ;
+BNODE : @string ;
+INTEGER : @string ;

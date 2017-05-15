@@ -1,17 +1,13 @@
-# Auto generated from jsg/lexer.jsg by PyJSG version 0.1.1
-# Generation date: 2017-03-29 13:55
+# Auto generated from jsg/lexer.jsg by PyJSG version 1.0.0
+# Generation date: 2017-05-15 11:10
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
+from pyjsg.jsglib.jsg import *
 from pyjsg.jsglib.typing_patch import fix_forwards
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
-
-
-
-
 
 
 class BOOL(JSGString):
@@ -47,30 +43,30 @@ class LANGTAG(JSGString):
 
 
 class DOUBLE(JSGString):
-    pattern = JSGPattern(r'[+-]?([0-9]+\.[0-9]*{EXPONENT}|\.[0-9]+{EXPONENT}|[0-9]+{EXPONENT})'.format(EXPONENT=EXPONENT.pattern))
+    pattern = JSGPattern(r'[+-]?([0-9]+\.[0-9]*({EXPONENT})|\.[0-9]+({EXPONENT})|[0-9]+({EXPONENT}))'.format(EXPONENT=EXPONENT.pattern))
 
 
 class PN_CHARS_U(JSGString):
-    pattern = JSGPattern(r'{PN_CHARS_BASE}|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))
+    pattern = JSGPattern(r'({PN_CHARS_BASE})|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))
 
 
 class UCHAR(JSGString):
-    pattern = JSGPattern(r'\\\\u{HEX}{HEX}{HEX}{HEX}|\\\\U{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}'.format(HEX=HEX.pattern))
+    pattern = JSGPattern(r'\\\\u({HEX})({HEX})({HEX})({HEX})|\\\\U({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})'.format(HEX=HEX.pattern))
 
 
 class PN_CHARS(JSGString):
-    pattern = JSGPattern(r'{PN_CHARS_U}|\-|[0-9]|\\u00B7|[\u0300-\u036F]|[\u203F-\u2040]'.format(PN_CHARS_U=PN_CHARS_U.pattern))
+    pattern = JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|\\u00B7|[\u0300-\u036F]|[\u203F-\u2040]'.format(PN_CHARS_U=PN_CHARS_U.pattern))
 
 
 class IRI(JSGString):
-    pattern = JSGPattern(r'({PN_CHARS}|\.|\:|\/|\\\\|\#|\@|\%|\&|{UCHAR})*'.format(UCHAR=UCHAR.pattern, PN_CHARS=PN_CHARS.pattern))
+    pattern = JSGPattern(r'(({PN_CHARS})|\.|\:|\/|\\\\|\#|\@|\%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))
 
 
 class BNODE(JSGString):
-    pattern = JSGPattern(r'_\:({PN_CHARS_U}|[0-9])(({PN_CHARS}|\.)*{PN_CHARS})?'.format(PN_CHARS_U=PN_CHARS_U.pattern, PN_CHARS=PN_CHARS.pattern))
+    pattern = JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
 
 
 class PN_PREFIX(JSGString):
-    pattern = JSGPattern(r'{PN_CHARS_BASE}(({PN_CHARS}|\.)*{PN_CHARS})?'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern, PN_CHARS=PN_CHARS.pattern))
+    pattern = JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))
 
-fix_forwards(globals())
+fix_forwards(locals())

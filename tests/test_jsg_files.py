@@ -28,11 +28,10 @@
 import os
 import unittest
 
-from parser_impl.generate_python import generate
-
 
 class JSGTestCase(unittest.TestCase):
     def test_input_files(self):
+        from pyjsg.parser_impl.generate_python import generate
         for dirpath, _, filenames in os.walk("jsg"):
             for fn in filenames:
                 if fn.endswith(".jsg"):

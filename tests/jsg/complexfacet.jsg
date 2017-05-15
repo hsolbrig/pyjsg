@@ -1,11 +1,14 @@
+
+numericFacet     = (mininclusive minexclusive maxinclusive maxexclusive):numericLiteral? ;
+numericLiteral   = INTEGER|DECIMAL|DOUBLE ;
+
+labeledNodeConstraint1   { first:INTEGER? numericFacet? last:STRING+}
+labeledNodeConstraint2   { first:@int numericFacet last:@string}
+labeledNodeCOnstraint3   { first:INTEGER* numericFacet* last:STRING*}
+
+@terminals
 INTEGER : [0-9]* ;
 DECIMAL : [0-9]* ;
 DOUBLE : [0-9]* ;
 STRING : [a-z]* ;
-
-
-numericFacet     = (mininclusive|minexclusive|maxinclusive|maxexclusive):numericLiteral ;
-numericLiteral   = INTEGER|DECIMAL|DOUBLE ;
-
-labeledNodeConstraint   { first:INTEGER? numericFacet* last:STRING+}
 

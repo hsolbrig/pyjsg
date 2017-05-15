@@ -34,24 +34,31 @@ import requests
 from dict_compare import compare_dicts
 from jsonasobj import loads as jao_loads
 
-import ShExJ
-from jsglib.logger import Logger
-from jsglib.jsg import loads as jsg_loads
-from parser_impl.generate_python import parse
+from pyjsg.jsglib.logger import Logger
+from pyjsg.jsglib.jsg import loads as jsg_loads
+from pyjsg.parser_impl.generate_python import parse
 from tests.memlogger import MemLogger
 
-shexJSGSource = "https://api.github.com/repos/hsolbrig/shexTest/contents/doc/ShExJ.jsg"
-shexTestRepository = "https://api.github.com/repos/hsolbrig/shexTest/contents/schemas"
-#shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/master/schemas/1val1DECIMAL.json"
+# shexJSGSource = "https://api.github.com/repos/hsolbrig/shexTest/contents/doc/ShExJ.jsg"
+shexJSGSource = ""
+shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas"
+
 shexTestJson = None
+# shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/master/schemas/" \
+#                "1refbnode_with_spanning_PN_CHARS_BASE1.json"
+
 
 # If there is a path here, we use the local ShExJ.jsg rather than the one on the github site
-# LOCAL_PARSER_IMAGE = os.path.join('jsg', 'ShExJ.jsg')
-LOCAL_PARSER_IMAGE = None
-USE_STATIC_SHEXJ = False
+LOCAL_PARSER_IMAGE = os.path.join('jsg', 'ShExJ.jsg')
+
+# You can't debug if you compile inline -- change to a static image if you have to test
+# LOCAL_PARSER_IMAGE = None
+USE_EXISTING_SHEX = True
+
+STOP_ON_ERROR = True
 
 # Files to skip until we reintroduce a manifest reader
-skip = ['coverage.json', 'manifest.json']
+skip = ['coverage.json', 'manifest.json', '1IRI_with_all_punctuationdot.json', '_all.json']
 
 
 def compare_json(j1: str, j2: str, log: Logger) -> bool:
@@ -61,34 +68,35 @@ def compare_json(j1: str, j2: str, log: Logger) -> bool:
     return compare_dicts(d1._as_dict, d2._as_dict, file=log)
 
 
-def validate_shexj_json(json_str: str, input_fname: str, module: types.ModuleType) -> bool:
+def validate_shexj_json(json_str: str, input_fname: str, mod: types.ModuleType) -> bool:
     """
     Validate json_str against ShEx Schema
     :param json_str: String to validate
     :param input_fname: Name of source file for error reporting
+    :param mod: module context
     :return: True if pass
     """
-    log = MemLogger('\t')
-    logger = Logger(log)
-    shex_obj = jsg_loads(json_str, module)
+    logger = Logger(MemLogger('\t'))
+    shex_obj = jsg_loads(json_str, mod)
     if not shex_obj._is_valid(logger):
         print("File: {} - ".format(input_fname))
-        print(log.log)
+        print(logger.text)
         return False
     elif not compare_json(json_str, shex_obj._as_json, logger):
         print("File: {} - ".format(input_fname))
-        print(log.log)
+        print(logger.text)
+        print(shex_obj._as_json_dumps())
         return False
     return True
 
 
-def validate_file(download_url: str, module: types.ModuleType) -> bool:
+def validate_file(download_url: str, mod: types.ModuleType) -> bool:
     fname = download_url.rsplit('/', 1)[1]
     if fname not in skip:
         print("Testing {}".format(download_url))
         resp = requests.get(download_url)
         if resp.ok:
-            return validate_shexj_json(resp.text, download_url, module)
+            return validate_shexj_json(resp.text, download_url, mod)
         else:
             print("Error {}: {}".format(resp.status_code, resp.reason))
             return False
@@ -112,21 +120,25 @@ def download_github_file(github_url: str) -> Optional[str]:
     return None
 
 
-def validate_shex_schemas(module: types.ModuleType) -> bool:
+def validate_shex_schemas(mod: types.ModuleType) -> bool:
     if not shexTestJson:
         resp = requests.get(shexTestRepository)
         if resp.ok:
-            return all(validate_file(f['download_url'], module) for f in resp.json() if f['name'].endswith('.json'))
+            if STOP_ON_ERROR:
+                return all(validate_file(f['download_url'], mod) for f in resp.json() if f['name'].endswith('.json'))
+            else:
+                return all([validate_file(f['download_url'], mod) for f in resp.json() if f['name'].endswith('.json')])
+        else:
+            print("Error {}: {}".format(resp.status_code, resp.reason))
     else:
-        return validate_file(shexTestJson, module)
-    print("Error {}: {}".format(resp.status_code, resp.reason))
+        return validate_file(shexTestJson, mod)
     return False
 
 
-def download_shex_parser() -> Optional[types.ModuleType]:
+def download_shex_parser() -> None:
     """
     Download the ShExJ definition and transform it into python
-    :return: ShExJ module if success
+    :return: Success indicator
     """
     if LOCAL_PARSER_IMAGE:
         shexj_jsg = open(LOCAL_PARSER_IMAGE).read()
@@ -135,23 +147,17 @@ def download_shex_parser() -> Optional[types.ModuleType]:
     if shexj_jsg is not None:
         shexj_py = parse(shexj_jsg, shexJSGSource)
         if shexj_py is not None:
-            with open("ShExJ.py", 'w') as shexj_src:
+            with open(os.path.join('py', "ShExJ.py"), 'w') as shexj_src:
                 shexj_src.write(shexj_py)
-            shex_module = types.ModuleType("<ShExJ>")
-            exec(shexj_py, shex_module.__dict__)
-            return shex_module
-    return None
 
 
 class ShExJValidationTestCase(unittest.TestCase):
 
     def test_shex_schema(self):
-        if not USE_STATIC_SHEXJ:
-            module = download_shex_parser()
-        else:
-            module = ShExJ
-        if module is not None:
-            self.assertTrue(validate_shex_schemas(module))
+        if not USE_EXISTING_SHEX:
+            download_shex_parser()
+        import tests.py.ShExJ as ShExJ
+        self.assertTrue(validate_shex_schemas(ShExJ))
 
 if __name__ == '__main__':
     unittest.main()

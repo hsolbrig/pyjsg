@@ -1,4 +1,4 @@
-# Generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/grammar/jsgParser.g4 by ANTLR 4.6
+# Generated from jsgParser.g4 by ANTLR 4.7
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .jsgParser import jsgParser
@@ -19,13 +19,13 @@ class jsgParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#ignoreDirective.
-    def visitIgnoreDirective(self, ctx:jsgParser.IgnoreDirectiveContext):
+    # Visit a parse tree produced by jsgParser#typeExceptions.
+    def visitTypeExceptions(self, ctx:jsgParser.TypeExceptionsContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#typeExceptions.
-    def visitTypeExceptions(self, ctx:jsgParser.TypeExceptionsContext):
+    # Visit a parse tree produced by jsgParser#ignoreDirective.
+    def visitIgnoreDirective(self, ctx:jsgParser.IgnoreDirectiveContext):
         return self.visitChildren(ctx)
 
 
@@ -39,23 +39,28 @@ class jsgParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#objectExprObj.
-    def visitObjectExprObj(self, ctx:jsgParser.ObjectExprObjContext):
+    # Visit a parse tree produced by jsgParser#objectExpr.
+    def visitObjectExpr(self, ctx:jsgParser.ObjectExprContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#objectExprMap.
-    def visitObjectExprMap(self, ctx:jsgParser.ObjectExprMapContext):
+    # Visit a parse tree produced by jsgParser#membersDef.
+    def visitMembersDef(self, ctx:jsgParser.MembersDefContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#objectExprDef.
-    def visitObjectExprDef(self, ctx:jsgParser.ObjectExprDefContext):
+    # Visit a parse tree produced by jsgParser#altMembersDef.
+    def visitAltMembersDef(self, ctx:jsgParser.AltMembersDefContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#particleOpt.
-    def visitParticleOpt(self, ctx:jsgParser.ParticleOptContext):
+    # Visit a parse tree produced by jsgParser#pairDef.
+    def visitPairDef(self, ctx:jsgParser.PairDefContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by jsgParser#name.
+    def visitName(self, ctx:jsgParser.NameContext):
         return self.visitChildren(ctx)
 
 
@@ -69,58 +74,28 @@ class jsgParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#particle.
-    def visitParticle(self, ctx:jsgParser.ParticleContext):
+    # Visit a parse tree produced by jsgParser#objectMacro.
+    def visitObjectMacro(self, ctx:jsgParser.ObjectMacroContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#propertyOrGroupSimple.
-    def visitPropertyOrGroupSimple(self, ctx:jsgParser.PropertyOrGroupSimpleContext):
+    # Visit a parse tree produced by jsgParser#valueTypeMacro.
+    def visitValueTypeMacro(self, ctx:jsgParser.ValueTypeMacroContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#propertyOrGroupShorthand.
-    def visitPropertyOrGroupShorthand(self, ctx:jsgParser.PropertyOrGroupShorthandContext):
+    # Visit a parse tree produced by jsgParser#builtinValueType.
+    def visitBuiltinValueType(self, ctx:jsgParser.BuiltinValueTypeContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#propertyOrGroupChoice.
-    def visitPropertyOrGroupChoice(self, ctx:jsgParser.PropertyOrGroupChoiceContext):
+    # Visit a parse tree produced by jsgParser#valueType.
+    def visitValueType(self, ctx:jsgParser.ValueTypeContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#propertyOrGroupList.
-    def visitPropertyOrGroupList(self, ctx:jsgParser.PropertyOrGroupListContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#propertyTypeID.
-    def visitPropertyTypeID(self, ctx:jsgParser.PropertyTypeIDContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#propertyTypeSTRING.
-    def visitPropertyTypeSTRING(self, ctx:jsgParser.PropertyTypeSTRINGContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#propertyTypeObjectExpr.
-    def visitPropertyTypeObjectExpr(self, ctx:jsgParser.PropertyTypeObjectExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#propertyTypeArrayExpr.
-    def visitPropertyTypeArrayExpr(self, ctx:jsgParser.PropertyTypeArrayExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#propertyTypeChoice.
-    def visitPropertyTypeChoice(self, ctx:jsgParser.PropertyTypeChoiceContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#propertyTypeAny.
-    def visitPropertyTypeAny(self, ctx:jsgParser.PropertyTypeAnyContext):
+    # Visit a parse tree produced by jsgParser#nonRefValueType.
+    def visitNonRefValueType(self, ctx:jsgParser.NonRefValueTypeContext):
         return self.visitChildren(ctx)
 
 
@@ -129,8 +104,8 @@ class jsgParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#nonObject.
-    def visitNonObject(self, ctx:jsgParser.NonObjectContext):
+    # Visit a parse tree produced by jsgParser#idref.
+    def visitIdref(self, ctx:jsgParser.IdrefContext):
         return self.visitChildren(ctx)
 
 
@@ -139,13 +114,13 @@ class jsgParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#lexerRuleSpec.
-    def visitLexerRuleSpec(self, ctx:jsgParser.LexerRuleSpecContext):
+    # Visit a parse tree produced by jsgParser#lexerRules.
+    def visitLexerRules(self, ctx:jsgParser.LexerRulesContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#lexerebnf.
-    def visitLexerebnf(self, ctx:jsgParser.LexerebnfContext):
+    # Visit a parse tree produced by jsgParser#lexerRuleSpec.
+    def visitLexerRuleSpec(self, ctx:jsgParser.LexerRuleSpecContext):
         return self.visitChildren(ctx)
 
 
@@ -179,28 +154,13 @@ class jsgParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#lexerAtomTerminal.
-    def visitLexerAtomTerminal(self, ctx:jsgParser.LexerAtomTerminalContext):
+    # Visit a parse tree produced by jsgParser#lexerAtom.
+    def visitLexerAtom(self, ctx:jsgParser.LexerAtomContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by jsgParser#lexerAtomCharSet.
-    def visitLexerAtomCharSet(self, ctx:jsgParser.LexerAtomCharSetContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#lexerAtomDot.
-    def visitLexerAtomDot(self, ctx:jsgParser.LexerAtomDotContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#lexerTerminalID.
-    def visitLexerTerminalID(self, ctx:jsgParser.LexerTerminalIDContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by jsgParser#lexerTerminalString.
-    def visitLexerTerminalString(self, ctx:jsgParser.LexerTerminalStringContext):
+    # Visit a parse tree produced by jsgParser#lexerTerminal.
+    def visitLexerTerminal(self, ctx:jsgParser.LexerTerminalContext):
         return self.visitChildren(ctx)
 
 

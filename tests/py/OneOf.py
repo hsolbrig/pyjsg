@@ -1,61 +1,69 @@
-# Auto generated from jsg/OneOf.jsg by PyJSG version 0.1.1
-# Generation date: 2017-03-29 13:55
+# Auto generated from jsg/OneOf.jsg by PyJSG version 1.0.0
+# Generation date: 2017-05-15 11:10
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import JSGString, JSGPattern, JSGObject, JSGContext
+from pyjsg.jsglib.jsg import *
 from pyjsg.jsglib.typing_patch import fix_forwards
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
-
-
-
-
 OneOft_ = _ForwardRef('OneOf')
+tripleExprt_ = _ForwardRef('tripleExpr')
 
 
-class IRI(JSGString):
-    pattern = JSGPattern(r'[0-9]')
-
-
-class BNODE(JSGString):
-    pattern = JSGPattern(r'[0-9]')
-
-
-class INTEGER(JSGString):
-    pattern = JSGPattern(r'[0-9]')
-
-
-class _A1(JSGString):
+class _Anon1(JSGString):
     pattern = JSGPattern(r'unbounded')
 
+
+class IRI(String):
+    pattern = JSGPattern(r'')
+
+
+class BNODE(String):
+    pattern = JSGPattern(r'')
+
+
+class INTEGER(String):
+    pattern = JSGPattern(r'')
+
 class EachOf(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        super().__init__(self._context, **_kwargs)
 
 
 class TripleConstraint(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        super().__init__(self._context, **_kwargs)
 
+
+tripleExprLabel = Union[IRI, BNODE]
+
+tripleExpr = Union[EachOf, OneOft_, tripleExprLabel]
 
 class OneOf(JSGObject):
+    _reference_types = []
+    
     def __init__(self,
-                 id: Optional[Union[IRI, BNODE]] = None,
-                 expressions: List[Union[EachOf, OneOft_, IRI, BNODE]] = None,
+                 id: Optional[tripleExprLabel] = None,
+                 expressions: List[tripleExprt_] = None,
                  min: Optional[INTEGER] = None,
-                 max: Optional[Union[_A1, INTEGER]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 max: Optional[Union[_Anon1, INTEGER]] = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
         self.id = id
         self.expressions = expressions
         self.min = min
         self.max = max
+        super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(globals())
+fix_forwards(locals())

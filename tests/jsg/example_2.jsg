@@ -1,3 +1,1 @@
-doc { street:NAME no:NUM }
-NAME : .*;
-NUM : [0-9]+[a-e]?;
+doc { street:@string no:@int }

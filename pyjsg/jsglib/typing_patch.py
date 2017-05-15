@@ -38,99 +38,101 @@ from collections import Iterable
 
 # TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
 
-def conforms(element, typ) -> bool:
-    if element == '_context':
+def conforms(element, etype) -> bool:
+    if isinstance(element, str) and element == '_context':
         return True
-    elif is_forward(typ):
+    elif is_forward(etype):
         ns = {}
-        typ = typ._eval_type(ns, ns)        # All forwards have to already be fixed
-    if is_union(typ):
-        return union_conforms(element, typ)
-    elif is_dict(typ):
-        return dict_conforms(element, typ)
-    elif is_iterable(typ):
-        return iterable_conforms(element, typ)
+        etype = etype._eval_type(ns, ns)        # All forwards have to already be fixed
+    if is_union(etype):
+        return union_conforms(element, etype)
+    elif is_dict(etype):
+        return dict_conforms(element, etype)
+    elif is_iterable(etype):
+        return iterable_conforms(element, etype)
     else:
-        return element_conforms(element, typ)
+        return element_conforms(element, etype)
 
 
-def is_typing_type(typ) -> bool:
-    return is_union(typ) or is_dict(typ) or is_iterable(typ)
+def is_typing_type(etype) -> bool:
+    return is_union(etype) or is_dict(etype) or is_iterable(etype)
 
 
-def as_type(element, typ) -> object:
+def as_type(element, etype) -> object:
     if element is None:
         return element
-    if is_forward(typ):
-        typ = typ._eval_type(None, None)        # All forwards should already be vixed
-    if is_union(typ):
-        if union_conforms(element, typ):
-            return as_union(element, typ)
-    elif is_dict(typ):
-        if dict_conforms(element, typ):
+    if is_forward(etype):
+        etype = etype._eval_type(None, None)        # All forwards should already be vixed
+    if is_union(etype):
+        if union_conforms(element, etype):
+            return as_union(element, etype)
+    elif is_dict(etype):
+        if dict_conforms(element, etype):
             return element
-    elif is_iterable(typ):
-        if iterable_conforms(element, typ):
-            return typ.__extra__(element)
-    elif element_conforms(element, typ):
-        return typ(element)
+    elif is_iterable(etype):
+        if iterable_conforms(element, etype):
+            return etype.__extra__(element)
+    elif element_conforms(element, etype):
+        return etype(element)
     return None
 
 
-def is_forward(typ) -> bool:
-    return type(typ) is _ForwardRef
+def is_forward(etype) -> bool:
+    return type(etype) is _ForwardRef
 
 
-def is_union(typ) -> bool:
+def is_union(etype) -> bool:
     if sys.version_info < (3, 6):
-        return issubclass(typ, Union)
+        return issubclass(etype, Union)
     else:
-        return type(typ) is _Union
+        return type(etype) is _Union
 
 
-def is_dict(typ) -> bool:
-    return type(typ) is GenericMeta and typ.__extra__ is dict
+def is_dict(etype) -> bool:
+    return type(etype) is GenericMeta and etype.__extra__ is dict
 
 
-def is_iterable(typ) -> bool:
-    return type(typ) is GenericMeta and issubclass(typ.__extra__, Iterable)
+def is_iterable(etype) -> bool:
+    return type(etype) is GenericMeta and issubclass(etype.__extra__, Iterable)
 
 
-def union_conforms(element, typ) -> bool:
-    if is_union(typ):
-        union_vals = typ.__union_params__ if sys.version_info < (3, 6) else typ.__args__
+def union_conforms(element, etype) -> bool:
+    if is_union(etype):
+        union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
         return any(conforms(element, t) for t in union_vals)
     return False
 
 
-def as_union(element, typ) -> object:
-    union_vals = typ.__union_params__ if sys.version_info < (3, 6) else typ.__args__
+def as_union(element, etype) -> object:
+    union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
     for t in union_vals:
         if conforms(element, t):
             return element
     return None
 
 
-def dict_conforms(element, typ) -> bool:
-    if is_dict(typ) and isinstance(element, dict):
-        kt, vt = typ.__args__
+def dict_conforms(element, etype) -> bool:
+    if is_dict(etype) and isinstance(element, dict):
+        kt, vt = etype.__args__
         return all(conforms(k, kt) and conforms(v, vt) for k, v in element.items())
     return False
 
 
-def iterable_conforms(element, typ) -> bool:
-    if is_iterable(typ) and isinstance(element, Iterable):
-        vt = typ.__args__[0]
+def iterable_conforms(element, etype) -> bool:
+    if is_iterable(etype) and isinstance(element, Iterable):
+        vt = etype.__args__[0]
         return all(conforms(e, vt) for e in element)
     return False
 
 
-def element_conforms(element, typ) -> bool:
-    if isinstance(typ, type(type)) and issubclass(typ, type(None)):
+def element_conforms(element, etype) -> bool:
+    if element is None and etype == object:
+        return True
+    elif isinstance(etype, type(type)) and (issubclass(etype, type(None))):
         return element is None
     elif element is None:
         return False
-    return isinstance(element, typ)
+    return isinstance(element, etype)
 
 
 def fix_forwards(ns: Dict[str, Any]) -> None:
@@ -142,6 +144,7 @@ def fix_forward(ns: Dict[str, Any], val: Any) -> None:
         if isinstance(val, GenericMeta):                # Skip the types themselves
             pass
         elif is_forward(val):
+            val.__forward_evaluated__ = False           # Force resolution to local namespace
             val._eval_type(ns, {})
         elif is_union(val):
             union_vals = val.__union_params__ if sys.version_info < (3, 6) else val.__args__

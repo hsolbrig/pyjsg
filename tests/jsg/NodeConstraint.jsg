@@ -1,5 +1,9 @@
+xsFacet          = stringFacet | numericFacet ;
+stringFacet      = (length minlength maxlength):@int | pattern:@string flags:@string? ;
+numericFacet     = (mininclusive minexclusive maxinclusive maxexclusive):@int
+                   (totaldigits fractiondigits):@int ;
 
+NodeConstraint   { nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet?}
 
-NodeConstraint   { nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? }
-
+@terminals
 IRI : [0-9] ;

@@ -1,3 +1,5 @@
-labeledShapeOr   { type:"ShapeOr" id:shapeExprLabel shapeExprs:[shapeExpr{2,}] }
+labeledShapeOr   { type:"ShapeOr" id:shapeExprLabel shapeExprs:[SHAPEEXPR{2,}] }
 shapeExprLabel   {}
-shapeExpr : [a-z] ;
+
+@terminals
+SHAPEEXPR : [a-z] ;

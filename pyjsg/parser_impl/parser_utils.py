@@ -28,9 +28,9 @@
 import ast
 import keyword
 from collections import Iterable
-from typing import List, Union, Set, Optional
+from typing import List, Set
 
-from pyjsg.parser.jsgParser import jsgParser, ParserRuleContext
+from pyjsg.parser.jsgParser import ParserRuleContext
 
 
 def flatten(l: Iterable) -> List:
@@ -57,23 +57,30 @@ def as_set(l: Iterable) -> Set:
     return set(flatten(l))
 
 
+identifier_types = ['ID', 'LEXER_ID', 'LEXER_ID_REF', 'idref', 'STRING']
+
+
 def as_token(ctx: ParserRuleContext) -> str:
     """
-    Return the text of ID or STRING from ctx
-    :param ctx: JSG parser item with an ID or STRING value
+    Return a tokenized identifier from ctx.
+    :param ctx: JSG parser item with some sort of identifier
     :return:
     """
-    tkn = ctx.ID().getText() if ctx.ID() else ctx.STRING().getText()[1:-1]
+    tkn = None
+    for ele_name in identifier_types:
+        ele = getattr(ctx, ele_name, None)
+        if ele and ele():
+            tkn = ele().getText()[1:-1] if ele_name == 'STRING' else ele().getText()
     return esc_kw(str(tkn))
 
 
-def as_tokens(ctx: ParserRuleContext) -> List[str]:
+def as_tokens(ctx: List[ParserRuleContext]) -> List[str]:
     """
-    Return a stringified list of all ID's in ctx
-    :param ctx: JSG parser item with ID as a list
+    Return a stringified list of identifiers in ctx
+    :param ctx: JSG parser item with a set of identifiers
     :return:
     """
-    return [esc_kw(str(tkn)) for tkn in ctx.ID()]
+    return [as_token(e) for e in ctx]
 
 
 def is_valid_python(tkn: str) -> bool:
@@ -89,7 +96,6 @@ def is_valid_python(tkn: str) -> bool:
     return len(root.body) == 1 and isinstance(root.body[0].value, ast.Name)
 
 
-
 def esc_kw(token: str) -> str:
     """
     Escape python keywords
@@ -97,35 +103,3 @@ def esc_kw(token: str) -> str:
     :return: token with '_' suffixed if it is a keyword
     """
     return token + '_' if keyword.iskeyword(token) else token
-
-
-def map_ebnf(target: str, ebnf: Union[str, jsgParser.EbnfSuffixContext]) -> str:
-    """
-    Map '?', '*', '+', '{n,m|*}' to a python type
-    :param target: identifier to be surrounded
-    :param ebnf: ebnf to map
-    :return: python interpretation
-    """
-    if isinstance(ebnf, jsgParser.EbnfSuffixContext):
-        ebnf = ebnf.getText()
-    if not ebnf:
-        return target
-    if ebnf == '?':
-        return "Optional[{}]".format(target)
-    else:
-        return "List[{}]".format(target)    # TODO: add cardinalities to the model
-
-
-class AnonymousIdentifierFactory:
-    """
-    Anonymous identifiers are required in two cases:
-    1) Where JSON identifiers are STRING rather than ID constructs and need to be wrapped in an outer name
-    2) Anonymous inner constructs -- not strictly necessary, the code becomes way too complex without them
-    """
-
-    def __init__(self):
-        self._nextid = 0
-
-    def next_id(self, base: Optional[str] = None) -> str:
-        self._nextid += 1
-        return "_" + (base if base is not None else "A") + "{:d}".format(self._nextid)

@@ -1,7 +1,10 @@
-choices        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
+expr        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
 
-single = choices ;
+labeledShapeOr {}
+labeledShapeAnd {}
+labeledShapeNot {}
+labeledNodeConstraint {}
+labeledShape {}
+shapeExprLabel {}
+labeledShapeExternal {}
 
-foo = a:X b:Y;
-
-bar {}

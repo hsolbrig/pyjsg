@@ -25,10 +25,13 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+import importlib.abc
+import importlib.util
 import os
 from argparse import ArgumentParser
 from typing import Optional, Union
 
+import sys
 from antlr4 import CommonTokenStream
 from antlr4 import FileStream, InputStream
 from antlr4.error.ErrorListener import ErrorListener
@@ -47,12 +50,15 @@ class ParseErrorListener(ErrorListener):
         self.n_errors += 1
 
     def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+        print("*** Parsing ambiguity error", file=sys.stderr)
         self.n_errors += 1
 
     def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+        print("*** Parsing full context error", file=sys.stderr)
         self.n_errors += 1
 
     def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+        print("*** Context sensitivity error", file=sys.stderr)
         self.n_errors += 1
 
 
@@ -106,7 +112,7 @@ def parse(input_: Union[str, FileStream], source: str) -> Optional[str]:
             print("Undefined token: " + tkn)
         return None
 
-    return parser.python(source)
+    return parser.as_python(source)
 
 
 def genargs() -> ArgumentParser:
@@ -121,16 +127,28 @@ def genargs() -> ArgumentParser:
     return parser
 
 
+def evaluate(module_name: str, fname: str):
+    """
+    Load fname as a module.  Will raise an exception if there is an error
+    :param module_name: resulting name of module
+    :param fname: name to load 
+    """
+    print("Testing {}".format(fname))
+    spec = importlib.util.spec_from_file_location(module_name, fname)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+
+
 def generate(argv) -> bool:
     opts = genargs().parse_args(argv)
+    file_base = str(os.path.basename(opts.infile.rsplit('.', 1)[0]))
     if not opts.outfile:
-        opts.outfile = os.path.join(os.path.dirname(opts.infile),
-                                    str(os.path.basename(opts.infile).rsplit('.', 1)[0]) + ".py")
+        opts.outfile = os.path.join(os.path.dirname(opts.infile), file_base + ".py")
     if do_parse(opts.infile, opts.outfile):
         print("Output written to {}".format(opts.outfile))
         if opts.evaluate:
-            with open(opts.outfile) as f:
-                exec(f.read(), globals())
+            evaluate("foo", opts.outfile)               # Don't pollute namespace
         return True
     else:
         print("Conversion failed")

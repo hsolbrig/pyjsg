@@ -27,50 +27,48 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional, List, Set
 
+from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
+from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 from pyjsg.parser.jsgParser import *
-from pyjsg.parser_impl.jsg_propertytype_parser import JSGPropertyType
+
 
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
-from .parser_utils import flatten
 
 
-# TODO: Implement array cardinality
+_array_template = """
+
+{} = {}
+"""
 
 
 class JSGArrayExpr(jsgParserVisitor):
     def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.ArrayExprContext] = None):
         self._context = context
-        self._ebnfsuffix = ""
-        self._proptypes = []            # JSGPropertyType
+
+        self._typ = None                     # type: JSGValueType
+        self._ebnf = None                    # type: Optional[JSGEbnf]
 
         if ctx:
             self.visit(ctx)
 
     def __str__(self):
-        return "arrayExpr[{}]".format('|'.join([str(p) for p in self._proptypes]))
+        return "arrayExpr: [{}{}]".format(self._typ, self._ebnf if self._ebnf else "")
 
-    def __repr__(self):
-        types = self.dependency_list()
-        if len(types) > 1:
-            inner_type = "Union[{}]".format(', '.join(types))
-        elif len(types):
-            inner_type = self._proptypes[0].typeid
-        else:
-            inner_type = ""
-        return "List[{}]".format(inner_type)
+    def as_python(self, name: str) -> str:
+        return _array_template.format(name, self.signature())
+
+    def signature(self) -> str:
+        return "List[{}]".format(self._context.reference_for(self._typ.typeid))
 
     def dependency_list(self) -> List[str]:
-        return flatten([e.dependency_list() for e in self._proptypes])
+        return self._typ.dependency_list()
 
     def dependencies(self) -> Set[str]:
         return set(self.dependency_list())
 
     def visitArrayExpr(self, ctx: jsgParser.ArrayExprContext):
-        """ arrayExpr: '[' propertyType (BAR propertType)* ebnSuffix? ']'"""
-        for pt in ctx.propertyType():
-            ptparser = JSGPropertyType(self._context)
-            ptparser.visit(pt)
-            self._proptypes.append(ptparser)
+        """ arrayExpr: OBRACKET valueType (BAR valueType)* ebnfSuffix? CBRACKET; """
+        self._typ = JSGValueType(self._context, ctx.valueType())
         if ctx.ebnfSuffix():
-            self._ebnfsuffix = ctx.ebnfSuffix().getText()
+            self._ebnf = JSGEbnf(self._context, ctx.ebnfSuffix())

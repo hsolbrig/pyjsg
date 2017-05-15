@@ -25,45 +25,63 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import Optional, List, Set
+from typing import Optional
 
 from pyjsg.parser.jsgParser import *
-from pyjsg.parser_impl.jsg_particle_parser import JSGParticle
-
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
-from .parser_utils import flatten
 
 
-class JSGObjectExprDef(jsgParserVisitor):
-    def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.ObjectExprDefContext] = None):
+class JSGEbnf(jsgParserVisitor):
+    def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.EbnfSuffixContext] = None):
         self._context = context
-        self._choices = []                  # List[List[JSGParticle]]
+        self._ebnftext = ""                 # type: str
+        self.min = 1                        # type: int
+        self.max = 1                        # type: Optional[int]
+
         if ctx:
             self.visit(ctx)
 
     def __str__(self):
-        return "objectExprDef({})".format(id(self))
+        return self._ebnftext
 
-    def is_object(self):
-        """ Return true if this expression needs to be represented as an object. False as a simple type def """
-        return any([any([e.is_object for e in elist]) for elist in self._choices])
+    @property
+    def is_optional(self):
+        return self.min == 0 and self.max == 1
 
-    def signature(self) -> List[str]:
-        """ Return a list of __init__ signatures in the form of id = type"""
-        return flatten([[c.signature() for c in clist] for clist in self._choices])
+    @property
+    def is_list(self):
+        return self.max is None or self.max > 1
 
-    def initializer(self) -> List[str]:
-        return flatten([[c.initializer() for c in clist] for clist in self._choices])
+    def python_type(self, subject: str) -> str:
+        """
+        Add the appropriate python typing to subject (e.g. Optional, List, ...)
+        :param subject: Subject to be decorated
+        :return: Typed subject
+        """
+        return "List[{}]".format(subject) if self.is_list else\
+            "Optional[{}]".format(subject) if self.is_optional else "None" if self.max == 0 else subject
 
-    def dependency_list(self) -> List[str]:
-        return flatten([[c.dependency_list() for c in clist] for clist in self._choices])
-
-    def dependencies(self) -> Set[str]:
-        return set(self.dependency_list())
-
-    def visitObjectExprDef(self, ctx: jsgParser.ObjectExprDefContext):
-        """ objectExprDef: particle+ (BAR particleOpt)* """
-        self._choices.append([JSGParticle(self._context, p) for p in ctx.particle()])
-        for opt in ctx.particleOpt():
-            self._choices.append([JSGParticle(self._context, p) for p in opt.particle()])
+    def visitEbnfSuffix(self, ctx: jsgParser.EbnfSuffixContext):
+        """ ebnfSuffix: QMARK | STAR | PLUS | OBRACE INT (COMMA (INT|STAR)?)? CBRACE """
+        self._ebnftext = ctx.getText()
+        if ctx.INT():
+            self.min = int(ctx.INT(0).getText())
+            if ctx.COMMA():
+                if len(ctx.INT()) > 1:
+                    self.max = int(ctx.INT(1).getText())
+                else:
+                    self.max = None
+            else:
+                self.max = self.min
+        elif ctx.QMARK():
+            self.min = 0
+            self.max = 1
+        elif ctx.STAR():
+            self.min = 0
+            self.max = None
+        elif ctx.PLUS():
+            self.min = 1
+            self.max = None
+        else:
+            raise NotImplementedError("Unknown ebnf construct: {}".format(self._ebnftext))

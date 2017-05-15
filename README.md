@@ -9,34 +9,30 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 <tr><th>JSON Grammar</th><th>Python Objects</th><th></th></tr>
 </thead><tbody>
 <tr><td><pre>doc { status:"ready" }</pre></td><td><pre>
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'ready')<br/>
+
 class doc(JSGObject):
     def __init__(self,
-                 status: str = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
-        self.status = "ready"
+                 status: _Anon1 = None,
+                 **_kwargs: Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
+        self.status = status
 </td></tr>
-<tr><td><pre>doc { street:NAME no:NUM }
-NAME : .*;
-NUM : [0-9]+[a-e]?;</pre></td><td><pre>
-class NAME(JSGString):
-    pattern = JSGPattern(r'.*')<br/>
-
-
-class NUM(JSGString):
-    pattern = JSGPattern(r'[0-9]+[a-e]?')
-
+<tr><td><pre>doc { street:@string no:@int }
+</pre></td><td><pre>
 class doc(JSGObject):
     def __init__(self,
-                 street: NAME = None,
-                 no: NUM = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 street: String = None,
+                 no: Int = None,
+                 **_kwargs: Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
         self.street = street
         self.no = no</pre></td></tr>
 <tr><td><pre>doc { street:(NAME|"*"|TEMPLATE) }
+@terminals
 NAME : .*;
-TEMPLATE : '{' .* '}';</pre></td><td><pre>class _A1(JSGString):
+TEMPLATE : '{' .* '}';</pre></td><td><pre>class _Anon1(JSGString):
     pattern = JSGPattern(r'\*')<br/>
 
 
@@ -49,18 +45,35 @@ class TEMPLATE(JSGString):
 
 class doc(JSGObject):
     def __init__(self,
-                 street: Union[_A1, NAME, TEMPLATE] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 street: Union[_Anon1, NAME, TEMPLATE] = None,
+                 **_kwargs: Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
         self.street = street</pre></td></tr>
 <tr><td><pre>doc { street:nameOrTemplate }
-nameOrTemplate = NAME | "*" | TEMPLATE ;
+nameOrTemplate = (NAME | TEMPLATE) ;
+
+@terminals
 NAME : .*;
-TEMPLATE : '{' .* '}';</pre></td><td>(invalid)</td></tr>
+TEMPLATE : '{' .* '}';</pre></td><td><pre>class NAME(JSGString):
+    pattern = JSGPattern(r'.*')
+
+
+class TEMPLATE(JSGString):
+    pattern = JSGPattern(r'\{.*\}')
+
+nameOrTemplate = Union[NAME, TEMPLATE]
+
+class doc(JSGObject):
+    def __init__(self,
+                 street: nameOrTemplate = None,
+                 **_kwargs: Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
+        self.street = street</td></tr>
 <tr><td><pre>doc { street:[(NAME | "*" | TEMPLATE){2,}] }
+@terminals
 NAME : .*;
-TEMPLATE : '{' .* '}';</pre></td><td><pre>class _A1(JSGString):
-    pattern = JSGPattern(r'\*')<br/>
+TEMPLATE : '{' .* '}';</pre></td><td><pre>class _Anon1(JSGString):
+    pattern = JSGPattern(r'\*')
 
 
 class NAME(JSGString):
@@ -68,18 +81,18 @@ class NAME(JSGString):
 
 
 class TEMPLATE(JSGString):
-    pattern = JSGPattern(r'\{.*\}'<br/>
+    pattern = JSGPattern(r'\{.*\}')
 
 class doc(JSGObject):
     def __init__(self,
-                 street: List[Union[_A1, NAME, TEMPLATE]] = None,
-                 **_extra: Dict[str, object]):
-        JSGObject.__init__(self, _CONTEXT, **_extra)
+                 street: List[Union[_Anon1, NAME, TEMPLATE]] = None,
+                 **_kwargs: Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
         self.street = street</pre></td></tr>
 </tbody></table>
 
 ## Usage
-* Requires Python 3.x -- has been tested through Python 3.6.1.  (This module depends on some of the internal features of the [Python typing library](https://docs.python.org/3/library/typing.html), which is still under active development -- be careful upgrading to newer versions without first running the unit tests.
+* Requires Python 3.x -- has been tested through Python 3.6.1.  (This module depends on some of the internal features of the [Python typing library](https://docs.python.org/3/library/typing.html), which is still under active development -- be careful upgrading to newer versions without first running the unit tests.)
 ```bash
 > pip install pyjsg
 > generate_parser -h
