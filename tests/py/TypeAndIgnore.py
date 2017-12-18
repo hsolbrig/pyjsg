@@ -1,13 +1,13 @@
-# Auto generated from jsg/TypeAndIgnore.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 11:10
+# Auto generated from jsg/TypeAndIgnore.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE = "type"
 _CONTEXT.TYPE_EXCEPTIONS.append("ObjectLiteral")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeOr")
@@ -21,4 +21,4 @@ _CONTEXT.IGNORE.append("That")
 
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

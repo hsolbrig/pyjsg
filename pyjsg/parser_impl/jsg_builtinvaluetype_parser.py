@@ -56,11 +56,12 @@ class JSGBuiltinValueType(jsgParserVisitor):
 
     @property
     def typeid(self):
-        return self.parserTypeToImplClass[self._value_type_text][1].__name__
+        id = self.parserTypeToImplClass[self._value_type_text][1]
+        return "jsg.JSGNull" if id == JSGNull else id.__name__
 
     @property
     def basetype(self):
-        return self.parserTypeToImplClass[self._value_type_text][0].__name__
+        return "jsg." + self.parserTypeToImplClass[self._value_type_text][0].__name__
 
     def set_anytype(self) -> jsgParserVisitor:
         self._value_type_text = "."

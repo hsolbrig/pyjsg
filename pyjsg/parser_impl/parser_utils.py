@@ -48,6 +48,10 @@ def flatten(l: Iterable) -> List:
     return rval
 
 
+def optional(v: str, always_optional: bool) -> str:
+    return v if not always_optional or v.startswith("Optional[") else "Optional[{}]".format(v)
+
+
 def as_set(l: Iterable) -> Set:
     """
     Return the set of all terminals in list l

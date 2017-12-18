@@ -1,5 +1,5 @@
 # PyJSG -- JSON Schema Grammar Bindings for Python
-Translate [JSON Schema Grammar](http://github.com/ericprud/jsglib) into Python objects.
+Translate [JSON Schema Grammar](http://github.com/ericprud/jsg) into Python objects.
 
 This tool generates Python 3 objects that represent the JSON objects defined in a JSG schema.  It uses the [Python Typing library](https://docs.python.org/3/library/typing.html) to add type hints to Python IDE's and includes a library to validate the python objects against the library definitions.
 
@@ -8,87 +8,71 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 <table><thead>
 <tr><th>JSON Grammar</th><th>Python Objects</th><th></th></tr>
 </thead><tbody>
-<tr><td><pre>doc { status:"ready" }</pre></td><td><pre>
-class _Anon1(JSGString):
-    pattern = JSGPattern(r'ready')<br/>
-
-class doc(JSGObject):
+<tr><td><pre>doc { status:"ready" }</pre></td><td>
+<pre>class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'ready')<br/>
+class doc(jsg.JSGObject):
     def __init__(self,
                  status: _Anon1 = None,
                  **_kwargs: Dict[str, object]):
-        super().__init__(_CONTEXT, **_kwargs)
         self.status = status
-</td></tr>
+        super().__init__(self._context, **_kwargs)</td></tr>
 <tr><td><pre>doc { street:@string no:@int }
 </pre></td><td><pre>
-class doc(JSGObject):
+class doc(jsg.JSGObject):
     def __init__(self,
-                 street: String = None,
-                 no: Int = None,
+                 street: str = None,
+                 no: int = None,
                  **_kwargs: Dict[str, object]):
-        super().__init__(_CONTEXT, **_kwargs)
-        self.street = street
-        self.no = no</pre></td></tr>
-<tr><td><pre>doc { street:(NAME|"*"|TEMPLATE) }
+        self.street = jsg.String(street)
+        self.no = jsg.Integer(no)
+        super().__init__(self._context, **_kwargs)
+</pre></td></tr>
+<tr><td><pre>doc { street:(NAME|"*"|TEMPLATE) }<br/>
 @terminals
-NAME : .*;
-TEMPLATE : '{' .* '}';</pre></td><td><pre>class _Anon1(JSGString):
-    pattern = JSGPattern(r'\*')<br/>
-
-
-class NAME(JSGString):
-    pattern = JSGPattern(r'.*')
-
-
-class TEMPLATE(JSGString):
-    pattern = JSGPattern(r'\{.*\}')
-
-class doc(JSGObject):
+NAME : [A-Za-z].*;
+TEMPLATE : '{' .* '}';</pre></td><td><pre>class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\*')<br/>
+class NAME(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[A-Za-z].*')<br/>
+class TEMPLATE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\{.*\}')<br/>
+class doc(jsg.JSGObject):    
     def __init__(self,
                  street: Union[_Anon1, NAME, TEMPLATE] = None,
                  **_kwargs: Dict[str, object]):
-        super().__init__(_CONTEXT, **_kwargs)
-        self.street = street</pre></td></tr>
+        self.street = street
+        super().__init__(self._context, **_kwargs)</pre></td></tr>
 <tr><td><pre>doc { street:nameOrTemplate }
-nameOrTemplate = (NAME | TEMPLATE) ;
-
+nameOrTemplate = (NAME | TEMPLATE) ;<br/>
 @terminals
 NAME : .*;
-TEMPLATE : '{' .* '}';</pre></td><td><pre>class NAME(JSGString):
-    pattern = JSGPattern(r'.*')
-
-
-class TEMPLATE(JSGString):
-    pattern = JSGPattern(r'\{.*\}')
-
-nameOrTemplate = Union[NAME, TEMPLATE]
-
-class doc(JSGObject):
+TEMPLATE : '{' .* '}';</pre></td><td><pre>class NAME(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'.*')<br/>
+class TEMPLATE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\{.*\}')<br/>
+nameOrTemplate = Union[NAME, TEMPLATE]<br/>
+class doc(jsg.JSGObject):    
     def __init__(self,
                  street: nameOrTemplate = None,
                  **_kwargs: Dict[str, object]):
-        super().__init__(_CONTEXT, **_kwargs)
-        self.street = street</td></tr>
+        self.street = street
+        super().__init__(self._context, **_kwargs)</pre></td></tr>
 <tr><td><pre>doc { street:[(NAME | "*" | TEMPLATE){2,}] }
 @terminals
 NAME : .*;
-TEMPLATE : '{' .* '}';</pre></td><td><pre>class _Anon1(JSGString):
-    pattern = JSGPattern(r'\*')
-
-
-class NAME(JSGString):
-    pattern = JSGPattern(r'.*')
-
-
-class TEMPLATE(JSGString):
-    pattern = JSGPattern(r'\{.*\}')
-
-class doc(JSGObject):
-    def __init__(self,
+TEMPLATE : '{' .* '}';</pre></td><td><pre>class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\*')<br/>
+class NAME(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'.*')<br/>
+class TEMPLATE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\{.*\}')<br/>
+class doc(jsg.JSGObject):
+        def __init__(self,
                  street: List[Union[_Anon1, NAME, TEMPLATE]] = None,
                  **_kwargs: Dict[str, object]):
-        super().__init__(_CONTEXT, **_kwargs)
-        self.street = street</pre></td></tr>
+        self.street = street
+        super().__init__(self._context, **_kwargs)</pre></td></tr>
 </tbody></table>
 
 ## Usage

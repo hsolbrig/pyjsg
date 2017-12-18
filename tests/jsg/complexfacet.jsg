@@ -1,10 +1,20 @@
 
-numericFacet     = (mininclusive minexclusive maxinclusive maxexclusive):numericLiteral? ;
+optFacet         = (mininclusive minexclusive maxinclusive maxexclusive):numericLiteral? ;
 numericLiteral   = INTEGER|DECIMAL|DOUBLE ;
 
-labeledNodeConstraint1   { first:INTEGER? numericFacet? last:STRING+}
-labeledNodeConstraint2   { first:@int numericFacet last:@string}
-labeledNodeCOnstraint3   { first:INTEGER* numericFacet* last:STRING*}
+optOpt   { first:INTEGER? optFacet? last:STRING+}
+optReq   { first:@int optFacet last:@string}
+optList   { first:INTEGER* optFacet* last:STRING*}
+
+reqFacet        = (mininclusive minexclusive maxinclusive maxexclusive):numericLiteral ;
+reqOpt   { first:INTEGER? reqFacet? last:STRING+}
+reqReq   { first:@int reqFacet last:@string}
+reqList   { first:INTEGER* reqFacet* last:STRING*}
+
+listFacet        = (mininclusive minexclusive maxinclusive maxexclusive):numericLiteral* ;
+listOpt   { first:INTEGER? listFacet? last:STRING+}
+listReq   { first:@int listFacet last:@string}
+listList   { first:INTEGER* listFacet* last:STRING*}
 
 @terminals
 INTEGER : [0-9]* ;

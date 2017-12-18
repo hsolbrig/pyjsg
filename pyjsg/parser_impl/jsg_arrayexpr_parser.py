@@ -25,7 +25,7 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import Optional, List, Set
+from typing import Optional, List, Set, Dict, Tuple
 
 from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
@@ -58,8 +58,12 @@ class JSGArrayExpr(jsgParserVisitor):
     def as_python(self, name: str) -> str:
         return _array_template.format(name, self.signature())
 
-    def signature(self) -> str:
-        return "List[{}]".format(self._context.reference_for(self._typ.typeid))
+    def signature(self, all_are_optional: Optional[bool]=False) -> str:
+        fstr = "List[{}]" if not all_are_optional else "Optional[List[{}]]"
+        return fstr.format(self._context.reference_for(self._typ.typeid))
+
+    def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        return []
 
     def dependency_list(self) -> List[str]:
         return self._typ.dependency_list()

@@ -62,17 +62,20 @@ class ParseErrorListener(ErrorListener):
         self.n_errors += 1
 
 
-def do_parse(infilename: str, outfilename: str) -> bool:
+def do_parse(infilename: str, outfilename: str, verbose: bool) -> bool:
     """
     Parse the jsg in infilename and save the results in outfilename
     :param infilename: file containing jsg
     :param outfilename: target python file
+    :param verbose: verbose output flag
     :return: true if success
     """
     python = parse(FileStream(infilename, encoding="utf-8"), infilename)
     if python is not None:
         with open(outfilename, 'w') as outfile:
             outfile.write(python)
+        if verbose:
+            print("Output written to {}".format(outfilename))
         return True
     return False
 
@@ -124,20 +127,21 @@ def genargs() -> ArgumentParser:
     parser.add_argument("infile", help="Input JSG specification")
     parser.add_argument("-o", "--outfile", help="Output python file (Default: {infile}.py)")
     parser.add_argument("-e", "--evaluate", help="Evaluate resulting python file as a test", action="store_true")
+    parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
     return parser
 
 
-def evaluate(module_name: str, fname: str):
+def evaluate(module_name: str, fname: str, verbose: bool):
     """
     Load fname as a module.  Will raise an exception if there is an error
     :param module_name: resulting name of module
     :param fname: name to load 
     """
-    print("Testing {}".format(fname))
+    if verbose:
+        print("Testing {}".format(fname))
     spec = importlib.util.spec_from_file_location(module_name, fname)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-
 
 
 def generate(argv) -> bool:
@@ -145,10 +149,9 @@ def generate(argv) -> bool:
     file_base = str(os.path.basename(opts.infile.rsplit('.', 1)[0]))
     if not opts.outfile:
         opts.outfile = os.path.join(os.path.dirname(opts.infile), file_base + ".py")
-    if do_parse(opts.infile, opts.outfile):
-        print("Output written to {}".format(opts.outfile))
+    if do_parse(opts.infile, opts.outfile, opts.verbose):
         if opts.evaluate:
-            evaluate("foo", opts.outfile)               # Don't pollute namespace
+            evaluate("generate_python_namespace", opts.outfile, opts.verbose)               # Don't pollute namespace
         return True
     else:
         print("Conversion failed")

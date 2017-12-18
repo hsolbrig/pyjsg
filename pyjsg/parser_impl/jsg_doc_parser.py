@@ -47,13 +47,13 @@ _jsg_python_template = '''# Auto generated from {infile} by PyJSG version {versi
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext(){body}
+_CONTEXT = jsg.JSGContext(){body}
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()
 '''
 
 
@@ -64,13 +64,17 @@ class JSGDocParser(jsgParserVisitor):
 
     def as_python(self, infile):
         self._context.resolve_circular_references()            # add forwards for any circular entries
-        body = ('\n' + '\n'.join(self._context.directives) + '\n\n') if self._context.directives else ''
+        body = ''
         for k in self._context.ordered_elements():
             v = self._context.grammarelts[k]
             if isinstance(v, JSGLexerRuleBlock):
                 body += v.as_python(k)
             elif isinstance(v, JSGObjectExpr):
                 body += v.as_python(k)
+                # TODO: See whether this needs to be escaped
+                # If there is no context type, add all objects to the list of exceptions
+                if not any(e.startswith('_CONTEXT.TYPE = ') for e in self._context.directives):
+                    self._context.directives.append('_CONTEXT.TYPE_EXCEPTIONS.append("{}")'.format(str(k)))
             elif isinstance(v, JSGValueType):
                 body += v.as_python(k)
             elif isinstance(v, JSGArrayExpr):
@@ -80,6 +84,7 @@ class JSGDocParser(jsgParserVisitor):
             else:
                 raise NotImplementedError("Unknown grammar elt for {}".format(k))
 
+        body = '\n' + '\n'.join(self._context.directives) + '\n\n' + body
         return _jsg_python_template.format(infile=infile,
                                            version=__version__,
                                            gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),

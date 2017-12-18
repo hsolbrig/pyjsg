@@ -25,15 +25,27 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import List
+from typing import Set, List
 
-from pyjsg.parser_impl.jsg_objectexprdef_parser import JSGObjectExprDef
+_forward_template = """
+{}_f_ = _ForwardRef['{}']"""
 
-from pyjsg.parser_impl.parser_utils import flatten
 
+class JSGForwardRef:
+    def __init__(self, ref: str):
+        self._ref = ref
 
-class JSGNonObjectExprDef(JSGObjectExprDef):
+    def as_python(self) -> str:
+        # return _forward_template.format(self._ref, self.label)
+        return ""
 
-    def signature(self) -> List[str]:
-        """ Return a list of __init__ signatures in the form of id = type"""
-        return flatten([[c.signature(all_are_optional=len(self._choices) > 1) for c in clist] for clist in self._choices])
+    def dependencies(self) -> Set[str]:
+        # Forwards don't show dependencies
+        return set(self.dependency_list())
+
+    def dependency_list(self) -> List[str]:
+        return []
+
+    @property
+    def label(self) -> str:
+        return '"{}"'.format(self._ref)

@@ -1,24 +1,27 @@
-# Auto generated from jsg/simplelexer.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 11:10
+# Auto generated from jsg/simplelexer.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 
 
-class HEX(JSGString):
-    pattern = JSGPattern(r'[0-9]|[A-F]|[a-f]')
 
 
-class EXPONENT(JSGString):
-    pattern = JSGPattern(r'[eE][+-]?[0-9]+')
+
+class HEX(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]|[A-F]|[a-f]')
 
 
-class LANGTAG(JSGString):
-    pattern = JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
+class EXPONENT(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[eE][+-]?[0-9]+')
 
-fix_forwards(locals())
+
+class LANGTAG(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
+
+_CONTEXT.NAMESPACE = locals()

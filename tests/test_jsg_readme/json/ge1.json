@@ -4,8 +4,11 @@
   "employees": [
     {"name": "Grandon Clifford",
      "gender": "m",
-      "active": true
-     }, {"name": "Elizabeth Poot",
+      "active": true},
+    {"name": "Elizabeth Poot",
          "gender": "f",
-         "active": false}
-  ]}
+         "active": false,
+         "details": [{"type": "details",
+                      "id": "note",
+                      "text": "left in 2017"}]
+    } ] }

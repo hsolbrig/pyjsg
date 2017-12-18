@@ -1,41 +1,47 @@
-# Auto generated from jsg/pd1.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 12:03
+# Auto generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/tests/test_jsg_readme/jsg/pd1.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE = "id"
 
 
 
-class person(JSGObject):
+class person(jsg.JSGObject):
     _reference_types = []
+    _members = {'name': str,
+                'age': int}
+    _strict = True
     
     def __init__(self,
                  name: str = None,
                  age: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = String(name)
-        self.age = Integer(age)
+        self.name = jsg.String(name)
+        self.age = jsg.Integer(age)
         super().__init__(self._context, **_kwargs)
 
 
-class membership(JSGObject):
+class membership(jsg.JSGObject):
     _reference_types = []
+    _members = {'list_name': str,
+                'members': List[person]}
+    _strict = True
     
     def __init__(self,
                  list_name: str = None,
                  members: List[person] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.list_name = String(list_name)
+        self.list_name = jsg.String(list_name)
         self.members = members
         super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

@@ -1,34 +1,39 @@
-# Auto generated from jsg/OneOf.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 11:10
+# Auto generated from jsg/OneOf.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
-OneOft_ = _ForwardRef('OneOf')
-tripleExprt_ = _ForwardRef('tripleExpr')
+_CONTEXT = jsg.JSGContext()
+_CONTEXT.TYPE_EXCEPTIONS.append("EachOf")
+_CONTEXT.TYPE_EXCEPTIONS.append("TripleConstraint")
+_CONTEXT.TYPE_EXCEPTIONS.append("OneOf")
 
 
-class _Anon1(JSGString):
-    pattern = JSGPattern(r'unbounded')
 
 
-class IRI(String):
-    pattern = JSGPattern(r'')
+class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'unbounded')
 
 
-class BNODE(String):
-    pattern = JSGPattern(r'')
+class IRI(jsg.String):
+    pattern = jsg.JSGPattern(r'')
 
 
-class INTEGER(String):
-    pattern = JSGPattern(r'')
+class BNODE(jsg.String):
+    pattern = jsg.JSGPattern(r'')
 
-class EachOf(JSGObject):
+
+class INTEGER(jsg.String):
+    pattern = jsg.JSGPattern(r'')
+
+class EachOf(jsg.JSGObject):
     _reference_types = []
+    _members = {}
+    _strict = True
     
     def __init__(self,
                  **_kwargs: Dict[str, object]):
@@ -36,8 +41,10 @@ class EachOf(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class TripleConstraint(JSGObject):
+class TripleConstraint(jsg.JSGObject):
     _reference_types = []
+    _members = {}
+    _strict = True
     
     def __init__(self,
                  **_kwargs: Dict[str, object]):
@@ -47,14 +54,19 @@ class TripleConstraint(JSGObject):
 
 tripleExprLabel = Union[IRI, BNODE]
 
-tripleExpr = Union[EachOf, OneOft_, tripleExprLabel]
+tripleExpr = Union[EachOf, "OneOf", tripleExprLabel]
 
-class OneOf(JSGObject):
+class OneOf(jsg.JSGObject):
     _reference_types = []
+    _members = {'id': Optional[tripleExprLabel],
+                'expressions': List["tripleExpr"],
+                'min': Optional[INTEGER],
+                'max': Optional[Union[_Anon1, INTEGER]]}
+    _strict = True
     
     def __init__(self,
                  id: Optional[tripleExprLabel] = None,
-                 expressions: List[tripleExprt_] = None,
+                 expressions: List["tripleExpr"] = None,
                  min: Optional[INTEGER] = None,
                  max: Optional[Union[_Anon1, INTEGER]] = None,
                  **_kwargs: Dict[str, object]):
@@ -66,4 +78,4 @@ class OneOf(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

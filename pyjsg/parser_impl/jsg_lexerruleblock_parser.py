@@ -62,12 +62,12 @@ class JSGLexerRuleBlock(jsgParserVisitor):
 
     def as_python(self, name: str) -> str:
         """ Return the python constructor """
-        base_type = self._jsontype.basetype if self._jsontype else "JSGString"
+        base_type = self._jsontype.basetype if self._jsontype else "jsg.JSGString"
         if self._ruleTokens:
-            pattern = "JSGPattern(r'{}'.format({}))".\
+            pattern = "jsg.JSGPattern(r'{}'.format({}))".\
                 format(self._rulePattern, ', '.join(['{v}={v}.pattern'.format(v=v) for v in sorted(self._ruleTokens)]))
         else:
-            pattern = "JSGPattern(r'{}')".format(self._rulePattern)
+            pattern = "jsg.JSGPattern(r'{}')".format(self._rulePattern)
         return python_template.format(name, base_type, pattern)
 
     # Note: the following two methods cannot be static

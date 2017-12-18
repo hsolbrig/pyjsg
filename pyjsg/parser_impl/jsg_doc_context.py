@@ -26,7 +26,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from collections import OrderedDict
-from typing import List, Set, Optional, Dict, Union
+from typing import List, Set, Optional, Dict, Union, Tuple
 
 from .parser_utils import as_set
 from pyjsg.parser_impl.anonymousidentifierfactory import AnonymousIdentifierFactory
@@ -70,6 +70,7 @@ class JSGDocContext:
         return flag or (ebnf is not None and ebnf.is_optional)
 
     def initializer(self, tkn: str, prefix: Optional[str], add_exists_clause=False) -> List[str]:
+        tkn = self.reference_for(tkn)
         if tkn in self.grammarelts:
             initializer = getattr(self.grammarelts[tkn], "initializer", None)
             if not initializer:
@@ -80,6 +81,7 @@ class JSGDocContext:
             return []
 
     def none_initializer(self, tkn: str) -> List[str]:
+        tkn = self.reference_for(tkn)
         if tkn in self.grammarelts:
             none_initializer = getattr(self.grammarelts[tkn], "none_initializer", None)
             if not none_initializer:
@@ -91,13 +93,25 @@ class JSGDocContext:
     def reference_for(self, tkn: str) -> str:
         return self.forward_refs.get(tkn, tkn)
 
-    def signature(self, tkn: str, all_are_optional: bool = False) -> List[str]:
-        if tkn in self.forward_refs:
-            return [self.forward_refs[tkn]]
+    def signature(self, tkn: str, all_are_optional: Optional[bool]=False) -> List[str]:
+        """
+        Return the __init__ signature for tkn
+        :param tkn: Token to retrieve signature for
+        :param all_are_optional: If True, all parameters are forced optional
+        :return: 
+        """
+        tkn = self.reference_for(tkn)
         if tkn in self.grammarelts:
             return self.grammarelts[tkn].signature(all_are_optional)
         else:
             return []
+
+    def members(self, tkn: str, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        tkn = self.reference_for(tkn)
+        if tkn in self.grammarelts:
+            return self.grammarelts[tkn].members(all_are_optional)
+        else:
+            raise NotImplementedError("Token {} is not in grammarelts".format(tkn))
 
     def dependency_list(self, tkn: str) -> List[str]:
         """

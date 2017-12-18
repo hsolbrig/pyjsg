@@ -25,8 +25,9 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import Optional, Union, List, Set
+from typing import Optional, Union, List, Set, Tuple
 
+from pyjsg.jsglib.jsg import JSGException
 from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 from pyjsg.parser.jsgParser import *
@@ -39,8 +40,10 @@ from .parser_utils import as_token, flatten
 
 _class_template = """
 
-class {name}(JSGObject):
+class {name}(jsg.JSGObject):
     _reference_types = [{reference_types}]
+    _members = {{{members}}}
+    _strict = {strict}
     
 {init_fctn}"""
 
@@ -50,7 +53,8 @@ _init_template = """    def __init__(self{},
         self._context = _CONTEXT{}
         super().__init__(self._context, **_kwargs)
 """
-indent1 = ",\n                 "
+indent0 = ",\n                "
+indent1 = indent0 + " "
 indent2 = "\n        "
 indent3 = "\n            "
 
@@ -66,6 +70,7 @@ class JSGObjectExpr(jsgParserVisitor):
                  name: Optional[str] = None):
         self._context = context
         self._name = name
+        self._strict = True
 
         # _members is if there is a single set of pairs
         self._members = []                  # type: List[JSGPairDef]
@@ -89,27 +94,33 @@ class JSGObjectExpr(jsgParserVisitor):
         # TODO: Complete map implementation
         if self._map_valuetype:
             reference_types = ""
+            members = {}
             init_fctn = _init_template.format("", "")
+            strict = self._strict
             return _class_template.format(**locals())
         elif self._choices:
             pair_signatures = indent1 + _choice_template.format(', '.join(self._choices))
             pair_initializers = []
+            pair_members = {}
             for c in self._choices:
                 c_initializers = self._context.initializer(c, 'opt_')
                 c_none_initializers = self._context.none_initializer(c)
                 if len(c_initializers) != len(c_none_initializers):
-                    raise Exception("HELP")
+                    raise JSGException("HELP - this shouldn't happen")
                 for c_initializer, c_none in zip(c_initializers, c_none_initializers):
                     pair_initializers.append(_choice_initializer
                                              .format(choice=c, initializer=c_initializer, none=c_none))
+                pair_members.update(self._context.members(c))
             init_fctn = _init_template.format(pair_signatures, indent2 + indent2.join(pair_initializers))
             reference_types = ", ".join(self._choices)
+            members = indent0.join("'{}': {}".format(k, v) for k, v in pair_members.items())
+            strict = self._strict
             return _class_template.format(**locals())
         else:
             return self._create_classdef(name, self._members)
 
     def _create_classdef(self, name: str, pairs: List[JSGPairDef]) -> str:
-        pair_signatures = []
+        pair_signatures = []                # type: List[str]
         pair_refs = flatten(pair.signature() for pair in pairs if pair.is_reference_type())
         for pair in pairs:
             if not pair.is_reference_type():
@@ -135,6 +146,8 @@ class JSGObjectExpr(jsgParserVisitor):
         initializers = indent2 + indent2.join(flatten(pair_initializers)) if pair_initializers else ""
         init_fctn = _init_template.format(signatures, initializers)
         reference_types = ', '.join(pair.typeid for pair in pairs if pair.is_reference_type())
+        members = indent0.join("'{}': {}".format(name, etype) for (name, etype) in self.members())
+        strict = self._strict
         return _class_template.format(**locals())
 
     def _gen_choice_initializer(self, pair_ref: str) -> str:
@@ -155,10 +168,9 @@ class JSGObjectExpr(jsgParserVisitor):
     def dependencies(self) -> Set[str]:
         return set(self.dependency_list())
 
-    def signature(self, all_are_optional: bool=False) -> List[str]:
+    def signature(self, all_are_optional: Optional[bool] = False) -> List[str]:
         """
         Return a list of __init__ type declarations (format: name: type) for the components
-        :param all_are_optional: If true, type must be Optional
         :return: list of signatures
         """
         if self._map_valuetype:
@@ -167,6 +179,18 @@ class JSGObjectExpr(jsgParserVisitor):
             return flatten(self._context.signature(c, True) for c in self._choices)
         else:
             return flatten(pair.signature(all_are_optional) for pair in self._members)
+
+    def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        rval = []
+        if self._map_valuetype:
+            return rval
+        elif self._choices:
+            for choice in self._choices:
+                rval += (self._context.members(choice, all_are_optional))
+        else:
+            for pair in self._members:
+                rval += pair.members(all_are_optional)
+        return rval
 
     def initializer(self, prefix: Optional[str] = None, add_exists_clause: bool=False) -> List[str]:
         if self._map_valuetype:
@@ -184,11 +208,11 @@ class JSGObjectExpr(jsgParserVisitor):
         else:
             return flatten(pair.none_initializer() for pair in self._members)
 
-    def _add_choice(self, branch: int, ctx) -> None:
+    def _add_choice(self, branch: int, ctx: List[jsgParser.MemberContext]):
         choice_name = "{}_{}_".format(self._name, branch)
         choice_obj = JSGObjectExpr(self._context, name=choice_name)
-        for pairdef in ctx.pairDef():
-            choice_obj.visit(pairdef)
+        for member in ctx:
+            choice_obj.visit(member)
         self._choices.append(choice_name)
         self._context.grammarelts[choice_name] = choice_obj
 
@@ -208,19 +232,31 @@ class JSGObjectExpr(jsgParserVisitor):
                 self._map_ebnf = JSGEbnf(self._context, ctx.ebnfSuffix())
 
     def visitMembersDef(self, ctx: jsgParser.MembersDefContext):
-        """ membersDef: pairDef+ (BAR altMembersDef)* ;
-            altMembersDef: pairDef* 
+        """ membersDef: COMMA | member+ (BAR altMemberDef)* (BAR lastComma)? ;
+            altMemberDef: member* ;
+            member: pairDef COMMA?
+            lastComma: COMMA ;
         """
-        if not ctx.altMembersDef():
+        if ctx.COMMA():                             # lone comma - wild card
+            self._strict = False
+        if not ctx.BAR():                           # member+
             self.visitChildren(ctx)
         else:
             if not self._name:
                 self._name = self._context.anon_id()
             entry = 1
-            self._add_choice(entry, ctx)
-            for alt in ctx.altMembersDef():
+            self._add_choice(entry, ctx.member())       # add first brance (member+)
+            for alt in ctx.altMemberDef():
                 entry += 1
-                self._add_choice(entry, alt)
+                self._add_choice(entry, alt.member())
+            if ctx.lastComma():
+                entry += 1
+                self._add_choice(entry, [])
+
+    def visitMember(self, ctx: jsgParser.MemberContext):
+        """ member: pairDef COMMA? """
+        self._strict = ctx.COMMA() is None
+        self.visitChildren(ctx)
 
     def visitPairDef(self, ctx: jsgParser.PairDefContext):
         self._members.append(JSGPairDef(self._context, ctx))

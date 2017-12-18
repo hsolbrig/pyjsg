@@ -47,11 +47,10 @@ class GeneratePythonTestCase(unittest.TestCase):
             with open(goodfile) as gf:
                 bf.write(gf.read())
         with self.assertRaises(ZeroDivisionError):
-            evaluate("foo", badfile)
+            evaluate("bar", badfile, False)
 
         # Make sure that our namespace hasn't been messed up
-        # TODO: If you run test_jsg_files prior to running test_ShExJ, the namespace gets polluted
-        self.assertFalse('foo' in globals())
+        self.assertFalse('bar' in globals())
         os.remove(goodfile)
         os.remove(badfile)
 

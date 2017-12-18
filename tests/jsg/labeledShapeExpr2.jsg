@@ -1,0 +1,9 @@
+expr        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
+
+labeledShapeOr {id: @string}
+labeledShapeAnd {id: @string}
+labeledShapeNot {id: @string}
+labeledNodeConstraint {id: @string}
+labeledShape {id: @string}
+shapeExprLabel {id: @string}
+labeledShapeExternal {id: @string |}

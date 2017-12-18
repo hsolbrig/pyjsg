@@ -29,15 +29,19 @@ import re
 import json
 import types
 
-from abc import ABCMeta
 from collections import OrderedDict
-from typing import Union, Any, Dict, TextIO, cast
-from inspect import signature, Parameter
+from typing import Union, Any, Dict, TextIO
 
 from jsonasobj import JsonObj
 from .logger import *
 
 from .typing_patch import conforms
+
+
+# TODO: Extend List to include a minimum and maximum value
+
+class JSGException(Exception):
+    pass
 
 
 class JSGContext:
@@ -51,10 +55,11 @@ class JSGContext:
     JSON_LD - True means we allow JSON_LD constructs (parameters w/ "@")
     """
     def __init__(self):
-        self.TYPE = ""                      # str
-        self.TYPE_EXCEPTIONS = []           # List[str]
-        self.IGNORE = []                    # List[str]
-        self.JSON_LD = True                 # Boolean
+        self.TYPE = ""                      # type: str
+        self.TYPE_EXCEPTIONS = []           # type: List[str]
+        self.IGNORE = []                    # type: List[str]
+        self.JSON_LD = True                 # type: Boolean
+        self.NAMESPACE = None               # type: Dict[str, Any]
 
     def unvalidated_parm(self, parm: str) -> bool:
         """
@@ -65,8 +70,6 @@ class JSGContext:
         return parm.startswith("_") or parm == self.TYPE or parm in self.IGNORE or \
             (self.JSON_LD and parm.startswith('@'))
 
-
-# TODO: Extend List to include a minimum and maximum value
 
 class JSGValidateable():
     """
@@ -103,6 +106,8 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
     """
     _reference_types = []           # type: List[JSGObject]
     _reference_names = []           # type: List[str]
+    _members = {}                   # type: Dict[str, type]
+    _strict = True                  # type: bool
 
     def __init__(self, context: JSGContext, **kwargs):
         """
@@ -135,25 +140,11 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param value:
         :return:
         """
-        if key in signature(self.__init__).parameters:
-            parm = signature(self.__init__).parameters[key]
-            if parm.kind == Parameter.POSITIONAL_OR_KEYWORD:
-                self._set_value(key, value)
-            elif parm.kind == Parameter.VAR_KEYWORD:
-                for k, v in value:
-                    setattr(self, k, v)
-            elif self._context.unvalidated_parm(key):
-                self._set_value(key, value)
-            else:
-                raise ValueError("Unknown attribute: {}={}".format(key, value))
-        elif key == "_context":
+        if key == "_context":
             self[key] = value
-        elif self._context.unvalidated_parm(key):
+        elif key in self._members or self._context.unvalidated_parm(key):
             self._set_value(key, value)
-        # TODO: This allows anything to be entered -- should put a guard around the init code
-        elif True:
-            self._set_value(key, value)
-        else:
+        elif self._strict:
             raise ValueError("Unknown attribute: {}={}".format(key, value))
 
     def __delattr__(self, item):
@@ -202,14 +193,11 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         return JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
             else cast(JSGString, obj).val if issubclass(type(obj), JSGString) else str(obj)
 
-    @classmethod
-    def _is_valid_element(cls, log: Logger, name: str, entry: object) -> bool:
-        if name not in signature(cls.__init__).parameters:
-            return any(e._is_valid_element for e in cls._reference_types)
+    def _is_valid_element(self, log: Logger, name: str, entry: object) -> bool:
+        if name not in self._members:
+            return any(e._is_valid_element for e in self._reference_types)
         else:
-            # TODO: merge this with is_valid below
-            parm = signature(cls.__init__).parameters[name]
-            etype = parm.annotation
+            etype = self._members[name]
             if (etype is str or etype is int or etype is float or etype is bool) and \
                     isinstance(entry, JSGString):
                 val = getattr(entry, "val", None)
@@ -218,18 +206,21 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             if val is not None and getattr(entry, "_is_valid", None):
                 if not entry._is_valid(log) and not log.logging:
                     return False
-            elif not conforms(val, etype):  # Note: None and absent are equivalent
+            elif not conforms(val, etype, self._context.NAMESPACE):                # Note: None and absent are equivalent
                 if val is None:
-                    if log.log("{}: Missing required field: {}".format(cls.__name__, name)):
+                    if log.log("{}: Missing required field: {}".format(self.__class__.__name__, name)):
                         return False
                 else:
+                    # TODO: Debugging
+                    conforms(val, etype, self._context.NAMESPACE)
                     if log.log("{}: Type mismatch for {}. Expecting: {} Got: {}"
-                               .format(cls.__name__, name, etype, type(entry))):
+                               .format(self.__class__.__name__, name, etype, type(entry))):
                         return False
-            elif val is not None and not cls._test(val, log):  # Make sure that entry conforms to its own type
+            elif val is not None and not self._test(val, log):  # Make sure that entry conforms to its own type
                 return False
+        return True
 
-    def _is_valid(self, log: Optional[Logger] = None, strict: bool = True) -> bool:
+    def _is_valid(self, log: Optional[Logger] = None) -> bool:
         if log is None:
             log = Logger()
         nerrors = log.nerrors
@@ -240,35 +231,15 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
                        .format(self._class_name, getattr(self, self._context.TYPE))):
                 return False
 
-        sig = signature(self.__init__)
-        for name, parm in sig.parameters.items():
-            if name != "self" and parm.kind == Parameter.POSITIONAL_OR_KEYWORD and name not in self._reference_names:
-                etype = parm.annotation
-                entry = getattr(self, name)
+        for name in self._members.keys():
+            entry = getattr(self, name)
+            if not self._is_valid_element(log, name, entry):
+                return False
 
-                if (etype is str or etype is int or etype is float or etype is bool) and \
-                        isinstance(entry, JSGString):
-                    val = getattr(entry, "val", None)
-                else:
-                    val = entry
-                if val is not None and getattr(entry, "_is_valid", None):
-                    if not entry._is_valid(log) and not log.logging:
-                        return False
-                elif not conforms(val, etype):                # Note: None and absent are equivalent
-                    if val is None:
-                        if log.log("{}: Missing required field: {}".format(type(self).__name__, name)):
-                            return False
-                    else:
-                        if log.log("{}: Type mismatch for {}. Expecting: {} Got: {}"
-                                   .format(type(self).__name__, name, etype, type(entry))):
-                            return False
-                elif val is not None and not self._test(val, log):  # Make sure that entry conforms to its own type
-                    return False
-
-        if strict:
+        if self._strict:
             # Test each attribute against the schema
             for k, v in self._strip_nones(self.__dict__).items():
-                if k not in sig.parameters and k != self._context.TYPE \
+                if k not in self._members and k != self._context.TYPE \
                         and k not in self._context.IGNORE and k != "@context":
                     if not self._is_valid_element(log, k, v):
                         if log.log("Extra element: {}: {}".format(k, v)):
@@ -299,7 +270,7 @@ class JSGObjectMap(JSGObject):
             if self._name_filter is not None and not self._name_filter.matches(key):
                 raise ValueError("Illegal key: {}={}".format(key, value))
             else:
-                if not conforms(value, self._value_type):
+                if not conforms(value, self._value_type, self._context.NAMESPACE):
                     raise ValueError("Illegal value type {} = {}".format(key, value))
         self[key] = value
 
@@ -318,7 +289,7 @@ class JSGObjectMap(JSGObject):
             if self._name_filter is not None and not self._name_filter.matches(name):
                 if log.log("{}: Illegal key value: {} = {}".format(self.__class__.__name__, name, entry)):
                     return False
-            elif not conforms(entry, self._value_type):
+            elif not conforms(entry, self._value_type, self._context.NAMESPACE):
                 if entry is None:
                     if log.log("{}: Missing required field: {}".format(type(self).__name__, name)):
                         return False
@@ -460,6 +431,7 @@ class Boolean(JSGString):
         else:
             self.__dict__[key] = value
 
+
 class JSGNull(JSGString):
     pattern = JSGPattern(r'null|None')
 
@@ -484,9 +456,17 @@ class Object(JSGObject):
 
 
 class AnyType(JsonObj, JSGValidateable):
+    def __init__(self, val: Any, **kwargs):
+        """
+        Construct a simple string variable
+        :param val: any type that can be cooreced into a string
+        :param kwargs: named arguments
+        """
+        self.val = val
+        super().__init__(**kwargs)
+
     def _is_valid(self, log: Optional[Logger] = None):
         return True
-
 
 def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Optional[JSGValidateable]:
     """
@@ -496,9 +476,9 @@ def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Option
     :return:
     """
     # Note: At the moment, this package assumes that there is, at most, one JSON object that
-    #       doesn't have a type identifier.  Once we get into a world where there is more than
-    #       one, the correct object is going to have to become context sensitive.  A task for
-    #       another day
+    #       doesn't have a type identifier.  For various and sundry reasons, we will assume that it
+    #       is the first entry in the exceptions list (because, of there is NO context type, then we
+    #       add all object definitions to the exception list...)
     target_class = getattr(load_module, pairs[load_module._CONTEXT.TYPE], None) \
         if load_module._CONTEXT.TYPE in pairs else None
     if not target_class and len(load_module._CONTEXT.TYPE_EXCEPTIONS) == 1:
@@ -506,9 +486,9 @@ def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Option
     if target_class:
         return target_class(**pairs)
     if load_module._CONTEXT.TYPE in pairs:
-        raise Exception("Unknown type: {}".format(pairs[load_module._CONTEXT.TYPE]))
+        raise JSGException("Unknown type: {}".format(pairs[load_module._CONTEXT.TYPE]))
     else:
-        raise Exception("Missing {} var".format(load_module._CONTEXT.TYPE))
+        raise JSGException("Missing {} var".format(load_module._CONTEXT.TYPE))
 
 
 def loads(s: str, load_module: types.ModuleType, **kwargs) -> JSGObject:

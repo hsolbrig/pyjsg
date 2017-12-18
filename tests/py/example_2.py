@@ -1,25 +1,31 @@
-# Auto generated from jsg/example_2.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 11:10
+# Auto generated from jsg/example_2.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
+_CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
-class doc(JSGObject):
+
+
+class doc(jsg.JSGObject):
     _reference_types = []
+    _members = {'street': str,
+                'no': int}
+    _strict = True
     
     def __init__(self,
                  street: str = None,
                  no: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.street = String(street)
-        self.no = Integer(no)
+        self.street = jsg.String(street)
+        self.no = jsg.Integer(no)
         super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

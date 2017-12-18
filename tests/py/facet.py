@@ -1,32 +1,44 @@
-# Auto generated from jsg/facet.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 11:10
+# Auto generated from jsg/facet.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
+_CONTEXT.TYPE_EXCEPTIONS.append("stringFacet")
+_CONTEXT.TYPE_EXCEPTIONS.append("numericFacet")
+_CONTEXT.TYPE_EXCEPTIONS.append("xsFacet")
+_CONTEXT.TYPE_EXCEPTIONS.append("labeledNodeConstraint")
 
 
-class INTEGER(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
 
 
-class DECIMAL(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class INTEGER(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class DOUBLE(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class DECIMAL(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class STRING(JSGString):
-    pattern = JSGPattern(r'[A-Z]*')
+class DOUBLE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
-class stringFacet(JSGObject):
+
+class STRING(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[A-Z]*')
+
+class stringFacet(jsg.JSGObject):
     _reference_types = []
+    _members = {'length': Optional[INTEGER],
+                'minlength': Optional[INTEGER],
+                'maxlength': Optional[INTEGER],
+                'pattern': STRING,
+                'flags': Optional[STRING]}
+    _strict = True
     
     def __init__(self,
                  length: Optional[INTEGER] = None,
@@ -44,8 +56,15 @@ class stringFacet(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class numericFacet(JSGObject):
+class numericFacet(jsg.JSGObject):
     _reference_types = []
+    _members = {'mininclusive': Optional[DOUBLE],
+                'minexclusive': Optional[DOUBLE],
+                'maxinclusive': Optional[DOUBLE],
+                'maxexclusive': Optional[DOUBLE],
+                'totaldigits': Optional[INTEGER],
+                'fractiondigits': Optional[INTEGER]}
+    _strict = True
     
     def __init__(self,
                  mininclusive: Optional[DOUBLE] = None,
@@ -65,8 +84,20 @@ class numericFacet(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet(JSGObject):
+class xsFacet(jsg.JSGObject):
     _reference_types = [stringFacet, numericFacet]
+    _members = {'length': Optional[INTEGER],
+                'minlength': Optional[INTEGER],
+                'maxlength': Optional[INTEGER],
+                'pattern': STRING,
+                'flags': Optional[STRING],
+                'mininclusive': Optional[DOUBLE],
+                'minexclusive': Optional[DOUBLE],
+                'maxinclusive': Optional[DOUBLE],
+                'maxexclusive': Optional[DOUBLE],
+                'totaldigits': Optional[INTEGER],
+                'fractiondigits': Optional[INTEGER]}
+    _strict = True
     
     def __init__(self,
                  choice: Union[stringFacet, numericFacet] = None,
@@ -90,8 +121,12 @@ class xsFacet(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class labeledNodeConstraint(JSGObject):
+class labeledNodeConstraint(jsg.JSGObject):
     _reference_types = [xsFacet]
+    _members = {'first': Optional[INTEGER],
+                'xsFacet': List[xsFacet],
+                'last': List[STRING]}
+    _strict = True
     
     def __init__(self,
                  first: Optional[INTEGER] = None,
@@ -105,4 +140,4 @@ class labeledNodeConstraint(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

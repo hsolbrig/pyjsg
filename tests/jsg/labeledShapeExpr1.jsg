@@ -1,0 +1,19 @@
+expr        = labeledShapeOr | labeledShapeAnd | labeledShapeNot | labeledNodeConstraint | labeledShape | shapeExprLabel | labeledShapeExternal;
+
+labeledShapeOr {}
+labeledShapeAnd {}
+labeledShapeNot {}
+labeledNodeConstraint {}
+labeledShape {}
+shapeExprLabel {}
+labeledShapeExternal {}
+
+single = expr ;
+
+foo = a:XX b:YY;
+
+bar {}
+
+@terminals
+XX : [0-9] ;
+YY : [0-9] ;

@@ -14,7 +14,7 @@
 
 Schema           {
   "@context":"http://www.w3.org/ns/shex.jsonld"
-startActs:[SemAct+]? start:shapeExpr? shapes:[shapeExpr+]? }
+imports:[IRIREF+]? startActs:[SemAct+]? start:shapeExpr? shapes:[shapeExpr+]? }
 
 
 
@@ -23,44 +23,52 @@ shapeExpr        = (ShapeOr | ShapeAnd | ShapeNot | NodeConstraint | Shape | sha
 ShapeOr          {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
 ShapeAnd         {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
 ShapeNot         {id:shapeExprLabel? shapeExpr:shapeExpr }
-NodeConstraint   {id:shapeExprLabel? nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRI? xsFacet? values:[valueSetValue+]? }
-Shape            {id:shapeExprLabel? virtual:@bool? closed:@bool? extra:[IRI+]? expression:tripleExpr? inherit:[shapeExprLabel+]? semActs:[SemAct+]? annotations:[Annotation+]? }
 ShapeExternal    {id:shapeExprLabel?  }
-
-# Triple Expressions
-tripleExpr       = (EachOf | OneOf | TripleConstraint | tripleExprLabel) ;
-EachOf           { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
-OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
-TripleConstraint { id:tripleExprLabel? inverse:@bool? negated:@bool? predicate:IRI valueExpr:shapeExpr? min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
+shapeExprLabel   = IRIREF|BNODE ;
+# TODO: Explain why xsFacet* here causes a fail
+NodeConstraint   {id:shapeExprLabel? nodeKind:("iri"|"bnode"|"nonliteral"|"literal")? datatype:IRIREF? xsFacet? values:[valueSetValue+]? }
 
 # XML Schema facets
 xsFacet          = stringFacet | numericFacet ;
+# TODO: Explain why there is no '|' inside these two constructs
 stringFacet      = (length minlength maxlength):@int | pattern:@string flags:@string? ;
 numericFacet     = (mininclusive minexclusive maxinclusive maxexclusive):@number
                    (totaldigits fractiondigits):@int ;
 
 # Value Sets
-valueSetValue    = (objectValue | IriStem | IriStemRange | LiteralStem | LiteralStemRange | LanguageStem | LanguageStemRange) ;
-objectValue      = (IRI | ObjectLiteral) ;
-IriStem          { stem:IRI }
-IriStemRange     { stem:(IRI|Wildcard) exclusions:[(IRI | IriStem)+] }
+valueSetValue    = (objectValue | IriStem | IriStemRange | LiteralStem | LiteralStemRange | Language | LanguageStem | LanguageStemRange) ;
+objectValue      = (IRIREF | ObjectLiteral) ;
+ObjectLiteral    { value:@string language:LANGTAG? type:IRIREF? }
+IriStem          { stem:IRIREF }
+IriStemRange     { stem:(IRIREF|Wildcard) exclusions:[(IRIREF | IriStem)+] }
 LiteralStem      { stem:@string }
 LiteralStemRange { stem:(@string|Wildcard) exclusions:[(@string | LiteralStem)+] }
+Language         { languageTag:LANGTAG }
 LanguageStem     { stem:LANGTAG }
 LanguageStemRange{ stem:(LANGTAG|Wildcard) exclusions:[(LANGTAG | LanguageStem) +] }
 Wildcard         {  }
 
-SemAct           { name:IRI code:@string? }
-Annotation       { predicate:IRI object:objectValue }
+Shape            {id:shapeExprLabel? closed:@bool? extra:[IRIREF+]? expression:tripleExpr? semActs:[SemAct+]? annotations:[Annotation+]? }
 
-shapeExprLabel   = IRI|BNODE ;
-tripleExprLabel  = IRI|BNODE ;
-ObjectLiteral    { value:@string language:LANGTAG? type:IRI? }
+# Triple Expressions
+tripleExpr       = (EachOf | OneOf | TripleConstraint | tripleExprLabel) ;
+EachOf           { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
+OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
+TripleConstraint { id:tripleExprLabel? inverse:@bool? predicate:IRIREF valueExpr:shapeExpr? min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
+# TODO: Figure out why this indirection causes issues (reference is from tripleExpr)
+# tripleExprRef    = tripleExprLabel ;
+tripleExprLabel  = IRIREF|BNODE ;
+
+SemAct           { name:IRIREF code:@string? }
+Annotation       { predicate:IRIREF object:objectValue }
 
 # Terminals used in productions:
 @terminals
-IRI              : (PN_CHARS | '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&' | UCHAR)* ; # <http://www.w3.org/TR/turtle/#grammar-production-IRIREF> - "<>"s
-BNODE            : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; # <http://www.w3.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>
+# Turtle IRIREF without enclosing "<>"s
+IRIREF           : ([^\u0000-\u0020\u005C\u007B\u007D<>"|^`] | UCHAR)*     ; # <http://www.w3.org/TR/turtle/#grammar-production-IRIREF> - "<>"s
+# Turtle BLANK_NODE_LABEL
+BNODE            : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; # <http://www.w.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>
+# BCP47 Language-Tag
 LANGTAG          : [a-zA-Z]+('-'([a-zA-Z0-9])+)* ;
 
 # Terminals use only in other terminals:

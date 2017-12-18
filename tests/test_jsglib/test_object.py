@@ -27,40 +27,47 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
-from pyjsg.jsglib.jsg import JSGObject, String, Integer, JSGContext, Boolean, Number, Null, Optional, JSGNull
+from pyjsg.jsglib import jsg
 from jsonasobj import loads as json_loads
 from dict_compare import dict_compare
 
 from pyjsg.jsglib.logger import Logger
 from tests.memlogger import MemLogger
 
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 
 
 class ObjectTestCase(unittest.TestCase):
-    def check_json(self, t: JSGObject, c: str):
+    def check_json(self, t: jsg.JSGObject, c: str):
         self.assertTrue(dict_compare(json_loads(c)._as_dict, t._as_json_obj()))
 
     def test_simple_object(self):
-        class Person(JSGObject):
+        class Person(jsg.JSGObject):
+            _reference_types = []
+            _members = {'name': str,
+                        'age': int,
+                        'married': bool,
+                        'weight': float,
+                        'tag': Optional[jsg.JSGNull]}
+            _strict = True
+
             def __init__(self,
                          name: str = None,
                          age: int = None,
                          married: bool = None,
                          weight: float = None,
-                         tag: Optional[JSGNull] = None,
+                         tag: Optional[jsg.JSGNull] = None,
                          **_kwargs: Dict[str, object]):
                 super().__init__(_CONTEXT, **_kwargs)
-                self.name = String(name)
-                self.age = Integer(age)
-                self.married = Boolean(married)
-                self.weight = Number(weight)
+                self.name = jsg.String(name)
+                self.age = jsg.Integer(age)
+                self.married = jsg.Boolean(married)
+                self.weight = jsg.Number(weight)
                 self.tag = tag
 
         log = Logger(MemLogger())
-
 
         x = Person()
         x.name = "Grunt P Snooter"
@@ -82,7 +89,7 @@ class ObjectTestCase(unittest.TestCase):
         x.weight = "112"
         self.assertTrue(x._is_valid())
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112}')
-        x.tag = Null
+        x.tag = jsg.Null
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112, "tag": null}')
         with self.assertRaises(ValueError):
             x.age = "abc"

@@ -84,9 +84,11 @@ A JSG schema can define constraints on any number of JSON objects or arrays.
 #### JSON Object Constraints
 A JSG Object Constraint constrains the set of possible name/value pairs that may appear in a given JSON object.  As an example:
 ```text
+.TYPE type - person
+
 company {name: @string, "year founded": @int?, employees: person{2,}}
-person {name: @string gender:('m'|'f') "active":@bool}
-details {type: @string, }
+person {name: @string gender:('m'|'f') "active":@bool details*}
+details {id: @string, }
 ```
 defines three object constraints:
 * `company` - a JSON object that conforms to the this constraint must have:
@@ -98,6 +100,8 @@ defines three object constraints:
     * a "gender" element of type JSON string whose value must be "m" or "f"
     * an "active" element whose values must be `true` or `false`
 * `details` - a conforming JSON object must have exacgtly one "type" element of type JSON string any number of additional elements of any type.
+
+The following sample would pass the above 
 
 ```json
 { "type": "company",

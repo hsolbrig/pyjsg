@@ -41,10 +41,10 @@ from tests.memlogger import MemLogger
 
 # shexJSGSource = "https://api.github.com/repos/hsolbrig/shexTest/contents/doc/ShExJ.jsg"
 shexJSGSource = ""
-shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas"
+shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=2.0"
 
 shexTestJson = None
-# shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/master/schemas/" \
+# shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/2.0/schemas/" \
 #                "1refbnode_with_spanning_PN_CHARS_BASE1.json"
 
 
@@ -55,10 +55,10 @@ LOCAL_PARSER_IMAGE = os.path.join('jsg', 'ShExJ.jsg')
 # LOCAL_PARSER_IMAGE = None
 USE_EXISTING_SHEX = True
 
-STOP_ON_ERROR = True
+STOP_ON_ERROR = False
 
 # Files to skip until we reintroduce a manifest reader
-skip = ['coverage.json', 'manifest.json', '1IRI_with_all_punctuationdot.json', '_all.json']
+skip = ['coverage.json', 'manifest.json']
 
 
 def compare_json(j1: str, j2: str, log: Logger) -> bool:
@@ -141,7 +141,8 @@ def download_shex_parser() -> None:
     :return: Success indicator
     """
     if LOCAL_PARSER_IMAGE:
-        shexj_jsg = open(LOCAL_PARSER_IMAGE).read()
+        with open(LOCAL_PARSER_IMAGE) as f:
+            shexj_jsg = f.read()
     else:
         shexj_jsg = download_github_file(shexJSGSource)
     if shexj_jsg is not None:
@@ -156,7 +157,7 @@ class ShExJValidationTestCase(unittest.TestCase):
     def test_shex_schema(self):
         if not USE_EXISTING_SHEX:
             download_shex_parser()
-        import tests.py.ShExJ as ShExJ
+        import tests.test_jsglib.py.ShExJ as ShExJ
         self.assertTrue(validate_shex_schemas(ShExJ))
 
 if __name__ == '__main__':

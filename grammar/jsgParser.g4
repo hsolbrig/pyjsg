@@ -23,8 +23,11 @@ objectExpr			: OBRACE membersDef? CBRACE
 					;
 
 // JSON object members
-membersDef          : (pairDef COMMA?)+ (BAR altMembersDef)* ;
-altMembersDef       : (pairDef COMMA?)* ;
+membersDef          : COMMA
+                    | member+ (BAR altMemberDef)* (BAR lastComma)? ;
+altMemberDef        : member* ;
+member              : pairDef COMMA? ;
+lastComma           : COMMA ;
 
 
 // JSON pair definition

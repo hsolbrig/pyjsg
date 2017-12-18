@@ -1,60 +1,73 @@
-# Auto generated from jsg/ge1.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 12:43
+# Auto generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/tests/test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE = "type"
 _CONTEXT.TYPE_EXCEPTIONS.append("person")
 
 
 
 
-class _Anon1(JSGString):
-    pattern = JSGPattern(r'(m)|(f)')
+class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'(m)|(f)')
 
-class details(JSGObject):
+class details(jsg.JSGObject):
     _reference_types = []
+    _members = {'id': str}
+    _strict = False
     
     def __init__(self,
-                 type: str = None,
+                 id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.type = String(type)
+        self.id = jsg.String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class person(JSGObject):
-    _reference_types = []
+class person(jsg.JSGObject):
+    _reference_types = [details]
+    _members = {'name': str,
+                'gender': _Anon1,
+                'active': bool,
+                'details': List[details]}
+    _strict = True
     
     def __init__(self,
                  name: str = None,
                  gender: _Anon1 = None,
                  active: bool = None,
+                 details: List[details] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = String(name)
+        self.name = jsg.String(name)
         self.gender = gender
-        self.active = Boolean(active)
+        self.active = jsg.Boolean(active)
+        self.details = details
         super().__init__(self._context, **_kwargs)
 
 
-class company(JSGObject):
+class company(jsg.JSGObject):
     _reference_types = []
+    _members = {'name': str,
+                'year founded': Optional[int],
+                'employees': List[person]}
+    _strict = True
     
     def __init__(self,
                  name: str = None,
                  employees: List[person] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = String(name)
-        setattr(self, 'year founded', Integer(_kwargs.pop('year founded')))
+        self.name = jsg.String(name)
+        setattr(self, 'year founded', jsg.Integer(_kwargs.pop('year founded', None)))
         self.employees = employees
         super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

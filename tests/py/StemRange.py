@@ -1,20 +1,28 @@
-# Auto generated from jsg/StemRange.jsg by PyJSG version 1.0.0
-# Generation date: 2017-05-15 11:10
+# Auto generated from jsg/StemRange.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 21:15
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
-from pyjsg.jsglib.jsg import *
-from pyjsg.jsglib.typing_patch import fix_forwards
+from pyjsg.jsglib import jsg
+from pyjsg.jsglib import typing_patch
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
+_CONTEXT.TYPE_EXCEPTIONS.append("Wildcard")
+_CONTEXT.TYPE_EXCEPTIONS.append("ObjectLiteral")
+_CONTEXT.TYPE_EXCEPTIONS.append("Stem")
+_CONTEXT.TYPE_EXCEPTIONS.append("StemRange")
 
 
-class IRI(String):
-    pattern = JSGPattern(r'')
 
-class Wildcard(JSGObject):
+
+class IRI(jsg.String):
+    pattern = jsg.JSGPattern(r'')
+
+class Wildcard(jsg.JSGObject):
     _reference_types = []
+    _members = {}
+    _strict = True
     
     def __init__(self,
                  **_kwargs: Dict[str, object]):
@@ -22,8 +30,12 @@ class Wildcard(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class ObjectLiteral(JSGObject):
+class ObjectLiteral(jsg.JSGObject):
     _reference_types = []
+    _members = {'value': str,
+                'language': Optional[str],
+                'type': Optional[str]}
+    _strict = True
     
     def __init__(self,
                  value: str = None,
@@ -31,16 +43,18 @@ class ObjectLiteral(JSGObject):
                  type: Optional[str] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.value = String(value)
-        self.language = String(language)
-        self.type = String(type)
+        self.value = jsg.String(value)
+        self.language = jsg.String(language)
+        self.type = jsg.String(type)
         super().__init__(self._context, **_kwargs)
 
 
 objectValue = Union[IRI, ObjectLiteral]
 
-class Stem(JSGObject):
+class Stem(jsg.JSGObject):
     _reference_types = []
+    _members = {'stem': IRI}
+    _strict = True
     
     def __init__(self,
                  stem: IRI = None,
@@ -50,8 +64,11 @@ class Stem(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class StemRange(JSGObject):
+class StemRange(jsg.JSGObject):
     _reference_types = []
+    _members = {'stem': Union[IRI, Wildcard],
+                'exclusions': Optional[List[Union[objectValue, Stem]]]}
+    _strict = True
     
     def __init__(self,
                  stem: Union[IRI, Wildcard] = None,
@@ -63,4 +80,4 @@ class StemRange(JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-fix_forwards(locals())
+_CONTEXT.NAMESPACE = locals()

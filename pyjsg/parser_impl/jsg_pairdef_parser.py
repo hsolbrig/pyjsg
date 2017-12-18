@@ -25,7 +25,7 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import Optional, List, Set, Tuple
+from typing import Optional, List, Set, Tuple, Dict
 
 from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
@@ -33,13 +33,13 @@ from pyjsg.parser.jsgParser import *
 
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
-from .parser_utils import as_token, is_valid_python
+from .parser_utils import as_token, is_valid_python, optional
 
 _val_template_simple = "{prefix}{cooked_name}"
-_val_template_simple_raw = "_kwargs.pop('{raw_name}')"
+_val_template_simple_raw = "_kwargs.pop('{raw_name}', None)"
 
 _val_template_builtin = "{basetype}({prefix}{cooked_name})"
-_val_template_builtin_raw = "{basetype}(_kwargs.pop('{raw_name}'))"
+_val_template_builtin_raw = "{basetype}(_kwargs.pop('{raw_name}', None))"
 
 _initializer_template_cooked = "self.{raw_name} = {val}{opt_clause}"
 _initializer_template_raw = "setattr(self, '{raw_name}', {val}){opt_clause}"
@@ -69,22 +69,36 @@ class JSGPairDef(jsgParserVisitor):
         else:
             return "pairDef: typeReference: {}{}".format(self._type_reference, self._ebnf if self._ebnf else "")
 
-    def _card(self, e, all_are_optional: bool):
-        if all_are_optional and (not self._ebnf or self._ebnf.min != 0 or self._ebnf.max is not None):
-                return "Optional[{}]".format(e)
-        return self._ebnf.python_type(e) if self._ebnf else e
+    def _card(self, e: str, all_are_optional: bool) -> str:
+        if self._ebnf and self._ebnf.is_optional:
+            return optional(e, True)
+        return optional(self._ebnf.python_type(e) if self._ebnf else e, all_are_optional)
 
     def is_reference_type(self) -> bool:
         return self._type_reference is not None
 
-    # TODO: find out whether all_are_optional is used
-    def signature(self, all_are_optional: bool = False) -> List[str]:
+    def signature(self, all_are_optional: Optional[bool] = False) -> List[str]:
         """ Return the __init__ signature element(s) """
         if self._type_reference:
             return [self._card(self._context.reference_for(self.typeid), all_are_optional)]
         else:
             return ["{}: {} = None".format(n, self._card(self.typeid, all_are_optional))
                     for _, n in self._names if is_valid_python(n)]
+
+    def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        """
+        Return the name/type tuples represented by this pairdef
+        :param all_are_optional: If true, all types must be optional
+        :return: 
+        """
+        if self._type_reference:
+            if self._ebnf and self._ebnf.is_list:
+                return [(self.typeid, optional("List[{}]".format(self.typeid), all_are_optional))]
+            else:
+                return self._context.members(self.typeid, all_are_optional or (self._ebnf and self._ebnf.is_optional))
+        else:
+            member_type = self._card(self.typeid, all_are_optional)
+            return [(raw_name, member_type) for raw_name, _ in self._names]
 
     @property
     def typeid(self) -> str:

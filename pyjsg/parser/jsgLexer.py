@@ -1,4 +1,4 @@
-# Generated from jsgLexer.g4 by ANTLR 4.7
+# Generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/grammar/jsgLexer.g4 by ANTLR 4.7
 from antlr4 import *
 from io import StringIO
 from typing.io import TextIO

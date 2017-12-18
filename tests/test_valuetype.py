@@ -33,13 +33,13 @@ from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 from tests.parser import parse
 
-builtin_tests = [("@string", "String", "str"),
-                 ("@number", "Number", "float"),
-                 ("@int", "Integer", "int"),
-                 ("@bool", "Boolean", "bool"),
-                 ("@null", "JSGNull", "JSGNull"),
-                 ("@array", "Array", "list"),
-                 ("@object", "Object", "object")]
+builtin_tests = [("@string", "jsg.String", "str"),
+                 ("@number", "jsg.Number", "float"),
+                 ("@int", "jsg.Integer", "int"),
+                 ("@bool", "jsg.Boolean", "bool"),
+                 ("@null", "jsg.JSGNull", "jsg.JSGNull"),
+                 ("@array", "jsg.Array", "list"),
+                 ("@object", "jsg.Object", "object")]
 
 ref_tests = [("A", "ID"),
              ("a", "ID"),
@@ -78,7 +78,7 @@ class ValueTypeTestCase(unittest.TestCase):
     def test_any(self):
         t = cast(JSGValueType, parse("id = .;", "valueTypeMacro", JSGValueType))
         self.assertEqual("object", t.typeid)
-        self.assertEqual("valueType: builtinValueType: AnyType", str(t))
+        self.assertEqual("valueType: builtinValueType: jsg.AnyType", str(t))
 
     def test_alternatives(self):
         t = cast(JSGValueType, parse("id = ('x'|'y') ;", "valueTypeMacro", JSGValueType))
@@ -98,8 +98,14 @@ class ValueTypeTestCase(unittest.TestCase):
 
     def test_objectmacro(self):
         t = cast(JSGObjectExpr, parse("stringFacet = (length minlength maxlength):INTEGER pattern:STRING flags:STRING? ;", "objectMacro", JSGObjectExpr))
-        self.assertEqual("""class stringFacet(JSGObject):
+        self.assertEqual("""class stringFacet(jsg.JSGObject):
     _reference_types = []
+    _members = {'length': INTEGER,
+                'minlength': INTEGER,
+                'maxlength': INTEGER,
+                'pattern': STRING,
+                'flags': Optional[STRING]}
+    _strict = True
     
     def __init__(self,
                  length: INTEGER = None,
@@ -118,8 +124,14 @@ class ValueTypeTestCase(unittest.TestCase):
         self.assertEqual(['INTEGER', 'STRING', 'STRING'], t.dependency_list())
 
         t = cast(JSGObjectExpr, parse("stringFacet = (length minlength maxlength):INTEGER pattern:STRING | flags:STRING? ;", "objectMacro", JSGObjectExpr))
-        self.assertEqual("""class stringFacet(JSGObject):
+        self.assertEqual("""class stringFacet(jsg.JSGObject):
     _reference_types = [_Anon1_1_, _Anon1_2_]
+    _members = {'length': INTEGER,
+                'minlength': INTEGER,
+                'maxlength': INTEGER,
+                'pattern': STRING,
+                'flags': Optional[STRING]}
+    _strict = True
     
     def __init__(self,
                  opt_: Union[_Anon1_1_, _Anon1_2_] = None,
@@ -134,19 +146,21 @@ class ValueTypeTestCase(unittest.TestCase):
         self.assertEqual({'_Anon1_1_', '_Anon1_2_', 'STRING', 'INTEGER'}, t.dependencies())
 
         t = cast(JSGObjectExpr, parse("x = a:@number | b:@null | ;", "objectMacro", JSGObjectExpr))
-        self.assertEqual("""class x(JSGObject):
+        print(t.as_python('stringFacet'))
+        self.assertEqual("""class stringFacet(jsg.JSGObject):
     _reference_types = [_Anon1_1_, _Anon1_2_, _Anon1_3_]
+    _members = {'a': float,
+                'b': jsg.JSGNull}
+    _strict = True
     
     def __init__(self,
                  opt_: Union[_Anon1_1_, _Anon1_2_, _Anon1_3_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.a = Number(opt_.a) if isinstance(opt_, _Anon1_1_) else Number(None)
-        self.b = JSGNull(opt_.b) if isinstance(opt_, _Anon1_2_) else JSGNull(None)
-        super().__init__(self._context, **_kwargs)""", t.as_python('x').strip())
+        self.a = jsg.Number(opt_.a) if isinstance(opt_, _Anon1_1_) else jsg.Number(None)
+        self.b = jsg.JSGNull(opt_.b) if isinstance(opt_, _Anon1_2_) else jsg.JSGNull(None)
+        super().__init__(self._context, **_kwargs)""", t.as_python('stringFacet').strip())
         self.assertEqual({'_Anon1_1_', '_Anon1_2_', '_Anon1_3_'}, t.dependencies())
-
-
 
 
 if __name__ == '__main__':

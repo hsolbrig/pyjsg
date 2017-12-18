@@ -40,7 +40,7 @@ tests = [("x1 : INT", ['x1: INT = None'], ['self.x1 = x1'], "pairDef: x1 : value
          ("x6 : INT{1, 1}", ['x6: INT = None'], ['self.x6 = x6'], "pairDef: x6 : valueType: LEXER_ID_REF: INT{1,1}"),
          ("x7 : INT{1,}", ['x7: List[INT] = None'], ['self.x7 = x7'], "pairDef: x7 : valueType: LEXER_ID_REF: INT{1,}"),]
 
-builtins = [("k : @string", ["k: str = None"], ['self.k = String(k)'], 'pairDef: k : valueType: builtinValueType: String')]
+builtins = [("k : @string", ["k: str = None"], ['self.k = jsg.String(k)'], 'pairDef: k : valueType: builtinValueType: jsg.String')]
 
 
 class PairDefTestCase(unittest.TestCase):
@@ -63,29 +63,29 @@ class PairDefTestCase(unittest.TestCase):
         self.assertEqual("pairDef: def : valueType: LEXER_ID_REF: INT", str(t))
         t = cast(JSGPairDef, parse("'a var' : @number", "pairDef", JSGPairDef))
         self.assertEqual([], t.signature())
-        self.assertEqual(["setattr(self, 'a var', Number(_kwargs.pop('a var')))"], t.initializer())
-        self.assertEqual("pairDef: a var : valueType: builtinValueType: Number", str(t))
+        self.assertEqual(["setattr(self, 'a var', jsg.Number(_kwargs.pop('a var', None)))"], t.initializer())
+        self.assertEqual("pairDef: a var : valueType: builtinValueType: jsg.Number", str(t))
 
     def test_pairdef_shorthand(self):
         text = "(x1 'v 2' 'class') : @number {3,17}"
         t = cast(JSGPairDef, parse(text, "pairDef", JSGPairDef))
         self.assertEqual(['x1: List[float] = None', 'class_: List[float] = None'], t.signature())
-        self.assertEqual(['self.x1 = Number(x1)', "setattr(self, 'v 2', Number(_kwargs.pop('v 2')))", 'self.class = Number(class_)'], t.initializer())
-        self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: Number{3,17}", str(t))
+        self.assertEqual(['self.x1 = jsg.Number(x1)', "setattr(self, 'v 2', jsg.Number(_kwargs.pop('v 2', None)))", 'self.class = jsg.Number(class_)'], t.initializer())
+        self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: jsg.Number{3,17}", str(t))
         self.assertEqual([], t.dependency_list())
 
         text = "(x1 'v 2' 'class') : @bool ?"
         t = cast(JSGPairDef, parse(text, "pairDef", JSGPairDef))
         self.assertEqual(['x1: Optional[bool] = None', 'class_: Optional[bool] = None'], t.signature())
-        self.assertEqual(['self.x1 = Boolean(x1)', "setattr(self, 'v 2', Boolean(_kwargs.pop('v 2')))", 'self.class = Boolean(class_)'], t.initializer())
-        self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: Boolean?", str(t))
+        self.assertEqual(['self.x1 = jsg.Boolean(x1)', "setattr(self, 'v 2', jsg.Boolean(_kwargs.pop('v 2', None)))", 'self.class = jsg.Boolean(class_)'], t.initializer())
+        self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: jsg.Boolean?", str(t))
         self.assertEqual([], t.dependency_list())
 
         text = "(x1 'v 2' 'class') : @null"
         t = cast(JSGPairDef, parse(text, "pairDef", JSGPairDef))
-        self.assertEqual(['x1: JSGNull = None', 'class_: JSGNull = None'], t.signature())
-        self.assertEqual(['self.x1 = JSGNull(x1)', "setattr(self, 'v 2', JSGNull(_kwargs.pop('v 2')))", 'self.class = JSGNull(class_)'], t.initializer())
-        self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: JSGNull", str(t))
+        self.assertEqual(['x1: jsg.JSGNull = None', 'class_: jsg.JSGNull = None'], t.signature())
+        self.assertEqual(['self.x1 = jsg.JSGNull(x1)', "setattr(self, 'v 2', jsg.JSGNull(_kwargs.pop('v 2', None)))", 'self.class = jsg.JSGNull(class_)'], t.initializer())
+        self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: jsg.JSGNull", str(t))
         self.assertEqual([], t.dependency_list())
 
     def test_pairdef_valuetype_ref(self):
