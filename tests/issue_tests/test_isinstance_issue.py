@@ -1,4 +1,4 @@
-# Copyright (c) 2017, Mayo Clinic
+# Copyright (c) 2018, Mayo Clinic
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -26,14 +26,28 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
-""" PyJSG -- Python JSON Schema Grammar Bindings
+import unittest
+from typing import Union
 
-This package translates between JSON and Python objects, following the rules
-specified by {JSON Schema Grammar<http://github.com/ericprud/jsglib>}
+import os
 
-"""
 
-__version__ = '0.4.1'
-__url__ = 'http://github.com/hsolbrig/pyjsg'
-__license__ = 'Apache 2.0'
+class IsInstanceTestCase(unittest.TestCase):
+    def test_isinstance_issue(self):
+        from pyjsg.jsglib.jsg import isinstance_
+        x = Union[int, str]
+        with self.assertRaises(TypeError):
+            isinstance(17, x)
+        self.assertTrue(isinstance_(17, x))
 
+    def test_issue_with_shexj(self):
+        from pyjsg.parser_impl.generate_python import generate
+        data_root = os.path.join(os.path.split(os.path.abspath(__file__))[0], '..',)
+        jsg_path = os.path.join(data_root, 'jsg', 'ShExJ.jsg')
+        py_path = os.path.join(data_root, 'py', 'ShExJ.py')
+        self.assertTrue(generate([jsg_path, "-o", py_path, "-e", "-v"]))
+        from tests.py import ShExJ
+        self.assertTrue(ShExJ.isinstance_(ShExJ.IRIREF("http://foo.bar"), ShExJ.shapeExprLabel))
+
+if __name__ == '__main__':
+    unittest.main()

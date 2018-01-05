@@ -513,3 +513,10 @@ def load(fp: Union[TextIO, str], load_module: types.ModuleType, **kwargs) -> JSG
             return loads(f.read(), load_module, **kwargs)
     else:
         return loads(fp.read(), load_module, **kwargs)
+
+
+def isinstance_(x, A_tuple):
+    """ native isinstance_ with the test for typing.Union overridden """
+    if type(A_tuple) == type(Union):
+        return any(isinstance_(x, t) for t in A_tuple.__args__)
+    return isinstance(x, A_tuple)

@@ -48,7 +48,7 @@ _jsg_python_template = '''# Auto generated from {infile} by PyJSG version {versi
 from typing import Optional, Dict, List, Union, _ForwardRef
 
 from pyjsg.jsglib import jsg
-from pyjsg.jsglib import typing_patch
+from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
 _CONTEXT = jsg.JSGContext(){body}
