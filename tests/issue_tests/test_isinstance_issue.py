@@ -44,7 +44,7 @@ class IsInstanceTestCase(unittest.TestCase):
         from pyjsg.parser_impl.generate_python import generate
         data_root = os.path.join(os.path.split(os.path.abspath(__file__))[0], '..',)
         jsg_path = os.path.relpath(os.path.join(data_root, 'jsg', 'ShExJ.jsg'))
-        py_path = os.path.join(data_root, 'py', 'ShExJ.py')
+        py_path = os.path.abspath(os.path.join(data_root, 'py', 'ShExJ.py'))
         self.assertTrue(generate([jsg_path, "-o", py_path, "-e", "-v"]))
         from tests.py import ShExJ
         self.assertTrue(ShExJ.isinstance_(ShExJ.IRIREF("http://foo.bar"), ShExJ.shapeExprLabel))

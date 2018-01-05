@@ -1,10 +1,10 @@
-# Auto generated from jsg/OneOf.jsg by PyJSG version 0.4.0
-# Generation date: 2018-01-05 11:57
+# Auto generated from jsg/OneOf.jsg by PyJSG version 0.4.1
+# Generation date: 2018-01-05 13:51
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
 from pyjsg.jsglib import jsg
-from pyjsg.jsglib import typing_patch
+from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
 _CONTEXT = jsg.JSGContext()

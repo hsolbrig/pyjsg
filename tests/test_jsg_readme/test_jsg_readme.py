@@ -53,8 +53,8 @@ class JSGReadMeTestCase(unittest.TestCase):
 
     def eval_python(self, cwd: str, dirpath: str, fn: str) -> None:
         basefile = fn.rsplit('.', 1)[0]
-        outfile = os.path.join(cwd, "py", basefile + ".py")
-        generate([os.path.join(dirpath, fn), "-o", outfile])
+        outfile = os.path.abspath(os.path.join(cwd, "py", basefile + ".py"))
+        generate([os.path.relpath(os.path.join(dirpath, fn)), "-o", outfile])
         mod = import_module("tests.test_jsg_readme.py." + basefile)
         for dirpath, _, filenames in os.walk("json"):
             for fn in filenames:

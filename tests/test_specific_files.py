@@ -39,8 +39,8 @@ class JSGTestCase(unittest.TestCase):
             for fn in filenames:
                 if fn.endswith(".jsg") and fn in files:
                     print("TESTING: {}".format(fn))
-                    outfile = os.path.join("py", fn.rsplit('.', 1)[0] + ".py")
-                    self.assertTrue(generate([os.path.join(dirpath, fn), "-o", outfile, "-e"]))
+                    outfile = os.path.abspath(os.path.join("py", fn.rsplit('.', 1)[0] + ".py"))
+                    self.assertTrue(generate([os.path.relpath(os.path.join(dirpath, fn)), "-o", outfile, "-e"]))
 
 if __name__ == '__main__':
     unittest.main()
