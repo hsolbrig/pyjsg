@@ -1,5 +1,5 @@
-# Auto generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/tests/issue_tests/../jsg/ShExJ.jsg by PyJSG version 0.4.0
-# Generation date: 2018-01-05 12:55
+# Auto generated from ../jsg/ShExJ.jsg by PyJSG version 0.4.1
+# Generation date: 2018-01-05 13:02
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 

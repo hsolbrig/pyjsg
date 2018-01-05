@@ -43,7 +43,7 @@ class IsInstanceTestCase(unittest.TestCase):
     def test_issue_with_shexj(self):
         from pyjsg.parser_impl.generate_python import generate
         data_root = os.path.join(os.path.split(os.path.abspath(__file__))[0], '..',)
-        jsg_path = os.path.join(data_root, 'jsg', 'ShExJ.jsg')
+        jsg_path = os.path.relpath(os.path.join(data_root, 'jsg', 'ShExJ.jsg'))
         py_path = os.path.join(data_root, 'py', 'ShExJ.py')
         self.assertTrue(generate([jsg_path, "-o", py_path, "-e", "-v"]))
         from tests.py import ShExJ
