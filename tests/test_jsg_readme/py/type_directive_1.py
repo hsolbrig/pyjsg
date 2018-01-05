@@ -1,4 +1,4 @@
-# Auto generated from jsg/example_4.jsg by PyJSG version 0.4.0
+# Auto generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/tests/test_jsg_readme/jsg/type_directive_1.jsg by PyJSG version 0.4.0
 # Generation date: 2018-01-05 11:57
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
@@ -12,26 +12,16 @@ _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
 
 
-
-class NAME(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'.*')
-
-
-class TEMPLATE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'\{.*\}')
-
-nameOrTemplate = Union[NAME, TEMPLATE]
-
 class doc(jsg.JSGObject):
     _reference_types = []
-    _members = {'street': nameOrTemplate}
+    _members = {'a': object}
     _strict = True
     
     def __init__(self,
-                 street: nameOrTemplate = None,
+                 a: object = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.street = street
+        self.a = jsg.AnyType(a)
         super().__init__(self._context, **_kwargs)
 
 

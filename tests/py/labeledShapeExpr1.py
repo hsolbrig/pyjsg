@@ -1,4 +1,4 @@
-# Auto generated from jsg/labeledShapeExpr.jsg by PyJSG version 0.4.0
+# Auto generated from jsg/labeledShapeExpr1.jsg by PyJSG version 0.4.0
 # Generation date: 2018-01-05 11:57
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
@@ -15,6 +15,7 @@ _CONTEXT.TYPE_EXCEPTIONS.append("labeledNodeConstraint")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShape")
 _CONTEXT.TYPE_EXCEPTIONS.append("shapeExprLabel")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeExternal")
+_CONTEXT.TYPE_EXCEPTIONS.append("bar")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr_1_")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr_2_")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr_3_")
@@ -22,9 +23,19 @@ _CONTEXT.TYPE_EXCEPTIONS.append("expr_4_")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr_5_")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr_6_")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr_7_")
+_CONTEXT.TYPE_EXCEPTIONS.append("foo")
 _CONTEXT.TYPE_EXCEPTIONS.append("expr")
+_CONTEXT.TYPE_EXCEPTIONS.append("single")
 
 
+
+
+class XX(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]')
+
+
+class YY(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]')
 
 class labeledShapeOr(jsg.JSGObject):
     _reference_types = []
@@ -93,6 +104,17 @@ class shapeExprLabel(jsg.JSGObject):
 
 
 class labeledShapeExternal(jsg.JSGObject):
+    _reference_types = []
+    _members = {}
+    _strict = True
+    
+    def __init__(self,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        super().__init__(self._context, **_kwargs)
+
+
+class bar(jsg.JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -187,6 +209,22 @@ class expr_7_(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
+class foo(jsg.JSGObject):
+    _reference_types = []
+    _members = {'a': XX,
+                'b': YY}
+    _strict = True
+    
+    def __init__(self,
+                 a: XX = None,
+                 b: YY = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
+        self.a = a
+        self.b = b
+        super().__init__(self._context, **_kwargs)
+
+
 class expr(jsg.JSGObject):
     _reference_types = [expr_1_, expr_2_, expr_3_, expr_4_, expr_5_, expr_6_, expr_7_]
     _members = {}
@@ -197,6 +235,18 @@ class expr(jsg.JSGObject):
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
         
+        super().__init__(self._context, **_kwargs)
+
+
+class single(jsg.JSGObject):
+    _reference_types = [expr]
+    _members = {}
+    _strict = True
+    
+    def __init__(self,
+                 expr: expr = None,
+                 **_kwargs: Dict[str, object]):
+        self._context = _CONTEXT
         super().__init__(self._context, **_kwargs)
 
 

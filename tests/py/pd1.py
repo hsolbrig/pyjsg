@@ -1,5 +1,5 @@
-# Auto generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/tests/test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.4.0
-# Generation date: 2018-01-05 11:57
+# Auto generated from /Users/mrf7578/Development/git/hsolbrig/pyjsg/tests/test_jsg_readme/jsg/pd1.jsg by PyJSG version 0.3.1
+# Generation date: 2017-12-17 20:23
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
@@ -9,10 +9,6 @@ from pyjsg.jsglib import typing_patch
 # .TYPE and .IGNORE settings
 _CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE = "id"
-_CONTEXT.TYPE_EXCEPTIONS.append("person")
-_CONTEXT.IGNORE.append("height")
-_CONTEXT.IGNORE.append("weight")
-_CONTEXT.IGNORE.append("location")
 
 
 
