@@ -39,7 +39,6 @@ from pyjsg.jsglib.jsg import loads as jsg_loads
 from pyjsg.parser_impl.generate_python import parse
 from tests.memlogger import MemLogger
 
-# shexJSGSource = "https://api.github.com/repos/hsolbrig/shexTest/contents/doc/ShExJ.jsg"
 shexJSGSource = ""
 shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=2.0"
 

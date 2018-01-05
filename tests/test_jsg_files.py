@@ -35,8 +35,8 @@ class JSGTestCase(unittest.TestCase):
         for dirpath, _, filenames in os.walk("jsg"):
             for fn in filenames:
                 if fn.endswith(".jsg"):
-                    outfile = os.path.join("py", fn.rsplit('.', 1)[0] + ".py")
-                    self.assertTrue(generate([os.path.join(dirpath, fn), "-o", outfile, "-e", "-v"]))
+                    outfile = os.path.abspath(os.path.join("py", fn.rsplit('.', 1)[0] + ".py"))
+                    self.assertTrue(generate([os.path.relpath(os.path.join(dirpath, fn)), "-o", outfile, "-e", "-v"]))
 
 
 if __name__ == '__main__':

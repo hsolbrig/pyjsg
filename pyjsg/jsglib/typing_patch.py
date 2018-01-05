@@ -29,13 +29,8 @@ import sys
 
 # Note: ModuleType and _ForwardRef and _Union IDE errors are expected
 from types import ModuleType
-from typing import GenericMeta, Dict, Any, List, _ForwardRef
+from typing import GenericMeta, Dict, Any, List, Union, _ForwardRef
 from collections import Iterable
-
-if sys.version_info < (3, 6):
-    from typing import Union
-else:
-    from typing import _Union
 
 
 # TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
@@ -64,10 +59,7 @@ def is_forward(etype) -> bool:
 
 
 def is_union(etype) -> bool:
-    if sys.version_info < (3, 6):
-        return issubclass(etype, Union)
-    else:
-        return type(etype) is _Union
+    return type(etype) == type(Union)
 
 
 def is_dict(etype) -> bool:
@@ -85,25 +77,12 @@ def union_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     return False
 
 
-def fix_union_forwards(ns: Dict[str, Any], etype) -> None:
-    union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
-    if union_vals is not None:
-        [fix_forward(ns, t) for t in union_vals]
-
-
 def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     if is_dict(etype) and isinstance(element, dict):
         kt, vt = etype.__args__
         return all(conforms(k, kt, namespace) and
                    conforms(v, vt, namespace) for k, v in element.items())
     return False
-
-
-def fix_dict_forwards(ns: Dict[str, Any], etype) -> None:
-    if etype.__args__ is not None:
-        kt, vt = etype.__args__
-        [fix_forward(ns, t) for t in kt]
-        [fix_forward(ns, t) for t in vt]
 
 
 def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
@@ -115,11 +94,6 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     return False
 
 
-def fix_iterable_forwards(ns: Dict[str, Any], etype) -> None:
-    if isinstance(etype.__args__, Iterable):
-        [fix_forward(ns, e) for e in etype.__args__]
-
-
 def element_conforms(element, etype) -> bool:
     if element is None and etype == object:
         return True
@@ -128,23 +102,3 @@ def element_conforms(element, etype) -> bool:
     elif element is None:
         return False
     return isinstance(element, etype)
-
-
-# TODO: Toss these as soon as we know we are ok
-def fix_forwards(ns: Dict[str, Any]) -> None:
-    raise NotImplementedError("Fix_forwards is no longer used")
-    # for val in ns.values():
-    #     fix_forward(ns, val)
-
-
-def fix_forward(ns: Dict[str, Any], val: Any) -> None:
-    raise NotImplementedError("Fix_forward is no longer used")
-    # print("fix_forwards({})".format(val))
-    # if is_forward(val):
-    #     val._eval_type(ns, {})
-    # elif is_union(val):
-    #     fix_union_forwards(ns, val)
-    # elif is_dict(val):
-    #     fix_dict_forwards(ns, val)
-    # elif is_iterable(val):
-    #     fix_iterable_forwards(ns, val)
