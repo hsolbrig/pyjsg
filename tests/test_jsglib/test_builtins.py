@@ -138,8 +138,7 @@ class JSGBuiltinsTestCase(unittest.TestCase):
         class INCOMPAT(Integer):
             pattern = JSGPattern(r'[a-z]+')
 
-        with self.assertRaises(ValueError):
-            x = INCOMPAT("a")
+        x = INCOMPAT("a")
 
         with self.assertRaises(ValueError):
             x = INCOMPAT(17)

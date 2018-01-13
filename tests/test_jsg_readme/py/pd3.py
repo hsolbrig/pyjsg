@@ -1,5 +1,5 @@
 # Auto generated from test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.4.2
-# Generation date: 2018-01-05 13:56
+# Generation date: 2018-01-13 16:20
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 

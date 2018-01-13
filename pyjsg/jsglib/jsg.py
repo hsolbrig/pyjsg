@@ -71,7 +71,7 @@ class JSGContext:
             (self.JSON_LD and parm.startswith('@'))
 
 
-class JSGValidateable():
+class JSGValidateable:
     """
     Mixin -- any class with an _is_valid function
     """
@@ -206,7 +206,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             if val is not None and getattr(entry, "_is_valid", None):
                 if not entry._is_valid(log) and not log.logging:
                     return False
-            elif not conforms(val, etype, self._context.NAMESPACE):                # Note: None and absent are equivalent
+            elif not conforms(val, etype, self._context.NAMESPACE):        # Note: None and absent are equivalent
                 if val is None:
                     if log.log("{}: Missing required field: {}".format(self.__class__.__name__, name)):
                         return False
@@ -358,7 +358,7 @@ class JSGString(JSGValidateable, metaclass=JSGStringMeta):
         """
         if validate and not self._is_valid_value(val):
             raise ValueError('Invalid {} value: "{}"'.format(self._class_name, val))
-        self.val = self._adjust_for_json(val)
+        super().__setattr__("val", self._adjust_for_json(val))
 
     @classmethod
     def _is_valid_value(cls, val: str) -> bool:
@@ -371,7 +371,7 @@ class JSGString(JSGValidateable, metaclass=JSGStringMeta):
 
     @staticmethod
     def _adjust_for_json(val: Any) -> Any:
-        return str(val).lower() if isinstance(val, bool) else str(val) if val is not None else val
+        return str(val).lower() if isinstance(val, bool) else str(val) if val is not None else None
 
     def _is_valid(self, log: Optional[Logger] = None) -> bool:
         """
@@ -389,7 +389,7 @@ class JSGString(JSGValidateable, metaclass=JSGStringMeta):
         return str(self.val)
 
     def __eq__(self, other):
-        return self.val == other.val if isinstance(other, JSGString) else other
+        return self.val == (other.val if isinstance(other, JSGString) else other)
 
     def __hash__(self):
         return hash(self.val)
@@ -409,15 +409,18 @@ class Number(JSGString):
     pattern = JSGPattern(r'-?(0|[1-9][0-9]*)(.[0-9]+)?([eE][+-]?[0-9]+)?')
     int_pattern = JSGPattern(r'-?(0|[1-9][0-9]*)')
 
-    def __setattr__(self, key, value):
-        if key == "val" and value is not None:
-            self.__dict__[key] = int(value) if Number.int_pattern.matches(value) else float(value)
-        else:
-            self.__dict__[key] = value
+    def __getattribute__(self, item):
+        attval = super().__getattribute__(item)
+        return attval if item != "val" or attval is None else int(attval) \
+            if self.int_pattern.matches(attval) else float(attval)
 
 
 class Integer(Number):
     pattern = JSGPattern(r'-?(0|[1-9][0-9]*)')
+
+    def __getattribute__(self, item):
+        attval = super().__getattribute__(item)
+        return attval if item != "val" or attval is None else int(attval)
 
 
 class Boolean(JSGString):
@@ -427,16 +430,22 @@ class Boolean(JSGString):
 
     def __setattr__(self, key, value):
         if key == "val" and value is not None:
-            self.__dict__[key] = value if isinstance(value, bool) else Boolean.true_pattern.matches(str(value))
+            # Note - final value below causes an exception
+            self.__dict__[key] = str(value).lower() if isinstance(value, bool) \
+                else str(value.val) if type(value) == Boolean else Boolean(value)
         else:
             self.__dict__[key] = value
+
+    def __getattribute__(self, item):
+        attval = super().__getattribute__(item)
+        return attval if item != "val" or attval is None else self.true_pattern.matches(attval)
 
 
 class JSGNull(JSGString):
     pattern = JSGPattern(r'null|None')
 
     def __init__(self, val: Optional[Any] = None, validate: bool=True):
-        self._val = val
+        self.val = val
         super().__init__(val, validate)
 
     def __setattr__(self, key, value):
@@ -446,7 +455,8 @@ class JSGNull(JSGString):
         return str(self.val)
 
     def _is_valid(self, log: Optional[Logger] = None, strict: bool = True) -> bool:
-        return self._val is None or self._val == "null"
+        return self.val is None or self.val == "null"
+
 
 Null = JSGNull("null")
 
@@ -467,6 +477,7 @@ class AnyType(JsonObj, JSGValidateable):
 
     def _is_valid(self, log: Optional[Logger] = None):
         return True
+
 
 def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Optional[JSGValidateable]:
     """
