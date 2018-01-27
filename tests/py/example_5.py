@@ -1,5 +1,5 @@
-# Auto generated from jsg/example_5.jsg by PyJSG version 0.4.2
-# Generation date: 2018-01-13 16:20
+# Auto generated from jsg/example_5.jsg by PyJSG version 0.5.0
+# Generation date: 2018-01-27 10:29
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 

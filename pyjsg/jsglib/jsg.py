@@ -341,7 +341,8 @@ class JSGStringMeta(type):
         if not self.pattern:
             return super().__instancecheck__(instance)
         else:
-            return self.pattern.matches(str(instance).lower() if isinstance(instance, bool) else str(instance))
+            return instance is not None and \
+                   self.pattern.matches(str(instance).lower() if isinstance(instance, bool) else str(instance))
 
 
 class JSGString(JSGValidateable, metaclass=JSGStringMeta):

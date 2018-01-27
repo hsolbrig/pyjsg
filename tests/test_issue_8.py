@@ -1,4 +1,4 @@
-# Copyright (c) 2017, Mayo Clinic
+# Copyright (c) 2018, Mayo Clinic
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -26,14 +26,22 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
-""" PyJSG -- Python JSON Schema Grammar Bindings
+import unittest
 
-This package translates between JSON and Python objects, following the rules
-specified by {JSON Schema Grammar<http://github.com/ericprud/jsglib>}
 
-"""
+class Issue8TestCase(unittest.TestCase):
 
-__version__ = '0.5.1'
-__url__ = 'http://github.com/hsolbrig/pyjsg'
-__license__ = 'Apache 2.0'
+    def test_none_as_string_instance(self):
+        from pyjsg.jsglib.jsg import JSGString, JSGPattern
 
+        class S(JSGString):
+            pattern = JSGPattern(r'[a-zA-Z]+')
+
+        self.assertTrue(isinstance('abc', S))
+        self.assertFalse(isinstance('abc1', S))
+        self.assertFalse(isinstance('', S))
+        self.assertFalse(isinstance(None, S))
+
+
+if __name__ == '__main__':
+    unittest.main()
