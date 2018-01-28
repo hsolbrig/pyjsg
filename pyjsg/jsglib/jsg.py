@@ -127,7 +127,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             self[key] = value
         else:
             cur_val = self.__dict__.get(key)
-            if cur_val is None or not isinstance(cur_val, JSGString):
+            if cur_val is None or not issubclass(type(cur_val), JSGString):
                 self[key] = value
             else:
                 self[key] = cur_val.__class__(value)
@@ -199,7 +199,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         else:
             etype = self._members[name]
             if (etype is str or etype is int or etype is float or etype is bool) and \
-                    isinstance(entry, JSGString):
+                    issubclass(type(entry), JSGString):
                 val = getattr(entry, "val", None)
             else:
                 val = entry
@@ -339,7 +339,7 @@ class JSGStringMeta(type):
     def __instancecheck__(self, instance) -> bool:
         # Note: IDE warning on pattern is ok
         if not self.pattern:
-            return super().__instancecheck__(instance)
+            return isinstance(instance, str)
         else:
             return instance is not None and \
                    self.pattern.matches(str(instance).lower() if isinstance(instance, bool) else str(instance))
@@ -390,7 +390,7 @@ class JSGString(JSGValidateable, metaclass=JSGStringMeta):
         return str(self.val)
 
     def __eq__(self, other):
-        return self.val == (other.val if isinstance(other, JSGString) else other)
+        return self.val == (other.val if issubclass(type(other), JSGString) else other)
 
     def __hash__(self):
         return hash(self.val)

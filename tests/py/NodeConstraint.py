@@ -1,5 +1,5 @@
-# Auto generated from jsg/NodeConstraint.jsg by PyJSG version 0.5.0
-# Generation date: 2018-01-27 10:31
+# Auto generated from jsg/NodeConstraint.jsg by PyJSG version 0.5.2
+# Generation date: 2018-01-28 17:28
 #
 from typing import Optional, Dict, List, Union, _ForwardRef
 
