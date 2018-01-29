@@ -3,6 +3,8 @@ Translate [JSON Schema Grammar](http://github.com/ericprud/jsg) into Python obje
 
 This tool generates Python 3 objects that represent the JSON objects defined in a JSG schema.  It uses the [Python Typing library](https://docs.python.org/3/library/typing.html) to add type hints to Python IDE's and includes a library to validate the python objects against the library definitions.
 
+[![PyPi](https://version-image.appspot.com/pypi/?name=PyJSG)](https://pypi.python.org/pypi/PyJSG)
+
 ## Examples
 
 <table><thead>
