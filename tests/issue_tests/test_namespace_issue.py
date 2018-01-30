@@ -27,12 +27,10 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
+from io import StringIO
 
 import os
-import sys
 
-from pyjsg.jsglib.logger import Logger
-from tests.memlogger import MemLogger
 
 json_str = """{
   "@context": "http://www.w3.org/ns/shex.jsonld",
@@ -74,11 +72,12 @@ class NamespaceTestIssue(unittest.TestCase):
 
         shex_obj = jsg_loads(json_str, ShExJ)
 
-        log = MemLogger()
-        rval = shex_obj._is_valid(Logger(log))
+        log = StringIO()
+        rval = shex_obj._is_valid(log)
         if not rval:
             print('\n'.join(log.read()))
         self.assertTrue(rval)
+
 
 if __name__ == '__main__':
     unittest.main()

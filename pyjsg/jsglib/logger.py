@@ -25,23 +25,10 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+from io import StringIO
+
 from abc import ABC, abstractmethod
-from typing import Optional, List, cast, IO
-
-
-class FileWithAWriteString(ABC):
-
-    @abstractmethod
-    def write(self, text: str) -> None:
-        pass
-
-    @abstractmethod
-    def read(self) -> List[str]:
-        pass
-
-    @abstractmethod
-    def clear(self) -> None:
-        pass
+from typing import Optional, List, cast, IO, TextIO
 
 
 class Logger:
@@ -51,7 +38,7 @@ class Logger:
     controlled by the presence of logfile.  If it is present, errors are logged and all errors are recorded.  If
     absent, the fact that the error exists is noted.
     """
-    def __init__(self, logfile: Optional[FileWithAWriteString] = None):
+    def __init__(self, logfile: Optional[TextIO] = None):
         """
         Construct a logging instance
         :param logfile: File to log to.  If absent, no messages are recorded
@@ -68,23 +55,8 @@ class Logger:
         """
         self.nerrors += 1
         if self._logfile is not None:
-            print(txt, file=cast(Optional[IO[str]], self._logfile))
+            print(txt, file=self._logfile)
         return not self.logging
-
-    def write(self, txt):
-        self._logfile.write(txt)
-
-    @property
-    def messages(self) -> List[str]:
-        return self._logfile.read() if self._logfile else ["No Logfile"]
-
-    @property
-    def text(self) -> str:
-        return "\n".join(self.messages)
-
-    def clear(self) -> None:
-        if self._logfile:
-            self._logfile.clear()
 
     @property
     def logging(self):
@@ -93,3 +65,4 @@ class Logger:
         :return: True if logging is occurring (meaning we want all errors) or False if we just want to find an error
         """
         return self._logfile is not None
+

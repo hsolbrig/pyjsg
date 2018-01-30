@@ -76,10 +76,10 @@ class JSGValidateable:
     Mixin -- any class with an _is_valid function
     """
     @abstractmethod
-    def _is_valid(self, log: Optional[Logger] = None) -> bool:
-        """
-        Mixin
-        :param log: Logger to record reason for non validation.
+    def _is_valid(self, log: Optional[Union[TextIO, Logger]] = None) -> bool:
+        """Mixin
+
+        :param log: Logger or IO device to record errors
         :return: True if valid, false otherwise
         """
         return False
@@ -193,7 +193,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         return JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
             else cast(JSGString, obj).val if issubclass(type(obj), JSGString) else str(obj)
 
-    def _is_valid_element(self, log: Logger, name: str, entry: object) -> bool:
+    def _is_valid_element(self, log: Logger, name: str, entry: JSGValidateable) -> bool:
         if name not in self._members:
             return any(e._is_valid_element for e in self._reference_types)
         else:
@@ -220,9 +220,13 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
                 return False
         return True
 
-    def _is_valid(self, log: Optional[Logger] = None) -> bool:
-        if log is None:
+    def _is_valid(self, log_file: Optional[Union[Logger, TextIO]] = None) -> bool:
+        if log_file is None:
             log = Logger()
+        elif isinstance(log_file, Logger):
+            log = log_file
+        else:
+            log = Logger(log_file)
         nerrors = log.nerrors
 
         if self._context.TYPE and getattr(self, self._context.TYPE, "") != self._class_name \

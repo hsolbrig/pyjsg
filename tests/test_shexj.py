@@ -25,24 +25,23 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-import os
-import types
 import unittest
-from typing import Optional
+from io import StringIO
+from typing import Optional, TextIO
 
+import os
 import requests
+import types
 from dict_compare import compare_dicts
 from jsonasobj import loads as jao_loads
 
-from pyjsg.jsglib.logger import Logger
 from pyjsg.jsglib.jsg import loads as jsg_loads
 from pyjsg.parser_impl.generate_python import parse
-from tests.memlogger import MemLogger
 
 shexJSGSource = ""
 shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=2.0"
 
-shexTestJson = None
+shexTestJson = ""
 # shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/2.0/schemas/" \
 #                "1refbnode_with_spanning_PN_CHARS_BASE1.json"
 
@@ -60,7 +59,7 @@ STOP_ON_ERROR = False
 skip = ['coverage.json', 'manifest.json']
 
 
-def compare_json(j1: str, j2: str, log: Logger) -> bool:
+def compare_json(j1: str, j2: str, log: TextIO) -> bool:
     """ Compare two JSON strings """
     d1 = jao_loads(j1)
     d2 = jao_loads(j2)
@@ -75,15 +74,15 @@ def validate_shexj_json(json_str: str, input_fname: str, mod: types.ModuleType) 
     :param mod: module context
     :return: True if pass
     """
-    logger = Logger(MemLogger('\t'))
+    log = StringIO()
     shex_obj = jsg_loads(json_str, mod)
-    if not shex_obj._is_valid(logger):
+    if not shex_obj._is_valid(log):
         print("File: {} - ".format(input_fname))
-        print(logger.text)
+        print(log.read())
         return False
-    elif not compare_json(json_str, shex_obj._as_json, logger):
+    elif not compare_json(json_str, shex_obj._as_json, log):
         print("File: {} - ".format(input_fname))
-        print(logger.text)
+        print(log.getvalue())
         print(shex_obj._as_json_dumps())
         return False
     return True
@@ -158,6 +157,7 @@ class ShExJValidationTestCase(unittest.TestCase):
             download_shex_parser()
         import tests.test_jsglib.py.ShExJ as ShExJ
         self.assertTrue(validate_shex_schemas(ShExJ))
+
 
 if __name__ == '__main__':
     unittest.main()

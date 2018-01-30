@@ -3,6 +3,9 @@ Translate [JSON Schema Grammar](http://github.com/ericprud/jsg) into Python obje
 
 This tool generates Python 3 objects that represent the JSON objects defined in a JSG schema.  It uses the [Python Typing library](https://docs.python.org/3/library/typing.html) to add type hints to Python IDE's and includes a library to validate the python objects against the library definitions.
 
+## History
+* 0.5.3 -- Simplified Logger - now uses StringIO instead of MemLogger
+
 [![PyPi](https://version-image.appspot.com/pypi/?name=PyJSG)](https://pypi.python.org/pypi/PyJSG)
 
 ## Examples
@@ -101,53 +104,61 @@ Output written to ShExJ.py
 ```
 ### Python
 ```python
-import ShExJ
-from pyjsg.jsglib.jsg import loads
+from tests.py import ShExJ
+    from pyjsg.jsglib.jsg import loads
+    from io import StringIO
 
-# Load an exsting schema
-shexj = """{
-  "@context": "http://www.w3.org/ns/shex.jsonld",
-  "type": "Schema",
-  "shapes": [
-    {
-      "id": "http://a.example/S1",
-      "type": "Shape",
-      "expression": {
-        "type": "TripleConstraint",
-        "predicate": "http://a.example/p1",
-        "valueExpr": {
-          "type": "NodeConstraint",
-          "datatype": "http://a.example/dt1"
+    # Load an exsting schema
+    shexj = """{
+      "@context": "http://www.w3.org/ns/shex.jsonld",
+      "type": "Schema",
+      "shapes": [
+        {
+          "id": "http://a.example/S1",
+          "type": "Shape",
+          "expression": {
+            "type": "TripleConstraint",
+            "predicate": "http://a.example/p1",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "datatype": "http://a.example/dt1"
+            }
+          }
         }
-      }
+      ]
     }
-  ]
-}
-"""
-s: ShExJ.Schema = loads(shexj, ShExJ)
-print("type(Shema): {}".format(s.type))
-print("PREDICATE: {}".format(s.shapes[0].expression.predicate))
+    """
+    s: ShExJ.Schema = loads(shexj, ShExJ)
+    print(f"type(Schema) = {s.type}")
+    print(f"PREDICATE: {s.shapes[0].expression.predicate}")
 
-# Add a new element
-s.shapes[0].closed = ShExJ.BOOL("true")
+    # Add a new element
+    s.shapes[0].closed = Boolean("true")
 
-# Emit modified JSON
-print(s._as_json_dumps())
+    # Emit modified JSON
+    print(s._as_json_dumps())
 
-# Validate the JSON
-print("Valid: {}".format(s._is_valid()))
+    # Validate the JSON
+    print(f"Valid: {s._is_valid()")
 
-# Attempt to add in invalid string
-try:
-    s.shapes[0].closed = ShExJ.BOOL("0", True)
-except ValueError as e:
-    print("String mismatch")
+    # Add an invalid element that isn't caught
+    s.shapes[0].expression.valueExpr = "Just text"
+    log = StringIO()
+    if not s._is_valid(log):
+        print(log.getvalue())
 
-# Attempt to add in invalid property
-try:
-    s.shapes[0].closd = ShExJ.BOOL("true")
-except ValueError as e:
-    print("No closd attribute")
+    # Attempt to add in invalid string
+    try:
+        s.shapes[0].closed = Boolean("0", True)
+    except ValueError:
+        print("String mismatch")
+
+    # Attempt to add in invalid property
+    try:
+        s.shapes[0].closd = Boolean("true")
+    except ValueError:
+        print("No attribute named 'closd'")
+
 ```
  ### Output 
  ```text
@@ -174,5 +185,5 @@ PREDICATE: http://a.example/p1
 }
 Valid: True
 String mismatch
-No closd attribute
+No attribute named 'closd'
 ```

@@ -27,14 +27,14 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from typing import Dict, Union, Optional
+from typing import Dict, Optional
+
+from dict_compare import dict_compare
+from io import StringIO
+from jsonasobj import loads as json_loads
 
 from pyjsg.jsglib import jsg
-from jsonasobj import loads as json_loads
-from dict_compare import dict_compare
-
 from pyjsg.jsglib.logger import Logger
-from tests.memlogger import MemLogger
 
 _CONTEXT = jsg.JSGContext()
 
@@ -67,21 +67,21 @@ class ObjectTestCase(unittest.TestCase):
                 self.weight = jsg.Number(weight)
                 self.tag = tag
 
-        log = Logger(MemLogger())
+        log = StringIO()
 
         x = Person()
         x.name = "Grunt P Snooter"
         x = Person(name="Sally Pope", age=42, married=True, weight=117)
-        x.name="Joe"
+        x.name = "Joe"
         self.check_json(x, '{"name": "Sally Pope", "age": 42, "married": true, "weight": 117.5}')
         x = Person("Sally Pope", "42")
         self.check_json(x, '{"name": "Sally Pope", "age": 42}')
         x = Person("Sally Pope")
         self.assertFalse(x._is_valid(log))
-        self.assertEqual(['Person: Missing required field: age',
-                          'Person: Missing required field: married',
-                          'Person: Missing required field: weight'], log.messages)
-        log.clear()
+        self.assertEqual('Person: Missing required field: age\n'
+                         'Person: Missing required field: married\n'
+                         'Person: Missing required field: weight\n', log.getvalue())
+        log = StringIO()
         x.age = 99
         self.assertFalse(x._is_valid())
         x.married = False
@@ -93,10 +93,9 @@ class ObjectTestCase(unittest.TestCase):
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112, "tag": null}')
         with self.assertRaises(ValueError):
             x.age = "abc"
-        del(x.weight)
+        del x.weight
         x._is_valid(log)
-        self.assertEqual(['Person: Missing required field: weight'], log.messages)
-
+        self.assertEqual('Person: Missing required field: weight\n', log.getvalue())
 
 
 if __name__ == '__main__':
