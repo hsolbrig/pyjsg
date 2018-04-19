@@ -146,7 +146,6 @@ class ValueTypeTestCase(unittest.TestCase):
         self.assertEqual({'_Anon1_1_', '_Anon1_2_', 'STRING', 'INTEGER'}, t.dependencies())
 
         t = cast(JSGObjectExpr, parse("x = a:@number | b:@null | ;", "objectMacro", JSGObjectExpr))
-        print(t.as_python('stringFacet'))
         self.assertEqual("""class stringFacet(jsg.JSGObject):
     _reference_types = [_Anon1_1_, _Anon1_2_, _Anon1_3_]
     _members = {'a': float,

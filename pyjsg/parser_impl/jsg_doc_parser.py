@@ -45,7 +45,12 @@ from .parser_utils import as_token, as_tokens
 _jsg_python_template = '''# Auto generated from {infile} by PyJSG version {version}
 # Generation date: {gendate}
 #
-from typing import Optional, Dict, List, Union, _ForwardRef
+import sys
+from typing import Optional, Dict, List, Union
+if sys.version_info < (3, 7):
+    from typing import _ForwardRef as ForwardRef
+else:
+    from typing import ForwardRef
 
 from pyjsg.jsglib import jsg
 from pyjsg.jsglib.jsg import isinstance_

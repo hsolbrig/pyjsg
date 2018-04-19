@@ -1,10 +1,15 @@
 # Auto generated from jsg/ShExJ.jsg by PyJSG version 0.3.1
 # Generation date: 2017-12-17 20:13
 #
-from typing import Optional, Dict, List, Union, _ForwardRef
+import sys
+from typing import Optional, Dict, List, Union
+if sys.version_info < (3, 7):
+    from typing import _ForwardRef as ForwardRef
+else:
+    from typing import ForwardRef
 
 from pyjsg.jsglib import jsg
-from pyjsg.jsglib import typing_patch
+from pyjsg.jsglib import typing_patch_37
 
 # .TYPE and .IGNORE settings
 _CONTEXT = jsg.JSGContext()

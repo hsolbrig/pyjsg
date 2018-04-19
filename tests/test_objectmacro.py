@@ -40,7 +40,6 @@ class ObjectMacroTestCase(unittest.TestCase):
         t = cast(JSGDocParser, parse("macro = a:@int | b:@int ;", "doc", JSGDocParser))
         exec(t.as_python(self.__class__.__name__), dict())
         t = cast(JSGDocParser, parse("macro = a| b ; a {} b {}", "doc", JSGDocParser))
-        print(t.as_python(self.__class__.__name__))
         exec(t.as_python(self.__class__.__name__), dict())
 
 

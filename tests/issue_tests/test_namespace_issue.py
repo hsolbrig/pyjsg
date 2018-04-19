@@ -65,7 +65,7 @@ class NamespaceTestIssue(unittest.TestCase):
         # # First load done from the testing namespace
         filepath = os.path.join(os.path.dirname(__file__))
         pyfile = os.path.abspath(os.path.join(filepath, '..', 'py', 'ShExJ.py'))
-        evaluate("test_namespace", pyfile, True)
+        evaluate("test_namespace", pyfile, False)
 
         # Second load from a different file
         import tests.test_jsglib.py.ShExJ as ShExJ

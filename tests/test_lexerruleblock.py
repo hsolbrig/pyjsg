@@ -25,13 +25,17 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-
+import sys
 import unittest
 from typing import cast
 
 from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
 from tests.parser import parse
-from pyjsg.jsglib import jsg
+from pyjsg.jsglib import jsg        # Note: this must be present
+
+# Note: Python tightened up the re.escape() functionality in version 3.7 -- it had previously been fairly promiscuous
+# when deciding what to escape.  The escape call itself can be found in jsg_lexerruleblock_parser.py.add_string().
+# This is why the conditionals below
 
 # Required to get the lexer in the correct state
 terminals = """@terminals
@@ -68,8 +72,12 @@ t21 = "ARRAY_ : .* @array ;"
 t22 = "OBJECT_: .* @object ;"
 t23 = "POS_INT : [0]|([1-9][0-9]*) @int ;"
 
-s1 = "pattern: r'(({PN_CHARS})|\.|\:|\/|\\\\|\#|\@|\%|\&|({UCHAR}))*'"
-s2 = "pattern: r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'"
+if sys.version_info < (3, 7):
+    s1 = "pattern: r'(({PN_CHARS})|\.|\:|\/|\\\\|\#|\@|\%|\&|({UCHAR}))*'"
+    s2 = "pattern: r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'"
+else:
+    s1 = "pattern: r'(({PN_CHARS})|\.|:|/|\\\\|\#|@|%|\&|({UCHAR}))*'"
+    s2 = "pattern: r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'"
 s3 = "pattern: r'true|false'"
 s4 = "pattern: r'[+-]?[0-9]+'"
 s5 = "pattern: r'[+-]?[0-9]*\.[0-9]+'"
@@ -77,12 +85,18 @@ s6 = "pattern: r'[+-]?([0-9]+\.[0-9]*({EXPONENT})|\.[0-9]+({EXPONENT})|[0-9]+({E
 s7 = "pattern: r'.*'"
 s8 = "pattern: r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'"
 s9 = "pattern: r'[A-Z]|[a-z]|[À-Ö]|[Ø-ö]|[ø-˿]|[Ͱ-ͽ]|[Ϳ-῿]|[‌-‍]|[⁰-↏]|[Ⰰ-⿯]|[、-퟿]|[豈-﷏]|[ﷰ-�]|[က0-F]'"
-s10 = "pattern: r'({PN_CHARS_U})|\-|[0-9]|\·|[̀-ͯ]|[‿-⁀]'"
+if sys.version_info < (3, 7):
+    s10 = "pattern: r'({PN_CHARS_U})|\-|[0-9]|\·|[̀-ͯ]|[‿-⁀]'"
+else:
+    s10 = "pattern: r'({PN_CHARS_U})|\-|[0-9]|·|[̀-ͯ]|[‿-⁀]'"
 s11 = "pattern: r'({PN_CHARS_BASE})|_'"
 s12 = "pattern: r'\\\\u({HEX})({HEX})({HEX})({HEX})|\\\\U({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})'"
 s13 = "pattern: r'[0-9]|[A-F]|[a-f]'"
 s14 = "pattern: r'[eE][+-]?[0-9]+'"
-s15 = "pattern: r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*'"
+if sys.version_info < (3, 7):
+    s15 = "pattern: r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*'"
+else:
+    s15 = "pattern: r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*'"
 s16 = "pattern: r'.*'"
 s17 = "pattern: r'.*'"
 s18 = "pattern: r'.*'"
@@ -93,10 +107,17 @@ s22 = "pattern: r'.*'"
 s23 = "pattern: r'[0]|([1-9][0-9]*)'"
 
 
-r1 = r'''class IRI(jsg.JSGString):
+if sys.version_info < (3, 7):
+    r1 = r'''class IRI(jsg.JSGString):
     pattern = jsg.JSGPattern(r'(({PN_CHARS})|\.|\:|\/|\\|\#|\@|\%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))'''
-r2 = '''class BNODE(jsg.JSGString):
+    r2 = '''class BNODE(jsg.JSGString):
     pattern = jsg.JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))'''
+else:
+    r1 = r'''class IRI(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'(({PN_CHARS})|\.|:|/|\\|\#|@|%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))'''
+    r2 = '''class BNODE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))'''
+
 r3 = '''class BOOL(jsg.JSGString):
     pattern = jsg.JSGPattern(r'true|false')'''
 r4 = '''class INTEGER(jsg.JSGString):
@@ -111,8 +132,12 @@ r8 = '''class PN_PREFIX(jsg.JSGString):
     pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))'''
 r9 = '''class PN_CHARS_BASE(jsg.JSGString):
     pattern = jsg.JSGPattern(r'[A-Z]|[a-z]|[À-Ö]|[Ø-ö]|[ø-˿]|[Ͱ-ͽ]|[Ϳ-῿]|[‌-‍]|[⁰-↏]|[Ⰰ-⿯]|[、-퟿]|[豈-﷏]|[ﷰ-�]|[က0-F]')'''
-r10 = '''class PN_CHARS(jsg.JSGString):
+if sys.version_info < (3, 7):
+    r10 = '''class PN_CHARS(jsg.JSGString):
     pattern = jsg.JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|\·|[̀-ͯ]|[‿-⁀]'.format(PN_CHARS_U=PN_CHARS_U.pattern))'''
+else:
+    r10 = '''class PN_CHARS(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|·|[̀-ͯ]|[‿-⁀]'.format(PN_CHARS_U=PN_CHARS_U.pattern))'''
 r11 = '''class PN_CHARS_U(jsg.JSGString):
     pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))'''
 r12 = '''class UCHAR(jsg.JSGString):
@@ -121,8 +146,12 @@ r13 = '''class HEX(jsg.JSGString):
     pattern = jsg.JSGPattern(r'[0-9]|[A-F]|[a-f]')'''
 r14 = '''class EXPONENT(jsg.JSGString):
     pattern = jsg.JSGPattern(r'[eE][+-]?[0-9]+')'''
-r15 = '''class LANGTAG(jsg.JSGString):
+if sys.version_info < (3, 7):
+    r15 = '''class LANGTAG(jsg.JSGString):
     pattern = jsg.JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')'''
+else:
+    r15 = '''class LANGTAG(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')'''
 r16 = '''class STR_(jsg.String):
     pattern = jsg.JSGPattern(r'.*')'''
 r17 = '''class NUMBER_(jsg.Number):

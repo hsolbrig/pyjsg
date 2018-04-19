@@ -28,7 +28,7 @@
 from typing import Set, List
 
 _forward_template = """
-{}_f_ = _ForwardRef['{}']"""
+{}_f_ = ForwardRef['{}']"""
 
 
 class JSGForwardRef:

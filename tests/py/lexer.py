@@ -1,7 +1,12 @@
-# Auto generated from jsg/lexer.jsg by PyJSG version 0.5.2
-# Generation date: 2018-01-29 19:33
+# Auto generated from tests/jsg/lexer.jsg by PyJSG version 0.5.3
+# Generation date: 2018-04-19 11:35
 #
-from typing import Optional, Dict, List, Union, _ForwardRef
+import sys
+from typing import Optional, Dict, List, Union
+if sys.version_info < (3, 7):
+    from typing import _ForwardRef as ForwardRef
+else:
+    from typing import ForwardRef
 
 from pyjsg.jsglib import jsg
 from pyjsg.jsglib.jsg import isinstance_
@@ -42,7 +47,7 @@ class EXPONENT(jsg.JSGString):
 
 
 class LANGTAG(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
+    pattern = jsg.JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
 
 
 class DOUBLE(jsg.JSGString):
@@ -66,7 +71,7 @@ class PN_CHARS(jsg.JSGString):
 
 
 class BNODE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
+    pattern = jsg.JSGPattern(r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
 
 
 class PN_PREFIX(jsg.JSGString):

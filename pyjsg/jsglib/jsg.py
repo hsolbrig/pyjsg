@@ -27,6 +27,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import re
 import json
+import sys
 import types
 
 from collections import OrderedDict
@@ -35,7 +36,10 @@ from typing import Union, Any, Dict, TextIO
 from jsonasobj import JsonObj
 from .logger import *
 
-from .typing_patch import conforms
+if sys.version_info < (3, 7):
+    from .typing_patch_36 import conforms, is_union
+else:
+    from .typing_patch_37 import conforms, is_union
 
 
 # TODO: Extend List to include a minimum and maximum value
@@ -533,6 +537,9 @@ def load(fp: Union[TextIO, str], load_module: types.ModuleType, **kwargs) -> JSG
 
 def isinstance_(x, A_tuple):
     """ native isinstance_ with the test for typing.Union overridden """
-    if type(A_tuple) == type(Union):
+    if is_union(A_tuple):
         return any(isinstance_(x, t) for t in A_tuple.__args__)
-    return isinstance(x, A_tuple)
+    elif getattr(A_tuple, '__origin__', None) is not None:
+        return isinstance(x, A_tuple.__origin__)
+    else:
+        return isinstance(x, A_tuple)

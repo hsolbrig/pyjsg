@@ -34,12 +34,12 @@ class GeneratePythonTestCase(unittest.TestCase):
     def test_execute_item(self):
         from pyjsg.parser_impl.generate_python import generate, evaluate
 
-        testdir = os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        goodfile = os.path.join(testdir, 'goodjsg.py')
-        badfile = os.path.join(testdir, 'badjsg.py')
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        goodfile = os.path.join(basedir, 'py', 'goodjsg.py')
+        badfile = os.path.join(basedir, 'py', 'badjsg.py')
 
         # Make sure that a simple generate works
-        self.assertTrue(generate([os.path.join("jsg", "complexfacet.jsg"), "-o", goodfile, "-e"]))
+        self.assertTrue(generate([os.path.join(basedir, "jsg", "complexfacet.jsg"), "-o", goodfile, "-e"]))
 
         # Make sure that we can detect exceptions and errors
         with open(badfile, 'w') as bf:

@@ -1,7 +1,12 @@
-# Auto generated from test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.5.2
-# Generation date: 2018-01-29 19:33
+# Auto generated from tests/test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.5.3
+# Generation date: 2018-04-19 11:35
 #
-from typing import Optional, Dict, List, Union, _ForwardRef
+import sys
+from typing import Optional, Dict, List, Union
+if sys.version_info < (3, 7):
+    from typing import _ForwardRef as ForwardRef
+else:
+    from typing import ForwardRef
 
 from pyjsg.jsglib import jsg
 from pyjsg.jsglib.jsg import isinstance_

@@ -27,7 +27,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import ast
 import keyword
-from collections import Iterable
+from collections.abc import Iterable
 from typing import List, Set
 
 from pyjsg.parser.jsgParser import ParserRuleContext

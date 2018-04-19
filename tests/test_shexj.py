@@ -26,6 +26,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import unittest
+from contextlib import redirect_stdout
 from io import StringIO
 from typing import Optional, TextIO
 
@@ -39,7 +40,7 @@ from pyjsg.jsglib.jsg import loads as jsg_loads
 from pyjsg.parser_impl.generate_python import parse
 
 shexJSGSource = ""
-shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=2.0"
+shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=master"
 
 shexTestJson = ""
 # shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/2.0/schemas/" \
@@ -91,7 +92,6 @@ def validate_shexj_json(json_str: str, input_fname: str, mod: types.ModuleType) 
 def validate_file(download_url: str, mod: types.ModuleType) -> bool:
     fname = download_url.rsplit('/', 1)[1]
     if fname not in skip:
-        print("Testing {}".format(download_url))
         resp = requests.get(download_url)
         if resp.ok:
             return validate_shexj_json(resp.text, download_url, mod)
@@ -146,7 +146,7 @@ def download_shex_parser() -> None:
     if shexj_jsg is not None:
         shexj_py = parse(shexj_jsg, shexJSGSource)
         if shexj_py is not None:
-            with open(os.path.join('py', "ShExJ.py"), 'w') as shexj_src:
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'py', "ShExJ.py"), 'w') as shexj_src:
                 shexj_src.write(shexj_py)
 
 
@@ -156,7 +156,9 @@ class ShExJValidationTestCase(unittest.TestCase):
         if not USE_EXISTING_SHEX:
             download_shex_parser()
         import tests.test_jsglib.py.ShExJ as ShExJ
-        self.assertTrue(validate_shex_schemas(ShExJ))
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs', 'test_shex_schema.log'), 'w') as logf:
+            with redirect_stdout(logf):
+                self.assertTrue(validate_shex_schemas(ShExJ))
 
 
 if __name__ == '__main__':

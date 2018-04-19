@@ -27,10 +27,8 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import sys
 
-# Note: ModuleType and _ForwardRef and _Union IDE errors are expected
-from types import ModuleType
-from typing import GenericMeta, Dict, Any, List, Union, _ForwardRef
-from collections import Iterable
+from typing import Dict, Any, List, Union, ForwardRef
+from collections.abc import Iterable
 
 
 # TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
@@ -39,7 +37,7 @@ def conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     if isinstance(element, str) and element == '_context':
         return True
     elif is_forward(etype):
-        etype = etype._eval_type(namespace, namespace)      # Everything should have been resolved
+        etype = etype._evaluate(namespace, namespace)
     if is_union(etype):
         return union_conforms(element, etype, namespace)
     elif is_dict(etype):
@@ -55,19 +53,21 @@ def is_typing_type(etype) -> bool:
 
 
 def is_forward(etype) -> bool:
-    return type(etype) is _ForwardRef
+    return type(etype) is ForwardRef
 
 
 def is_union(etype) -> bool:
-    return type(etype) == type(Union)
+    return getattr(etype, '__origin__', None) is not None and\
+           getattr(etype.__origin__, '_name', None) and\
+           etype.__origin__._name == 'Union'
 
 
 def is_dict(etype) -> bool:
-    return type(etype) is GenericMeta and etype.__extra__ is dict
+    return issubclass(type(etype), dict)
 
 
 def is_iterable(etype) -> bool:
-    return type(etype) is GenericMeta and issubclass(etype.__extra__, Iterable)
+    return getattr(etype, '__origin__', None) is not None and issubclass(etype.__origin__, Iterable)
 
 
 def union_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
@@ -86,7 +86,7 @@ def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 
 def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if element is None and issubclass(etype, List):
+    if element is None and is_iterable(etype):
         element = []
     if is_iterable(etype) and isinstance(element, Iterable):
         vt = etype.__args__[0]
@@ -101,4 +101,9 @@ def element_conforms(element, etype) -> bool:
         return element is None
     elif element is None:
         return False
-    return isinstance(element, etype)
+    elif getattr(etype, '_special', None) is not None and not etype._special:
+        return issubclass(type(element), type(etype))
+    elif getattr(etype, '__origin__', None):
+        return isinstance(element, etype.__origin__)
+    else:
+        return isinstance(element, etype)

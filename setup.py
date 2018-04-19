@@ -9,7 +9,6 @@ except ImportError:
 
 # typing library was introduced as a core module in version 3.5.0
 requires = ["antlr4-python3-runtime>=4.7", "jsonasobj>=1.1.2", "requests"]
-test_requires = ["yadict-compare>=1.1.2"]
 if sys.version_info < (3, 5):
     requires.append("typing")
 
@@ -24,9 +23,7 @@ setup(
     description='"PyJSG - Python JSON Schema Grammar bindings',
     long_description='A tool to create Python classes that represent JSON objects defined in JSG',
     install_requires=requires,
-    extras_require={
-        'testing' : test_requires
-    },
+    tests_require = ["yadict-compare>=1.1.2"],
     scripts=['scripts/generate_parser'],
     classifiers=[
         'Development Status :: 3 - Alpha',
