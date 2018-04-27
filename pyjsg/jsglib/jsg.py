@@ -162,7 +162,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param d: Object with attributes
         :return: Object dictionary w/ Nones and underscores removed
         """
-        return OrderedDict({k: None if isinstance(v, JSGNull) and v.val is not None else v for k, v in d.items()
+        return OrderedDict({k: None if isinstance(v, JSGNull) and v.val is None else v for k, v in d.items()
                             if not k.startswith("_") and v is not None and
                             (not issubclass(type(v), JSGString) or v.val is not None)})
 
@@ -194,7 +194,8 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param obj: Object to be serialized
         :return: Serialized version of obj
         """
-        return JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
+        return None if isinstance(obj, JSGNull) else \
+            JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
             else cast(JSGString, obj).val if issubclass(type(obj), JSGString) else str(obj)
 
     def _is_valid_element(self, log: Logger, name: str, entry: JSGValidateable) -> bool:
@@ -202,8 +203,8 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             return any(e._is_valid_element for e in self._reference_types)
         else:
             etype = self._members[name]
-            if (etype is str or etype is int or etype is float or etype is bool) and \
-                    issubclass(type(entry), JSGString):
+            if (etype is str or etype is int or etype is float or etype is bool or etype is object) and \
+                    (issubclass(type(entry), (JSGString, AnyType)) or isinstance(entry, AnyType)):
                 val = getattr(entry, "val", None)
             else:
                 val = entry
@@ -484,8 +485,8 @@ class AnyType(JsonObj, JSGValidateable):
         self.val = val
         super().__init__(**kwargs)
 
-    def _is_valid(self, log: Optional[Logger] = None):
-        return True
+    def _is_valid(self, log: Optional[Logger] = None) -> bool:
+        return self.val is not None
 
 
 def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Optional[JSGValidateable]:

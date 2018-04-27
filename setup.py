@@ -7,10 +7,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# typing library was introduced as a core module in version 3.5.0
-requires = ["antlr4-python3-runtime>=4.7", "jsonasobj>=1.1.2", "requests"]
-if sys.version_info < (3, 5):
-    requires.append("typing")
+requires = ["antlr4-python3-runtime>=4.7", "jsonasobj>=1.2.0", "requests"]
+
 
 setup(
     name='PyJSG',

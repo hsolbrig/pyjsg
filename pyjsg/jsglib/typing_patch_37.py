@@ -96,7 +96,7 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 def element_conforms(element, etype) -> bool:
     if element is None and etype == object:
-        return True
+        return False
     elif isinstance(etype, type(type)) and (issubclass(etype, type(None))):
         return element is None
     elif element is None:

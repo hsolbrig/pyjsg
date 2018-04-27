@@ -1,5 +1,5 @@
-# Auto generated from tests/jsg/ShExJ.jsg by PyJSG version 0.5.3
-# Generation date: 2018-04-19 11:55
+# Auto generated from jsg/ShExJ.jsg by PyJSG version 0.6.0
+# Generation date: 2018-04-27 13:17
 #
 import sys
 from typing import Optional, Dict, List, Union
