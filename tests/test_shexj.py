@@ -8,6 +8,7 @@ import requests
 import types
 from dict_compare import compare_dicts
 from jsonasobj import loads as jao_loads
+from jsonasobj.jsonobj import as_dict, as_json
 
 from pyjsg.jsglib.jsg import loads as jsg_loads
 from pyjsg.parser_impl.generate_python import parse
@@ -37,7 +38,7 @@ def compare_json(j1: str, j2: str, log: TextIO) -> bool:
     """ Compare two JSON strings """
     d1 = jao_loads(j1)
     d2 = jao_loads(j2)
-    return compare_dicts(d1._as_dict, d2._as_dict, file=log)
+    return compare_dicts(as_dict(d1), as_dict(d2), file=log)
 
 
 def validate_shexj_json(json_str: str, input_fname: str, mod: types.ModuleType) -> bool:
@@ -54,10 +55,10 @@ def validate_shexj_json(json_str: str, input_fname: str, mod: types.ModuleType) 
         print("File: {} - ".format(input_fname))
         print(log.read())
         return False
-    elif not compare_json(json_str, shex_obj._as_json, log):
+    elif not compare_json(json_str, as_json(shex_obj), log):
         print("File: {} - ".format(input_fname))
         print(log.getvalue())
-        print(shex_obj._as_json_dumps())
+        print(as_json(shex_obj))
         return False
     return True
 

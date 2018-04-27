@@ -1,4 +1,3 @@
-import sys
 import unittest
 from io import StringIO
 from types import ModuleType
@@ -28,4 +27,3 @@ class Harness(unittest.TestCase):
         else:
             with self.assertRaises(JSGException if is_exception else ValueError):
                 loads(json, module)._is_valid()
-

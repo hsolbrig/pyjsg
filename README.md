@@ -5,6 +5,9 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 
 ## History
 * 0.5.3 -- Simplified Logger - now uses StringIO instead of MemLogger
+* 0.6.0 -- Beginning of cleanup and jupyter documentation
+
+[![Pyversions](https://img.shields.io/pypi/pyversions/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
 [![PyPi](https://version-image.appspot.com/pypi/?name=PyJSG)](https://pypi.python.org/pypi/PyJSG)
 

@@ -1,5 +1,5 @@
 # Auto generated from jsg/labeledShapeExpr2.jsg by PyJSG version 0.6.0
-# Generation date: 2018-04-27 13:17
+# Generation date: 2018-04-27 13:34
 #
 import sys
 from typing import Optional, Dict, List, Union

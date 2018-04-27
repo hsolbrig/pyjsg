@@ -2,6 +2,8 @@
 import unittest
 from typing import List
 
+from jsonasobj.jsonobj import as_json
+
 from pyjsg.jsglib.jsg import JSGObjectMap, JSGPattern, JSGContext, JSGString, Null
 from tests.test_jsglib.iri_defn import *
 from jsonasobj import loads as jsonloads
@@ -23,7 +25,7 @@ class ObjectMapTestCase(unittest.TestCase):
         x = IntObjectMap()
         x.a17 = [1,2,3]
         self.assertTrue(x._is_valid())
-        self.assertEqual(x._as_json, jsonloads('{"a17":[1,2,3]}')._as_json)
+        self.assertEqual(as_json(x), as_json(jsonloads('{"a17":[1,2,3]}')))
         with self.assertRaises(ValueError):
             x.ab = [1, 2, 4]
         with self.assertRaises(ValueError):
@@ -57,7 +59,7 @@ class ObjectMapTestCase(unittest.TestCase):
                 super().__init__(_CONTEXT, **_kwargs)
 
         x = IRIKey(**{"http://example.org": 42, "http://ex.org?id=1": Null})
-        self.assertEqual('{"http://example.org": 42, "http://ex.org?id=1": null}', x._as_json)
+        self.assertEqual('{"http://example.org": 42, "http://ex.org?id=1": null}', as_json(x, indent=None))
         self.assertTrue(x._is_valid())
         self.assertEqual(x["http://example.org"], 42)
         self.assertEqual(x["http://ex.org?id=1"], Null)
