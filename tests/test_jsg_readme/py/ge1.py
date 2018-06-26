@@ -1,5 +1,5 @@
-# Auto generated from test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.6.0
-# Generation date: 2018-04-27 13:34
+# Auto generated from tests/test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.6.0
+# Generation date: 2018-06-26 12:41
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,7 +10,7 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg
+from pyjsg.jsglib import jsg, jsg_array
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
@@ -73,7 +73,7 @@ class company(jsg.JSGObject):
         self._context = _CONTEXT
         self.name = jsg.String(name)
         setattr(self, 'year founded', jsg.Integer(_kwargs.pop('year founded', None)))
-        self.employees = employees
+        self.employees = jsg_array.JSGArray(_CONTEXT, person, 2, None, employees)
         super().__init__(self._context, **_kwargs)
 
 

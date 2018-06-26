@@ -16,15 +16,15 @@ class JSGBuiltinsTestCase(unittest.TestCase):
 
     def test_string(self):
         self.do_test(String, "a simple string")
-        self.do_test(String, True, "true")
-        self.do_test(String, False, "false")
-        self.do_test(String, 143, "143")
-        self.do_test(String, 95.221E+5, "9522100.0")
+        # self.do_test(String, True, "true")
+        # self.do_test(String, False, "false")
+        # self.do_test(String, 143, "143")
+        # self.do_test(String, 95.221E+5, "9522100.0")
         self.do_test(String, "95.221E+5")
         self.do_test(String, "^<80>߿ࠀ࿿က쿿퀀퟿�𐀀𿿽񀀀󿿽􀀀􏿽$/")
         self.do_test(String, "^\/\t\n\r\-\\\u0061\U0001D4B8$", "^\\/\t\n\r\\-\\a𝒸$")
         self.assertIsNone(String(None).val)
-        self.do_test(String, -119, "-119")
+        # self.do_test(String, -119, "-119")
 
         class PAT_STR(String):
             pattern = JSGPattern(r'[a-z][0-9]+')
@@ -40,9 +40,9 @@ class JSGBuiltinsTestCase(unittest.TestCase):
             pattern = JSGPattern(r'0|([1-9][0-9]*)')
 
         self.do_test(INT_STR, "17")
-        self.do_test(INT_STR, 17, "17")
+        # self.do_test(INT_STR, 17, "17")
         with self.assertRaises(ValueError):
-            x = INT_STR(-17)
+            x = INT_STR("-17")
         with self.assertRaises(ValueError):
             x = INT_STR("something")
 

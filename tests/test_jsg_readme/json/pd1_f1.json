@@ -1,5 +1,5 @@
 {
-  "_ERROR" : "Missing id var",
+  "_ERROR" : "Missing \"id\" element",
   "list_name": "friends",
   "members": [{"id": "person",
                "name": "John Tweed",

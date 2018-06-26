@@ -1,5 +1,5 @@
-# Auto generated from tests/test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:41
+# Auto generated from tests/test_basics/jsg/labeledShapeOr.jsg by PyJSG version 0.6.0
+# Generation date: 2018-06-26 12:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -15,43 +15,46 @@ from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
 _CONTEXT = jsg.JSGContext()
-_CONTEXT.TYPE = "id"
-_CONTEXT.TYPE_EXCEPTIONS.append("person")
-_CONTEXT.IGNORE.append("height")
-_CONTEXT.IGNORE.append("weight")
-_CONTEXT.IGNORE.append("location")
+_CONTEXT.TYPE_EXCEPTIONS.append("shapeExprLabel")
+_CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeOr")
 
 
 
-class person(jsg.JSGObject):
+
+class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'ShapeOr')
+
+
+class SHAPEEXPR(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[a-z]')
+
+class shapeExprLabel(jsg.JSGObject):
     _reference_types = []
-    _members = {'name': str,
-                'age': int}
+    _members = {}
     _strict = True
     
     def __init__(self,
-                 name: str = None,
-                 age: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = jsg.String(name)
-        self.age = jsg.Integer(age)
         super().__init__(self._context, **_kwargs)
 
 
-class membership(jsg.JSGObject):
+class labeledShapeOr(jsg.JSGObject):
     _reference_types = []
-    _members = {'list_name': str,
-                'members': List[person]}
+    _members = {'type': _Anon1,
+                'id': shapeExprLabel,
+                'shapeExprs': List[SHAPEEXPR]}
     _strict = True
     
     def __init__(self,
-                 list_name: str = None,
-                 members: List[person] = None,
+                 type: _Anon1 = None,
+                 id: shapeExprLabel = None,
+                 shapeExprs: List[SHAPEEXPR] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.list_name = jsg.String(list_name)
-        self.members = jsg_array.JSGArray(_CONTEXT, person, 0, None, members)
+        self.type = type
+        self.id = id
+        self.shapeExprs = shapeExprs
         super().__init__(self._context, **_kwargs)
 
 

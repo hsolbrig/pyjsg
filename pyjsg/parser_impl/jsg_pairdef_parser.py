@@ -1,5 +1,6 @@
 from typing import Optional, List, Set, Tuple, Dict
 
+from pyjsg.jsglib.jsg import AnyType, EmptyAny
 from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 from pyjsg.parser.jsgParser import *
@@ -15,7 +16,9 @@ _val_template_builtin = "{basetype}({prefix}{cooked_name})"
 _val_template_builtin_raw = "{basetype}(_kwargs.pop('{raw_name}', None))"
 
 _initializer_template_cooked = "self.{raw_name} = {val}{opt_clause}"
+_initializer_template_multi_cooked = "self.{raw_name} = jsg_array.JSGArray(_CONTEXT, {opt_clause}, {self._ebnf.min}, {self._ebnf.max}, {cooked_name})"
 _initializer_template_raw = "setattr(self, '{raw_name}', {val}){opt_clause}"
+_initializer_template_multi_raw= "setattr(self, '{raw_name}', jsg_array.JSGArray(_CONTEXT, {opt_clause}, {self._ebnf.min}, {self._ebnf.max}, {val})"
 
 
 class JSGPairDef(jsgParserVisitor):
@@ -55,7 +58,8 @@ class JSGPairDef(jsgParserVisitor):
         if self._type_reference:
             return [self._card(self._context.reference_for(self.typeid), all_are_optional)]
         else:
-            return ["{}: {} = None".format(n, self._card(self.typeid, all_are_optional))
+            return ["{}: {} = {}".format(n, self._card(self.typeid, all_are_optional),
+                                         'jsg.EmptyAny' if self._typ.typeid == 'object' else "None")
                     for _, n in self._names if is_valid_python(n)]
 
     def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
@@ -86,6 +90,8 @@ class JSGPairDef(jsgParserVisitor):
         return self._ebnf and self._ebnf.is_list
 
     def _optional_clause(self, prefix: Optional[str], basetype: Optional[str], add_exists_clause: bool) -> str:
+        if self.is_list:
+            return str(basetype if basetype else self.typeid)
         if prefix and self._context.is_optional(self._ebnf, add_exists_clause):
             elsepart = "{}(None)".format(basetype) if basetype else "None"
             return " if {} else {}".format(prefix, elsepart)
@@ -106,10 +112,10 @@ class JSGPairDef(jsgParserVisitor):
         prefix = "" if prefix is None else prefix + "."
         if is_valid_python(raw_name + '_'):
             val = _val_template_builtin.format(**locals()) if basetype else _val_template_simple.format(**locals())
-            rval = _initializer_template_cooked.format(**locals())
+            rval = (_initializer_template_multi_cooked if self.is_list else _initializer_template_cooked).format(**locals())
         else:
             val = _val_template_builtin_raw.format(**locals()) if basetype else _val_template_simple_raw.format(**locals())
-            rval = _initializer_template_raw.format(**locals())
+            rval = (_initializer_template_multi_raw if self.is_list else _initializer_template_raw).format(**locals())
         return rval
 
     def initializer(self, prefix: Optional[str] = None, add_exists_clause: bool=False) -> List[str]:

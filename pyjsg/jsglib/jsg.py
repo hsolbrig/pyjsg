@@ -1,12 +1,12 @@
-import re
 import json
+import re
 import sys
 import types
-
 from collections import OrderedDict
-from typing import Union, Any, Dict, TextIO
+from typing import Union, Any, Dict
 
 from jsonasobj import JsonObj
+
 from .logger import *
 
 if sys.version_info < (3, 7):
@@ -59,7 +59,7 @@ class JSGValidateable:
         :param log: Logger or IO device to record errors
         :return: True if valid, false otherwise
         """
-        return False
+        raise NotImplementedError("_is_valid must be implemented")
 
     @property
     def _class_name(self):
@@ -123,6 +123,8 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             self._set_value(key, value)
         elif self._strict:
             raise ValueError("Unknown attribute: {}={}".format(key, value))
+        else:
+            super().__setattr__(key, value)
 
     def __delattr__(self, item):
         attr = getattr(self, item)
@@ -136,8 +138,9 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :return: Object dictionary w/ Nones and underscores removed
         """
         return OrderedDict({k: None if isinstance(v, JSGNull) and v.val is None else v for k, v in d.items()
-                            if not k.startswith("_") and v is not None and
-                            (not issubclass(type(v), JSGString) or v.val is not None)})
+                            if not k.startswith("_") and v is not None and v and
+                            (not issubclass(type(v), JSGString) or v.val is not None) and
+                            (not isinstance(v, AnyType) or v.val is not EmptyAny)})
 
     @staticmethod
     def _test(entry, log: Logger) -> bool:
@@ -181,12 +184,12 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
                 val = getattr(entry, "val", None)
             else:
                 val = entry
-            if val is not None and getattr(entry, "_is_valid", None):
+            if val is not None and val is not EmptyAny and getattr(entry, "_is_valid", None):
                 if not entry._is_valid(log) and not log.logging:
                     return False
             elif not conforms(val, etype, self._context.NAMESPACE):        # Note: None and absent are equivalent
-                if val is None:
-                    if log.log("{}: Missing required field: {}".format(self.__class__.__name__, name)):
+                if val is None or val is EmptyAny:
+                    if log.log("{}: Missing required field: '{}'".format(self.__class__.__name__, name)):
                         return False
                 else:
                     # TODO: Debugging
@@ -273,7 +276,7 @@ class JSGObjectMap(JSGObject):
                     return False
             elif not conforms(entry, self._value_type, self._context.NAMESPACE):
                 if entry is None:
-                    if log.log("{}: Missing required field: {}".format(type(self).__name__, name)):
+                    if log.log("{}: Missing required field: '{}'".format(type(self).__name__, name)):
                         return False
                 else:
                     if log.log("{}: Type mismatch for {}. Expecting: {} Got: {}"
@@ -344,13 +347,14 @@ class JSGString(JSGValidateable, metaclass=JSGStringMeta):
         super().__setattr__("val", self._adjust_for_json(val))
 
     @classmethod
-    def _is_valid_value(cls, val: str) -> bool:
-        """
-        Determine whether val is a valid value for this string
+    def _is_valid_value(cls, val) -> bool:
+        """ Determine whether val is a valid value for this string
+
         :param val: value to test
         :return:
         """
-        return cls.pattern is None or val is None or cls.pattern.matches(cls._adjust_for_json(val))
+        return val is None or \
+            (isinstance(val, str) and (cls.pattern is None or cls.pattern.matches(cls._adjust_for_json(val))))
 
     @staticmethod
     def _adjust_for_json(val: Any) -> Any:
@@ -392,18 +396,45 @@ class Number(JSGString):
     pattern = JSGPattern(r'-?(0|[1-9][0-9]*)(.[0-9]+)?([eE][+-]?[0-9]+)?')
     int_pattern = JSGPattern(r'-?(0|[1-9][0-9]*)')
 
+    @classmethod
+    def _is_valid_value(cls, val) -> bool:
+        """ Determine whether val is a valid value for this string
+
+        :param val: value to test
+        :return:
+        """
+        return val is None or cls.pattern.matches(str(val))
+
     def __getattribute__(self, item):
         attval = super().__getattribute__(item)
         return attval if item != "val" or attval is None else int(attval) \
             if self.int_pattern.matches(attval) else float(attval)
 
+    def __int__(self) -> int:
+        return int(self.val)
+
+    def __float__(self) -> float:
+        return float(self.val)
+
 
 class Integer(Number):
     pattern = JSGPattern(r'-?(0|[1-9][0-9]*)')
 
-    def __getattribute__(self, item):
+    @classmethod
+    def _is_valid_value(cls, val) -> bool:
+        """ Determine whether val is a valid value for this string
+
+        :param val: value to test
+        :return:
+        """
+        return val is None or cls.pattern.matches(str(val))
+
+    def __getattribute__(self, item) -> Optional[int]:
         attval = super().__getattribute__(item)
         return attval if item != "val" or attval is None else int(attval)
+
+    def __int__(self) -> int:
+        return int(self.val)
 
 
 class Boolean(JSGString):
@@ -411,7 +442,11 @@ class Boolean(JSGString):
     false_pattern = JSGPattern(r'[Ff]alse')
     pattern = JSGPattern(r'{}|{}'.format(true_pattern, false_pattern))
 
-    def __setattr__(self, key, value):
+    @classmethod
+    def _is_valid_value(cls, val) -> bool:
+        return val is None or cls.pattern.matches(str(val))
+
+    def __setattr__(self, key: str, value: Any) -> None:
         if key == "val" and value is not None:
             # Note - final value below causes an exception
             self.__dict__[key] = str(value).lower() if isinstance(value, bool) \
@@ -422,6 +457,9 @@ class Boolean(JSGString):
     def __getattribute__(self, item):
         attval = super().__getattribute__(item)
         return attval if item != "val" or attval is None else self.true_pattern.matches(attval)
+
+    def __bool__(self) -> bool:
+        return bool(self.val)
 
 
 class JSGNull(JSGString):
@@ -448,6 +486,15 @@ class Object(JSGObject):
     pass
 
 
+# We have to be able to differentiate between AnyType with a valid None value ("x": null) and
+# an uninitialized AnyType.  EmptyAny is the default value for the latter case
+class _EmptyAny:
+    pass
+
+
+EmptyAny = _EmptyAny()
+
+
 class AnyType(JsonObj, JSGValidateable):
     def __init__(self, val: Any, **kwargs):
         """
@@ -458,8 +505,11 @@ class AnyType(JsonObj, JSGValidateable):
         self.val = val
         super().__init__(**kwargs)
 
-    def _is_valid(self, log: Optional[Logger] = None) -> bool:
-        return self.val is not None
+    def _is_valid(self, log: Optional[Union[TextIO, Logger]] = None) -> bool:
+        return self.val is not EmptyAny
+
+
+UNKNOWN_TYPE_EXCEPTION = "Type '{}' is undefined"
 
 
 def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Optional[JSGValidateable]:
@@ -469,20 +519,35 @@ def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Option
     :param pairs: key/value tuples (In our case, they are str/str)
     :return:
     """
-    # Note: At the moment, this package assumes that there is, at most, one JSON object that
-    #       doesn't have a type identifier.  For various and sundry reasons, we will assume that it
-    #       is the first entry in the exceptions list (because, of there is NO context type, then we
-    #       add all object definitions to the exception list...)
-    target_class = getattr(load_module, pairs[load_module._CONTEXT.TYPE], None) \
-        if load_module._CONTEXT.TYPE in pairs else None
-    if not target_class and len(load_module._CONTEXT.TYPE_EXCEPTIONS) == 1:
-        target_class = getattr(load_module, load_module._CONTEXT.TYPE_EXCEPTIONS[0], None)
+    cntxt = load_module._CONTEXT
+
+    # If the type element is a member of the JSON, load it
+    possible_type = pairs[cntxt.TYPE] if cntxt.TYPE in pairs else None
+    target_class = getattr(load_module, possible_type, None) if isinstance(possible_type, str) else None
     if target_class:
         return target_class(**pairs)
-    if load_module._CONTEXT.TYPE in pairs:
-        raise JSGException("Unknown type: {}".format(pairs[load_module._CONTEXT.TYPE]))
+
+    # See whether there are any exception types that are valid for the incoming data
+    for type_exception in cntxt.TYPE_EXCEPTIONS:
+        if not hasattr(load_module, type_exception):
+            raise JSGException(UNKNOWN_TYPE_EXCEPTION.format(type_exception))
+        target_class = getattr(load_module, type_exception)
+        target_strict = target_class._strict
+        target_class._strict = False
+        rval = target_class(**pairs)
+        target_class._strict = target_strict
+        if is_valid(rval):
+            return rval
+
+    # If there is not a type variable and nothing fits, just load up the first (and perhaps only) exception
+    # It will later fail any is_valid tests
+    if not cntxt.TYPE and cntxt.TYPE_EXCEPTIONS:
+        return getattr(load_module, cntxt.TYPE_EXCEPTIONS[0])(**pairs)
+
+    if cntxt.TYPE in pairs:
+        raise JSGException('Unknown reference type: "{}": "{}"'.format(cntxt.TYPE, pairs[cntxt.TYPE]))
     else:
-        raise JSGException("Missing {} var".format(load_module._CONTEXT.TYPE))
+        raise JSGException('Missing "{}" element'.format(cntxt.TYPE))
 
 
 def loads(s: str, load_module: types.ModuleType, **kwargs) -> JSGObject:
@@ -517,3 +582,12 @@ def isinstance_(x, A_tuple):
         return isinstance(x, A_tuple.__origin__)
     else:
         return isinstance(x, A_tuple)
+
+
+def is_valid(obj: JSGValidateable, log: Optional[Union[TextIO, Logger]] = None) -> bool:
+    """ Determine whether obj is valid
+
+    :param obj: Object to validate
+    :param log: Logger to record validation failures.  If absent, no information is recorded
+    """
+    return obj._is_valid(log)

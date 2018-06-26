@@ -51,9 +51,9 @@ class ObjectTestCase(unittest.TestCase):
         self.check_json(x, '{"name": "Sally Pope", "age": 42}')
         x = Person("Sally Pope")
         self.assertFalse(x._is_valid(log))
-        self.assertEqual('Person: Missing required field: age\n'
-                         'Person: Missing required field: married\n'
-                         'Person: Missing required field: weight\n', log.getvalue())
+        self.assertEqual('Person: Missing required field: \'age\'\n'
+                         'Person: Missing required field: \'married\'\n'
+                         'Person: Missing required field: \'weight\'\n', log.getvalue())
         log = StringIO()
         x.age = 99
         self.assertFalse(x._is_valid())
@@ -68,7 +68,7 @@ class ObjectTestCase(unittest.TestCase):
             x.age = "abc"
         del x.weight
         x._is_valid(log)
-        self.assertEqual('Person: Missing required field: weight\n', log.getvalue())
+        self.assertEqual('Person: Missing required field: \'weight\'\n', log.getvalue())
 
 
 if __name__ == '__main__':

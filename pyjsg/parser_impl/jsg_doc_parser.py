@@ -27,7 +27,7 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg
+from pyjsg.jsglib import jsg, jsg_array
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings

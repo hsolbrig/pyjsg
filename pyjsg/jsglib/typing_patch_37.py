@@ -6,6 +6,7 @@ from collections.abc import Iterable
 
 # TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
 
+
 def conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     if isinstance(element, str) and element == '_context':
         return True
@@ -44,18 +45,15 @@ def is_iterable(etype) -> bool:
 
 
 def union_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if is_union(etype):
-        union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
-        return any(conforms(element, t, namespace) for t in union_vals)
-    return False
+    union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
+    return any(conforms(element, t, namespace) for t in union_vals)
+
 
 
 def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if is_dict(etype) and isinstance(element, dict):
         kt, vt = etype.__args__
         return all(conforms(k, kt, namespace) and
                    conforms(v, vt, namespace) for k, v in element.items())
-    return False
 
 
 def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
@@ -68,8 +66,11 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 
 def element_conforms(element, etype) -> bool:
-    if element is None and etype == object:
+    from pyjsg.jsglib.jsg import EmptyAny
+    if element is EmptyAny:
         return False
+    elif element is None and etype == object:
+        return True
     elif isinstance(etype, type(type)) and (issubclass(etype, type(None))):
         return element is None
     elif element is None:

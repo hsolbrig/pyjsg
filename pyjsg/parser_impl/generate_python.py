@@ -54,8 +54,8 @@ def do_parse(infilename: str, outfilename: str, verbose: bool) -> bool:
 
 
 def parse(input_: Union[str, FileStream], source: str) -> Optional[str]:
-    """
-    Parse the text in infile and save the results in outfile
+    """Parse the text in infile and save the results in outfile
+
     :param input_: string or stream to parse
     :param source: source name for python file header
     :return: python text if successful
