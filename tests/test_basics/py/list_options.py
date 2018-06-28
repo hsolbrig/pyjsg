@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/list_options.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/list_options.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,20 +10,20 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("list_eval")
 
 
 
 
-class INT(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]')
+class INT(JSGString):
+    pattern = JSGPattern(r'[0-9]')
 
-class list_eval(jsg.JSGObject):
+class list_eval(JSGObject):
     _reference_types = []
     _members = {'req': INT,
                 'opt': Optional[INT],
@@ -46,11 +46,11 @@ class list_eval(jsg.JSGObject):
         self._context = _CONTEXT
         self.req = req
         self.opt = opt
-        self.zero_or_more = jsg_array.JSGArray(_CONTEXT, INT, 0, None, zero_or_more)
-        self.one_or_more = jsg_array.JSGArray(_CONTEXT, INT, 1, None, one_or_more)
-        self.two_or_more = jsg_array.JSGArray(_CONTEXT, INT, 2, None, two_or_more)
-        self.three_or_four = jsg_array.JSGArray(_CONTEXT, INT, 3, 4, three_or_four)
-        self.one_or_more_v2 = jsg_array.JSGArray(_CONTEXT, INT, 1, None, one_or_more_v2)
+        self.zero_or_more = JSGArray('zero_or_more', _CONTEXT, INT, 0, None, zero_or_more)
+        self.one_or_more = JSGArray('one_or_more', _CONTEXT, INT, 1, None, one_or_more)
+        self.two_or_more = JSGArray('two_or_more', _CONTEXT, INT, 2, None, two_or_more)
+        self.three_or_four = JSGArray('three_or_four', _CONTEXT, INT, 3, 4, three_or_four)
+        self.one_or_more_v2 = JSGArray('one_or_more_v2', _CONTEXT, INT, 1, None, one_or_more_v2)
         super().__init__(self._context, **_kwargs)
 
 

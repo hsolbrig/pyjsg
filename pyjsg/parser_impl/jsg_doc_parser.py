@@ -27,11 +27,11 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext(){body}
+_CONTEXT = JSGContext(){body}
 
 _CONTEXT.NAMESPACE = locals()
 '''

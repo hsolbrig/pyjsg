@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/shapes.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/shapes.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,11 +10,11 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("ShapeExternal")
 _CONTEXT.TYPE_EXCEPTIONS.append("NodeConstraint")
 _CONTEXT.TYPE_EXCEPTIONS.append("Shape")
@@ -26,10 +26,10 @@ _CONTEXT.TYPE_EXCEPTIONS.append("ShapeNot")
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'ShapeNot')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'ShapeNot')
 
-class ShapeExternal(jsg.JSGObject):
+class ShapeExternal(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -40,7 +40,7 @@ class ShapeExternal(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class NodeConstraint(jsg.JSGObject):
+class NodeConstraint(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -51,7 +51,7 @@ class NodeConstraint(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class Shape(jsg.JSGObject):
+class Shape(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -62,9 +62,9 @@ class Shape(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-shapeExprLabel = jsg.String
+shapeExprLabel = String
 
-class labeledShapeNot(jsg.JSGObject):
+class labeledShapeNot(JSGObject):
     _reference_types = []
     _members = {'type': _Anon1,
                 'id': shapeExprLabel,
@@ -85,7 +85,7 @@ class labeledShapeNot(jsg.JSGObject):
 
 shapeExpr = Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, shapeExprLabel, ShapeExternal]
 
-class ShapeOr(jsg.JSGObject):
+class ShapeOr(JSGObject):
     _reference_types = []
     _members = {'shapeExprs': List["shapeExpr"]}
     _strict = True
@@ -98,7 +98,7 @@ class ShapeOr(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class ShapeAnd(jsg.JSGObject):
+class ShapeAnd(JSGObject):
     _reference_types = []
     _members = {'shapeExprs': List["shapeExpr"]}
     _strict = True
@@ -111,7 +111,7 @@ class ShapeAnd(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class ShapeNot(jsg.JSGObject):
+class ShapeNot(JSGObject):
     _reference_types = []
     _members = {'shapeExpr': "shapeExpr"}
     _strict = True

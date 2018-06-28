@@ -1,12 +1,11 @@
-from typing import Optional, List, Set, Tuple, Dict
+from typing import Optional, List, Set, Tuple
 
-from pyjsg.jsglib.jsg import AnyType, EmptyAny
-from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
-from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
+from pyjsg.jsglib import EmptyAny, Array, Object, AnyType
 from pyjsg.parser.jsgParser import *
-
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
+from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 from .parser_utils import as_token, is_valid_python, optional
 
 _val_template_simple = "{prefix}{cooked_name}"
@@ -15,10 +14,23 @@ _val_template_simple_raw = "_kwargs.pop('{raw_name}', None)"
 _val_template_builtin = "{basetype}({prefix}{cooked_name})"
 _val_template_builtin_raw = "{basetype}(_kwargs.pop('{raw_name}', None))"
 
-_initializer_template_cooked = "self.{raw_name} = {val}{opt_clause}"
-_initializer_template_multi_cooked = "self.{raw_name} = jsg_array.JSGArray(_CONTEXT, {opt_clause}, {self._ebnf.min}, {self._ebnf.max}, {cooked_name})"
-_initializer_template_raw = "setattr(self, '{raw_name}', {val}){opt_clause}"
-_initializer_template_multi_raw= "setattr(self, '{raw_name}', jsg_array.JSGArray(_CONTEXT, {opt_clause}, {self._ebnf.min}, {self._ebnf.max}, {val})"
+_init_template_cooked = "self.{raw_name} = {val}{opt_clause}"
+_init_template_multi_cooked = "self.{raw_name} = JSGArray('{raw_name}', _CONTEXT, {opt_clause}, " \
+                                     "{self._ebnf.min}, {self._ebnf.max}, {cooked_name})"
+
+_init_template_raw = "setattr(self, '{raw_name}', {val}){opt_clause}"
+_init_template_multi_raw = "setattr(self, '{raw_name}', JSGArray('{raw_name}', _CONTEXT, {opt_clause}, " \
+                                  "{self._ebnf.min}, {self._ebnf.max}, {val}))"
+
+_init_template_array_cooked = "self.{raw_name} = " \
+                              "Array('{raw_name}', _CONTEXT, AnyType, 0, None, {raw_name})"
+_init_template_array_raw = "setattr(self, '{raw_name}', " \
+                           "Array('{raw_name}', _CONTEXT, AnyType, 0, None, {cooked_name}))"
+
+_init_template_object_cooked = "self.{raw_name} = " \
+                               "Object('{raw_name}', _CONTEXT, **({{}} if {raw_name} is None else {raw_name}))"
+_init_template_object_raw = "setattr(self, '{raw_name}', " \
+                            "Object('{raw_name}', _CONTEXT, **({{}} if {cooked_name} is None else {cooked_name})))"
 
 
 class JSGPairDef(jsgParserVisitor):
@@ -59,7 +71,7 @@ class JSGPairDef(jsgParserVisitor):
             return [self._card(self._context.reference_for(self.typeid), all_are_optional)]
         else:
             return ["{}: {} = {}".format(n, self._card(self.typeid, all_are_optional),
-                                         'jsg.EmptyAny' if self._typ.typeid == 'object' else "None")
+                                         "EmptyAny" if self._typ.basetype is AnyType and not self.is_list else "None")
                     for _, n in self._names if is_valid_python(n)]
 
     def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
@@ -87,7 +99,7 @@ class JSGPairDef(jsgParserVisitor):
 
     @property
     def is_list(self) -> bool:
-        return self._ebnf and self._ebnf.is_list
+        return self._ebnf is not None and self._ebnf.is_list
 
     def _optional_clause(self, prefix: Optional[str], basetype: Optional[str], add_exists_clause: bool) -> str:
         if self.is_list:
@@ -98,7 +110,8 @@ class JSGPairDef(jsgParserVisitor):
         else:
             return ""
 
-    def _initializer_for(self, raw_name: str, cooked_name: str, prefix: Optional[str], basetype: Optional[str], add_exists_clause: bool) -> str:
+    def _initializer_for(self, raw_name: str, cooked_name: str, prefix: Optional[str], basetype: Optional[str],
+                         add_exists_clause: bool) -> str:
         """
         Create an initializer entry for the entry
         :param raw_name: name unadjusted for python compatibility.
@@ -110,13 +123,22 @@ class JSGPairDef(jsgParserVisitor):
         """
         opt_clause = self._optional_clause(prefix, basetype, add_exists_clause)
         prefix = "" if prefix is None else prefix + "."
+        base_type = self._typ.basetype if self._typ and self._typ.basetype else type(EmptyAny)
         if is_valid_python(raw_name + '_'):
-            val = _val_template_builtin.format(**locals()) if basetype else _val_template_simple.format(**locals())
-            rval = (_initializer_template_multi_cooked if self.is_list else _initializer_template_cooked).format(**locals())
+            val_template = _val_template_builtin if basetype and not self.is_list else _val_template_simple
+            init_template = _init_template_array_cooked if issubclass(base_type, Array) else \
+                _init_template_object_cooked if issubclass(base_type, Object) else \
+                _init_template_multi_cooked if self.is_list else \
+                _init_template_cooked
         else:
-            val = _val_template_builtin_raw.format(**locals()) if basetype else _val_template_simple_raw.format(**locals())
-            rval = (_initializer_template_multi_raw if self.is_list else _initializer_template_raw).format(**locals())
-        return rval
+            val_template = _val_template_builtin_raw if basetype and not self.is_list else _val_template_simple_raw
+            init_template = _init_template_array_raw if issubclass(base_type, Array) else \
+                _init_template_object_raw if issubclass(base_type, Object) else \
+                _init_template_multi_raw if self.is_list else \
+                _init_template_raw
+
+        val = val_template.format(**locals())
+        return init_template.format(**locals())
 
     def initializer(self, prefix: Optional[str] = None, add_exists_clause: bool=False) -> List[str]:
         """ Return the __init__ initializer assignment block """
@@ -124,13 +146,14 @@ class JSGPairDef(jsgParserVisitor):
         if self._type_reference:
             return self._context.initializer(self._type_reference, prefix, add_exists_clause)
         else:
-            return [self._initializer_for(rn, cn, prefix, self._typ.basetype, add_exists_clause) for rn, cn in self._names]
+            return [self._initializer_for(rn, cn, prefix, self._typ.basetypename, add_exists_clause)
+                    for rn, cn in self._names]
 
     def none_initializer(self) -> List[str]:
         if self._type_reference:
             return self._context.none_initializer(self._type_reference)
         else:
-            return ["{}(None)".format(self._typ.basetype) if self._typ.basetype else "None" for _ in self._names]
+            return ["{}(None)".format(self._typ.basetypename) if self._typ.basetype else "None" for _ in self._names]
 
     def dependency_list(self) -> List[str]:
         return self._typ.dependency_list() if self._typ else [self._type_reference]
@@ -159,6 +182,10 @@ class JSGPairDef(jsgParserVisitor):
 
     def visitValueType(self, ctx: jsgParser.ValueTypeContext):
         self._typ = JSGValueType(self._context, ctx)
+        if self._typ.basetype is Array:
+            self._ebnf = JSGEbnf(self._context)
+            self._ebnf.min = 0
+            self._ebnf.max = None
 
     def visitEbnfSuffix(self, ctx: jsgParser.EbnfSuffixContext):
         self._ebnf = JSGEbnf(self._context, ctx)

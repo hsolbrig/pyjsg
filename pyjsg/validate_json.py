@@ -35,7 +35,7 @@ class JSGPython:
         self.python = parse(self.schema, self.__class__.__name__) if self.schema else self._to_string(python)
         self.json_obj = None
         if not self.python:
-            raise ValueError("Cannot parse jsg string")
+            raise ValueError("JSGPython: jsg parsing error")
         spec = compile(self.python, self.__class__.__name__, 'exec')
         self.module = ModuleType(self.__class__.__name__)
         exec(spec, self.module.__dict__)

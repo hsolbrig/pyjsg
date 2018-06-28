@@ -1,5 +1,4 @@
 import json
-import re
 import sys
 import types
 from collections import OrderedDict
@@ -15,33 +14,34 @@ else:
     from .typing_patch_37 import conforms, is_union
 
 
-# TODO: Extend List to include a minimum and maximum value
-
 class JSGException(Exception):
     pass
 
 
 class JSGContext:
-    """ JSG Context environment
-    TYPE - the property that identifies the type of object. If present, must match the name of
-           a JSGObject in the generated module
-    TYPE_EXCEPTIONS - a list of objects that lack type identifiers.  At the moment, this program
-           can deal with at most one of these, which becomes the default for anything that lacks
-           a type variable OR has a type variable that doesn't name a known module
-    IGNORE - a list of properties that do not generate errors if present in an object
-    JSON_LD - True means we allow JSON_LD constructs (parameters w/ "@")
-    """
+    """ Context available to all JSG constructs """
     def __init__(self):
-        self.TYPE = ""                      # type: str
-        self.TYPE_EXCEPTIONS = []           # type: List[str]
-        self.IGNORE = []                    # type: List[str]
-        self.JSON_LD = True                 # type: Boolean
-        self.NAMESPACE = None               # type: Dict[str, Any]
+        # the object member name, if any, that identifies the type of object. If present, must match the name of
+        # a JSGObject
+        self.TYPE: str = ""
+
+        # Objects that lack type identifiers.  Any objects lacking a TYPE variable will be matched against
+        # the list below in order
+        self.TYPE_EXCEPTIONS: List[str] = []
+
+        # Object pair names that can always exist in an object
+        self.IGNORE: List[str] = []                    # type: List[str]
+
+        # True means that we allow JSON_LD constructs (parameters starting with "@")
+        self.JSON_LD = True
+
+        # NAMESPACE prevents references from being resolved against other JSG modules
+        self.NAMESPACE: Dict[str, Any] = None
 
     def unvalidated_parm(self, parm: str) -> bool:
-        """
-        Return true if the parameter shouldn't be validated
-        :param parm: name of parm
+        """Return true if the pair name should be ignored
+
+        :param parm: string part of pair string:value
         :return: True if it should be accepted
         """
         return parm.startswith("_") or parm == self.TYPE or parm in self.IGNORE or \
@@ -62,12 +62,19 @@ class JSGValidateable:
         raise NotImplementedError("_is_valid must be implemented")
 
     @property
-    def _class_name(self):
+    def _class_name(self) -> str:
         return type(self).__name__
+
+    @abstractmethod
+    def _is_initialized(self) -> bool:
+        """ Return true if the object has not been assigned a value
+        """
+        raise NotImplementedError("_is_initialized must be implemented")
 
 
 class JSGObjectMeta(type):
-    _reference_types = []          # type: List[JSGObject]
+    _reference_types: List["JSGObject"] = []
+    _reference_names: List[str]                 # Names of objects in _reference_types
 
     def __init__(cls, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -81,14 +88,14 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
     Note that methods and variables in JSGObject should always begin with "_", as we currently restrict the set of
     JSON names to those that begin with [a-zA-Z]
     """
-    _reference_types = []           # type: List[JSGObject]
-    _reference_names = []           # type: List[str]
-    _members = {}                   # type: Dict[str, type]
-    _strict = True                  # type: bool
+    _reference_types: List["JSGObject"] = []
+    _reference_names: List[str] = []
+    _members: Dict[str, type] = {}      #
+    _strict: bool = True                # True means treat extra elements as errors
 
     def __init__(self, context: JSGContext, **kwargs):
-        """
-        Generic constructor
+        """ Generic constructor
+
         :param context: Context for TYPE and IGNORE variables
         :param kwargs: Initial values - object specific
         """
@@ -99,7 +106,8 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         for k, v in kwargs.items():
             setattr(self, k, kwargs[k])
 
-    def _set_value(self, key, value):
+    def _set_value(self, key, value) -> None:
+        from pyjsg.jsglib.jsg_strings import JSGString
         if not isinstance(value, (str, int, bool, float)):
             self[key] = value
         else:
@@ -109,17 +117,16 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             else:
                 self[key] = cur_val.__class__(value)
 
-    def __setattr__(self, key: str, value: Any):
-        """
-        Screen attributes for name and type.  Anything starting with underscore ('_') goes, anything in the IGNORE list
-        and anything declared in the __init_ signature
+    def __setattr__(self, key: str, value: Any) -> None:
+        """ Attribute setter.  Any attribute that is part of the members list or not validated passes.  Otherwise
+        setting is only allowed if the class level _strict mode is False
+
         :param key:
         :param value:
         :return:
         """
-        if key == "_context":
-            self[key] = value
-        elif key in self._members or self._context.unvalidated_parm(key):
+        # Note: The initial startswith below is the only way we can SEE _members or _context...
+        if key.startswith('_') or key in self._members or self._context.unvalidated_parm(key):
             self._set_value(key, value)
         elif self._strict:
             raise ValueError("Unknown attribute: {}={}".format(key, value))
@@ -127,6 +134,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             super().__setattr__(key, value)
 
     def __delattr__(self, item):
+        from pyjsg.jsglib.jsg_strings import JSGString
         attr = getattr(self, item)
         setattr(self, item, type(attr)(None) if issubclass(type(attr), JSGString) else None)
 
@@ -137,10 +145,12 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param d: Object with attributes
         :return: Object dictionary w/ Nones and underscores removed
         """
+        from pyjsg.jsglib.jsg_strings import JSGString, JSGNull
         return OrderedDict({k: None if isinstance(v, JSGNull) and v.val is None else v for k, v in d.items()
                             if not k.startswith("_") and v is not None and v and
-                            (not issubclass(type(v), JSGString) or v.val is not None) and
-                            (not isinstance(v, AnyType) or v.val is not EmptyAny)})
+                            (issubclass(type(v), JSGObject) or
+                                (not issubclass(type(v), JSGString) or v.val is not None) and
+                                (not issubclass(type(v), AnyType) or v.val is not EmptyAny))})
 
     @staticmethod
     def _test(entry, log: Logger) -> bool:
@@ -170,11 +180,13 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param obj: Object to be serialized
         :return: Serialized version of obj
         """
+        from pyjsg.jsglib.jsg_strings import JSGString, JSGNull
         return None if isinstance(obj, JSGNull) else \
             JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
             else cast(JSGString, obj).val if issubclass(type(obj), JSGString) else str(obj)
 
     def _is_valid_element(self, log: Logger, name: str, entry: JSGValidateable) -> bool:
+        from pyjsg.jsglib.jsg_strings import JSGString
         if name not in self._members:
             return any(e._is_valid_element for e in self._reference_types)
         else:
@@ -192,8 +204,6 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
                     if log.log("{}: Missing required field: '{}'".format(self.__class__.__name__, name)):
                         return False
                 else:
-                    # TODO: Debugging
-                    conforms(val, etype, self._context.NAMESPACE)
                     if log.log("{}: Type mismatch for {}. Expecting: {} Got: {}"
                                .format(self.__class__.__name__, name, etype, type(entry))):
                         return False
@@ -232,12 +242,15 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
 
         return log.nerrors == nerrors
 
+    def _is_initialized(self) -> bool:
+        return True             # Dictionaries always count as initialized - the variables are set to None if not
+
 
 class JSGObjectMap(JSGObject):
     """
     An object map is a JsonObj with constraints on the attribute names, value types of both
     """
-    _name_filter = None               # type: Optional[JSGPattern]
+    _name_filter = None
     _value_type = object
 
     def __init__(self, _context, **_kwargs: Dict[str, Any]):
@@ -288,202 +301,12 @@ class JSGObjectMap(JSGObject):
         return log.nerrors == nerrors
 
 
-class JSGPattern:
-    """
-    A lexerRuleBlock
-    """
-    def __init__(self, pattern: str):
-        """
-        Compile and record a match pattern
-        :param pattern:
-        """
-        self.pattern_re = re.compile(pattern, flags=re.DOTALL)
-
-    def __str__(self):
-        return self.pattern_re.pattern
-
-    def matches(self, txt: str) -> bool:
-        """
-        Determine whether txt matches pattern
-        :param txt: text to check
-        :return: True if match
-        """
-        # rval = ref.getText()[1:-1].encode('utf-8').decode('unicode-escape')
-        if r'\\u' in self.pattern_re.pattern:
-            txt = txt.encode('utf-8').decode('unicode-escape')
-        match = self.pattern_re.match(txt)
-        return match is not None and match.end() == len(txt)
-
-
-class JSGStringMeta(type):
-    pattern = None          # type: Optional[JSGPattern]
-
-    def __init__(cls, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __instancecheck__(self, instance) -> bool:
-        # Note: IDE warning on pattern is ok
-        if not self.pattern:
-            return isinstance(instance, str)
-        else:
-            return instance is not None and \
-                   self.pattern.matches(str(instance).lower() if isinstance(instance, bool) else str(instance))
-
-
-class JSGString(JSGValidateable, metaclass=JSGStringMeta):
-    """
-    A lexerRuleSpec implementation
-    """
-    pattern = None          # type: Optional[JSGPattern]
-
-    def __init__(self, val: Any, validate: bool=True):
-        """
-        Construct a simple string variable
-        :param val: any type that can be cooreced into a string
-        :param validate: validate on entry
-        """
-        if validate and not self._is_valid_value(val):
-            raise ValueError('Invalid {} value: "{}"'.format(self._class_name, val))
-        super().__setattr__("val", self._adjust_for_json(val))
-
-    @classmethod
-    def _is_valid_value(cls, val) -> bool:
-        """ Determine whether val is a valid value for this string
-
-        :param val: value to test
-        :return:
-        """
-        return val is None or \
-            (isinstance(val, str) and (cls.pattern is None or cls.pattern.matches(cls._adjust_for_json(val))))
-
-    @staticmethod
-    def _adjust_for_json(val: Any) -> Any:
-        return str(val).lower() if isinstance(val, bool) else str(val) if val is not None else None
-
-    def _is_valid(self, log: Optional[Logger] = None) -> bool:
-        """
-        Determine whether the string is valid
-        :param log: function for reporting the result
-        :return: Result
-        """
-        if self._is_valid_value(self.val):
-            return True
-        if log:
-            log.log('Invalid {} value: "{}"'.format(self._class_name, self.val))
-        return False
-
-    def __str__(self):
-        return str(self.val)
-
-    def __eq__(self, other):
-        return self.val == (other.val if issubclass(type(other), JSGString) else other)
-
-    def __hash__(self):
-        return hash(self.val)
-
-
-class Array(JSGObject):
-    pass
-
-
-class String(JSGString):
-
-    def __setattr__(self, key, value):
-        self.__dict__[key] = str(value) if key == "val" and value is not None else value
-
-
-class Number(JSGString):
-    pattern = JSGPattern(r'-?(0|[1-9][0-9]*)(.[0-9]+)?([eE][+-]?[0-9]+)?')
-    int_pattern = JSGPattern(r'-?(0|[1-9][0-9]*)')
-
-    @classmethod
-    def _is_valid_value(cls, val) -> bool:
-        """ Determine whether val is a valid value for this string
-
-        :param val: value to test
-        :return:
-        """
-        return val is None or cls.pattern.matches(str(val))
-
-    def __getattribute__(self, item):
-        attval = super().__getattribute__(item)
-        return attval if item != "val" or attval is None else int(attval) \
-            if self.int_pattern.matches(attval) else float(attval)
-
-    def __int__(self) -> int:
-        return int(self.val)
-
-    def __float__(self) -> float:
-        return float(self.val)
-
-
-class Integer(Number):
-    pattern = JSGPattern(r'-?(0|[1-9][0-9]*)')
-
-    @classmethod
-    def _is_valid_value(cls, val) -> bool:
-        """ Determine whether val is a valid value for this string
-
-        :param val: value to test
-        :return:
-        """
-        return val is None or cls.pattern.matches(str(val))
-
-    def __getattribute__(self, item) -> Optional[int]:
-        attval = super().__getattribute__(item)
-        return attval if item != "val" or attval is None else int(attval)
-
-    def __int__(self) -> int:
-        return int(self.val)
-
-
-class Boolean(JSGString):
-    true_pattern = JSGPattern(r'[Tt]rue')
-    false_pattern = JSGPattern(r'[Ff]alse')
-    pattern = JSGPattern(r'{}|{}'.format(true_pattern, false_pattern))
-
-    @classmethod
-    def _is_valid_value(cls, val) -> bool:
-        return val is None or cls.pattern.matches(str(val))
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        if key == "val" and value is not None:
-            # Note - final value below causes an exception
-            self.__dict__[key] = str(value).lower() if isinstance(value, bool) \
-                else str(value.val) if type(value) == Boolean else Boolean(value)
-        else:
-            self.__dict__[key] = value
-
-    def __getattribute__(self, item):
-        attval = super().__getattribute__(item)
-        return attval if item != "val" or attval is None else self.true_pattern.matches(attval)
-
-    def __bool__(self) -> bool:
-        return bool(self.val)
-
-
-class JSGNull(JSGString):
-    pattern = JSGPattern(r'null|None')
-
-    def __init__(self, val: Optional[Any] = None, validate: bool=True):
-        self.val = val
-        super().__init__(val, validate)
-
-    def __setattr__(self, key, value):
-        self.__dict__[key] = "null" if key == "val" and value is not None else value
-
-    def __str__(self):
-        return str(self.val)
-
-    def _is_valid(self, log: Optional[Logger] = None, strict: bool = True) -> bool:
-        return self.val is None or self.val == "null"
-
-
-Null = JSGNull("null")
-
-
 class Object(JSGObject):
-    pass
+    _strict = False
+
+    def __init__(self, variable_name: str,  *args, **kwargs):
+        self._variable_name = variable_name
+        super().__init__(*args, **kwargs)
 
 
 # We have to be able to differentiate between AnyType with a valid None value ("x": null) and
@@ -495,7 +318,15 @@ class _EmptyAny:
 EmptyAny = _EmptyAny()
 
 
-class AnyType(JsonObj, JSGValidateable):
+class AnyTypeMeta(type):
+
+    def __instancecheck__(self, instance) -> bool:
+        return instance is not EmptyAny
+
+
+class AnyType(JsonObj, JSGValidateable, metaclass=AnyTypeMeta):
+    _strict = False
+
     def __init__(self, val: Any, **kwargs):
         """
         Construct a simple string variable
@@ -506,6 +337,9 @@ class AnyType(JsonObj, JSGValidateable):
         super().__init__(**kwargs)
 
     def _is_valid(self, log: Optional[Union[TextIO, Logger]] = None) -> bool:
+        return self.val is not EmptyAny
+
+    def _is_initialized(self) -> bool:
         return self.val is not EmptyAny
 
 

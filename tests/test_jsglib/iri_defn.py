@@ -1,5 +1,5 @@
 
-from pyjsg.jsglib.jsg import JSGString, JSGPattern
+from pyjsg.jsglib import JSGString, JSGPattern
 
 
 class HEX(JSGString):

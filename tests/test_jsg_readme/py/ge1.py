@@ -1,5 +1,5 @@
-# Auto generated from tests/test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:41
+# Auto generated from test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,21 +10,21 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE = "type"
 _CONTEXT.TYPE_EXCEPTIONS.append("person")
 
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'(m)|(f)')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'(m)|(f)')
 
-class details(jsg.JSGObject):
+class details(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = False
@@ -33,11 +33,11 @@ class details(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class person(jsg.JSGObject):
+class person(JSGObject):
     _reference_types = [details]
     _members = {'name': str,
                 'gender': _Anon1,
@@ -52,14 +52,14 @@ class person(jsg.JSGObject):
                  details: List[details] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = jsg.String(name)
+        self.name = String(name)
         self.gender = gender
-        self.active = jsg.Boolean(active)
+        self.active = Boolean(active)
         self.details = details
         super().__init__(self._context, **_kwargs)
 
 
-class company(jsg.JSGObject):
+class company(JSGObject):
     _reference_types = []
     _members = {'name': str,
                 'year founded': Optional[int],
@@ -71,9 +71,9 @@ class company(jsg.JSGObject):
                  employees: List[person] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = jsg.String(name)
-        setattr(self, 'year founded', jsg.Integer(_kwargs.pop('year founded', None)))
-        self.employees = jsg_array.JSGArray(_CONTEXT, person, 2, None, employees)
+        self.name = String(name)
+        setattr(self, 'year founded', Integer(_kwargs.pop('year founded', None)))
+        self.employees = JSGArray('employees', _CONTEXT, person, 2, None, employees)
         super().__init__(self._context, **_kwargs)
 
 

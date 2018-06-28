@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/labeledShapeExpr2.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/labeledShapeExpr2.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,11 +10,11 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeOr")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeAnd")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeNot")
@@ -35,7 +35,7 @@ _CONTEXT.TYPE_EXCEPTIONS.append("expr")
 
 
 
-class labeledShapeOr(jsg.JSGObject):
+class labeledShapeOr(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -44,11 +44,11 @@ class labeledShapeOr(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShapeAnd(jsg.JSGObject):
+class labeledShapeAnd(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -57,11 +57,11 @@ class labeledShapeAnd(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShapeNot(jsg.JSGObject):
+class labeledShapeNot(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -70,11 +70,11 @@ class labeledShapeNot(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledNodeConstraint(jsg.JSGObject):
+class labeledNodeConstraint(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -83,11 +83,11 @@ class labeledNodeConstraint(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShape(jsg.JSGObject):
+class labeledShape(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -96,11 +96,11 @@ class labeledShape(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class shapeExprLabel(jsg.JSGObject):
+class shapeExprLabel(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -109,11 +109,11 @@ class shapeExprLabel(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShapeExternal_1_(jsg.JSGObject):
+class labeledShapeExternal_1_(JSGObject):
     _reference_types = []
     _members = {'id': str}
     _strict = True
@@ -122,11 +122,11 @@ class labeledShapeExternal_1_(jsg.JSGObject):
                  id: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(id)
+        self.id = String(id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShapeExternal_2_(jsg.JSGObject):
+class labeledShapeExternal_2_(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -137,7 +137,7 @@ class labeledShapeExternal_2_(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class expr_1_(jsg.JSGObject):
+class expr_1_(JSGObject):
     _reference_types = [labeledShapeOr]
     _members = {'id': str}
     _strict = True
@@ -146,11 +146,11 @@ class expr_1_(jsg.JSGObject):
                  labeledShapeOr: labeledShapeOr = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(labeledShapeOr.id)
+        self.id = String(labeledShapeOr.id)
         super().__init__(self._context, **_kwargs)
 
 
-class expr_2_(jsg.JSGObject):
+class expr_2_(JSGObject):
     _reference_types = [labeledShapeAnd]
     _members = {'id': str}
     _strict = True
@@ -159,11 +159,11 @@ class expr_2_(jsg.JSGObject):
                  labeledShapeAnd: labeledShapeAnd = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(labeledShapeAnd.id)
+        self.id = String(labeledShapeAnd.id)
         super().__init__(self._context, **_kwargs)
 
 
-class expr_3_(jsg.JSGObject):
+class expr_3_(JSGObject):
     _reference_types = [labeledShapeNot]
     _members = {'id': str}
     _strict = True
@@ -172,11 +172,11 @@ class expr_3_(jsg.JSGObject):
                  labeledShapeNot: labeledShapeNot = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(labeledShapeNot.id)
+        self.id = String(labeledShapeNot.id)
         super().__init__(self._context, **_kwargs)
 
 
-class expr_4_(jsg.JSGObject):
+class expr_4_(JSGObject):
     _reference_types = [labeledNodeConstraint]
     _members = {'id': str}
     _strict = True
@@ -185,11 +185,11 @@ class expr_4_(jsg.JSGObject):
                  labeledNodeConstraint: labeledNodeConstraint = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(labeledNodeConstraint.id)
+        self.id = String(labeledNodeConstraint.id)
         super().__init__(self._context, **_kwargs)
 
 
-class expr_5_(jsg.JSGObject):
+class expr_5_(JSGObject):
     _reference_types = [labeledShape]
     _members = {'id': str}
     _strict = True
@@ -198,11 +198,11 @@ class expr_5_(jsg.JSGObject):
                  labeledShape: labeledShape = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(labeledShape.id)
+        self.id = String(labeledShape.id)
         super().__init__(self._context, **_kwargs)
 
 
-class expr_6_(jsg.JSGObject):
+class expr_6_(JSGObject):
     _reference_types = [shapeExprLabel]
     _members = {'id': str}
     _strict = True
@@ -211,11 +211,11 @@ class expr_6_(jsg.JSGObject):
                  shapeExprLabel: shapeExprLabel = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(shapeExprLabel.id)
+        self.id = String(shapeExprLabel.id)
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShapeExternal(jsg.JSGObject):
+class labeledShapeExternal(JSGObject):
     _reference_types = [labeledShapeExternal_1_, labeledShapeExternal_2_]
     _members = {'id': str}
     _strict = True
@@ -224,11 +224,11 @@ class labeledShapeExternal(jsg.JSGObject):
                  opt_: Union[labeledShapeExternal_1_, labeledShapeExternal_2_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(opt_.id) if isinstance(opt_, labeledShapeExternal_1_) else jsg.String(None)
+        self.id = String(opt_.id) if isinstance(opt_, labeledShapeExternal_1_) else String(None)
         super().__init__(self._context, **_kwargs)
 
 
-class expr_7_(jsg.JSGObject):
+class expr_7_(JSGObject):
     _reference_types = [labeledShapeExternal]
     _members = {'id': str}
     _strict = True
@@ -237,11 +237,11 @@ class expr_7_(jsg.JSGObject):
                  labeledShapeExternal: labeledShapeExternal = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(labeledShapeExternal.id)
+        self.id = String(labeledShapeExternal.id)
         super().__init__(self._context, **_kwargs)
 
 
-class expr(jsg.JSGObject):
+class expr(JSGObject):
     _reference_types = [expr_1_, expr_2_, expr_3_, expr_4_, expr_5_, expr_6_, expr_7_]
     _members = {'id': str}
     _strict = True
@@ -250,13 +250,13 @@ class expr(jsg.JSGObject):
                  opt_: Union[expr_1_, expr_2_, expr_3_, expr_4_, expr_5_, expr_6_, expr_7_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_1_) else jsg.String(None)
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_2_) else jsg.String(None)
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_3_) else jsg.String(None)
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_4_) else jsg.String(None)
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_5_) else jsg.String(None)
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_6_) else jsg.String(None)
-        self.id = jsg.String(opt_.id) if isinstance(opt_, expr_7_) else jsg.String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_1_) else String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_2_) else String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_3_) else String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_4_) else String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_5_) else String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_6_) else String(None)
+        self.id = String(opt_.id) if isinstance(opt_, expr_7_) else String(None)
         super().__init__(self._context, **_kwargs)
 
 

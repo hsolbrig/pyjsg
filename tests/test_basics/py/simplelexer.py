@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/simplelexer.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/simplelexer.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,25 +10,25 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 
 
 
 
 
-class HEX(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]|[A-F]|[a-f]')
+class HEX(JSGString):
+    pattern = JSGPattern(r'[0-9]|[A-F]|[a-f]')
 
 
-class EXPONENT(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[eE][+-]?[0-9]+')
+class EXPONENT(JSGString):
+    pattern = JSGPattern(r'[eE][+-]?[0-9]+')
 
 
-class LANGTAG(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
+class LANGTAG(JSGString):
+    pattern = JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
 
 _CONTEXT.NAMESPACE = locals()

@@ -110,6 +110,7 @@ def validate_shex_schemas(parser: JSGPython) -> bool:
 
 class ShExJValidationTestCase(unittest.TestCase):
 
+    @unittest.skipIf(False, "Schema tests disabled -- do not commit in this state")
     def test_shex_schema(self):
         parser = JSGPython(LOCAL_PARSER_IMAGE if LOCAL_PARSER_IMAGE else shexJSGSource)
         log_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs', 'test_shex_schema.log')

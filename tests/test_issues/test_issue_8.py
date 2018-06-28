@@ -5,7 +5,7 @@ import unittest
 class Issue8TestCase(unittest.TestCase):
 
     def test_none_as_string_instance(self):
-        from pyjsg.jsglib.jsg import JSGString, JSGPattern
+        from pyjsg.jsglib import JSGString, JSGPattern
 
         class S(JSGString):
             pattern = JSGPattern(r'[a-zA-Z]+')

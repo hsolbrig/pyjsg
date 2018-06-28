@@ -1,6 +1,6 @@
 
 import unittest
-from pyjsg.jsglib.jsg import JSGPattern
+from pyjsg.jsglib import JSGPattern
 from tests.test_jsglib.iri_defn import IRI
 
 class JSGPatternTest(unittest.TestCase):

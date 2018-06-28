@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/complexfacet.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/complexfacet.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,11 +10,11 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("optFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("reqFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("listFacet")
@@ -31,24 +31,24 @@ _CONTEXT.TYPE_EXCEPTIONS.append("listList")
 
 
 
-class INTEGER(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]*')
+class INTEGER(JSGString):
+    pattern = JSGPattern(r'[0-9]*')
 
 
-class DECIMAL(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]*')
+class DECIMAL(JSGString):
+    pattern = JSGPattern(r'[0-9]*')
 
 
-class DOUBLE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]*')
+class DOUBLE(JSGString):
+    pattern = JSGPattern(r'[0-9]*')
 
 
-class STRING(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[a-z]*')
+class STRING(JSGString):
+    pattern = JSGPattern(r'[a-z]*')
 
 numericLiteral = Union[INTEGER, DECIMAL, DOUBLE]
 
-class optFacet(jsg.JSGObject):
+class optFacet(JSGObject):
     _reference_types = []
     _members = {'mininclusive': Optional[numericLiteral],
                 'minexclusive': Optional[numericLiteral],
@@ -70,7 +70,7 @@ class optFacet(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class reqFacet(jsg.JSGObject):
+class reqFacet(JSGObject):
     _reference_types = []
     _members = {'mininclusive': numericLiteral,
                 'minexclusive': numericLiteral,
@@ -92,7 +92,7 @@ class reqFacet(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class listFacet(jsg.JSGObject):
+class listFacet(JSGObject):
     _reference_types = []
     _members = {'mininclusive': List[numericLiteral],
                 'minexclusive': List[numericLiteral],
@@ -107,14 +107,14 @@ class listFacet(jsg.JSGObject):
                  maxexclusive: List[numericLiteral] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.mininclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, mininclusive)
-        self.minexclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, minexclusive)
-        self.maxinclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, maxinclusive)
-        self.maxexclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, maxexclusive)
+        self.mininclusive = JSGArray('mininclusive', _CONTEXT, numericLiteral, 0, None, mininclusive)
+        self.minexclusive = JSGArray('minexclusive', _CONTEXT, numericLiteral, 0, None, minexclusive)
+        self.maxinclusive = JSGArray('maxinclusive', _CONTEXT, numericLiteral, 0, None, maxinclusive)
+        self.maxexclusive = JSGArray('maxexclusive', _CONTEXT, numericLiteral, 0, None, maxexclusive)
         super().__init__(self._context, **_kwargs)
 
 
-class optOpt(jsg.JSGObject):
+class optOpt(JSGObject):
     _reference_types = [optFacet]
     _members = {'first': Optional[INTEGER],
                 'mininclusive': Optional[numericLiteral],
@@ -135,11 +135,11 @@ class optOpt(jsg.JSGObject):
         self.minexclusive = optFacet.minexclusive if optFacet else None
         self.maxinclusive = optFacet.maxinclusive if optFacet else None
         self.maxexclusive = optFacet.maxexclusive if optFacet else None
-        self.last = jsg_array.JSGArray(_CONTEXT, STRING, 1, None, last)
+        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
         super().__init__(self._context, **_kwargs)
 
 
-class optReq(jsg.JSGObject):
+class optReq(JSGObject):
     _reference_types = [optFacet]
     _members = {'first': int,
                 'mininclusive': Optional[numericLiteral],
@@ -155,16 +155,16 @@ class optReq(jsg.JSGObject):
                  last: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.first = jsg.Integer(first)
+        self.first = Integer(first)
         self.mininclusive = optFacet.mininclusive if optFacet else None
         self.minexclusive = optFacet.minexclusive if optFacet else None
         self.maxinclusive = optFacet.maxinclusive if optFacet else None
         self.maxexclusive = optFacet.maxexclusive if optFacet else None
-        self.last = jsg.String(last)
+        self.last = String(last)
         super().__init__(self._context, **_kwargs)
 
 
-class optList(jsg.JSGObject):
+class optList(JSGObject):
     _reference_types = [optFacet]
     _members = {'first': List[INTEGER],
                 'optFacet': List[optFacet],
@@ -177,13 +177,13 @@ class optList(jsg.JSGObject):
                  last: List[STRING] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.first = jsg_array.JSGArray(_CONTEXT, INTEGER, 0, None, first)
+        self.first = JSGArray('first', _CONTEXT, INTEGER, 0, None, first)
         self.optFacet = optFacet
-        self.last = jsg_array.JSGArray(_CONTEXT, STRING, 0, None, last)
+        self.last = JSGArray('last', _CONTEXT, STRING, 0, None, last)
         super().__init__(self._context, **_kwargs)
 
 
-class reqOpt(jsg.JSGObject):
+class reqOpt(JSGObject):
     _reference_types = [reqFacet]
     _members = {'first': Optional[INTEGER],
                 'mininclusive': Optional[numericLiteral],
@@ -204,11 +204,11 @@ class reqOpt(jsg.JSGObject):
         self.minexclusive = reqFacet.minexclusive if reqFacet else None
         self.maxinclusive = reqFacet.maxinclusive if reqFacet else None
         self.maxexclusive = reqFacet.maxexclusive if reqFacet else None
-        self.last = jsg_array.JSGArray(_CONTEXT, STRING, 1, None, last)
+        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
         super().__init__(self._context, **_kwargs)
 
 
-class reqReq(jsg.JSGObject):
+class reqReq(JSGObject):
     _reference_types = [reqFacet]
     _members = {'first': int,
                 'mininclusive': numericLiteral,
@@ -224,16 +224,16 @@ class reqReq(jsg.JSGObject):
                  last: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.first = jsg.Integer(first)
+        self.first = Integer(first)
         self.mininclusive = reqFacet.mininclusive
         self.minexclusive = reqFacet.minexclusive
         self.maxinclusive = reqFacet.maxinclusive
         self.maxexclusive = reqFacet.maxexclusive
-        self.last = jsg.String(last)
+        self.last = String(last)
         super().__init__(self._context, **_kwargs)
 
 
-class reqList(jsg.JSGObject):
+class reqList(JSGObject):
     _reference_types = [reqFacet]
     _members = {'first': List[INTEGER],
                 'reqFacet': List[reqFacet],
@@ -246,13 +246,13 @@ class reqList(jsg.JSGObject):
                  last: List[STRING] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.first = jsg_array.JSGArray(_CONTEXT, INTEGER, 0, None, first)
+        self.first = JSGArray('first', _CONTEXT, INTEGER, 0, None, first)
         self.reqFacet = reqFacet
-        self.last = jsg_array.JSGArray(_CONTEXT, STRING, 0, None, last)
+        self.last = JSGArray('last', _CONTEXT, STRING, 0, None, last)
         super().__init__(self._context, **_kwargs)
 
 
-class listOpt(jsg.JSGObject):
+class listOpt(JSGObject):
     _reference_types = [listFacet]
     _members = {'first': Optional[INTEGER],
                 'mininclusive': Optional[List[numericLiteral]],
@@ -269,15 +269,15 @@ class listOpt(jsg.JSGObject):
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
         self.first = first
-        self.mininclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, mininclusive)
-        self.minexclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, minexclusive)
-        self.maxinclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, maxinclusive)
-        self.maxexclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, maxexclusive)
-        self.last = jsg_array.JSGArray(_CONTEXT, STRING, 1, None, last)
+        self.mininclusive = JSGArray('mininclusive', _CONTEXT, numericLiteral, 0, None, mininclusive)
+        self.minexclusive = JSGArray('minexclusive', _CONTEXT, numericLiteral, 0, None, minexclusive)
+        self.maxinclusive = JSGArray('maxinclusive', _CONTEXT, numericLiteral, 0, None, maxinclusive)
+        self.maxexclusive = JSGArray('maxexclusive', _CONTEXT, numericLiteral, 0, None, maxexclusive)
+        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
         super().__init__(self._context, **_kwargs)
 
 
-class listReq(jsg.JSGObject):
+class listReq(JSGObject):
     _reference_types = [listFacet]
     _members = {'first': int,
                 'mininclusive': List[numericLiteral],
@@ -293,16 +293,16 @@ class listReq(jsg.JSGObject):
                  last: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.first = jsg.Integer(first)
-        self.mininclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, mininclusive)
-        self.minexclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, minexclusive)
-        self.maxinclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, maxinclusive)
-        self.maxexclusive = jsg_array.JSGArray(_CONTEXT, numericLiteral, 0, None, maxexclusive)
-        self.last = jsg.String(last)
+        self.first = Integer(first)
+        self.mininclusive = JSGArray('mininclusive', _CONTEXT, numericLiteral, 0, None, mininclusive)
+        self.minexclusive = JSGArray('minexclusive', _CONTEXT, numericLiteral, 0, None, minexclusive)
+        self.maxinclusive = JSGArray('maxinclusive', _CONTEXT, numericLiteral, 0, None, maxinclusive)
+        self.maxexclusive = JSGArray('maxexclusive', _CONTEXT, numericLiteral, 0, None, maxexclusive)
+        self.last = String(last)
         super().__init__(self._context, **_kwargs)
 
 
-class listList(jsg.JSGObject):
+class listList(JSGObject):
     _reference_types = [listFacet]
     _members = {'first': List[INTEGER],
                 'listFacet': List[listFacet],
@@ -315,9 +315,9 @@ class listList(jsg.JSGObject):
                  last: List[STRING] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.first = jsg_array.JSGArray(_CONTEXT, INTEGER, 0, None, first)
+        self.first = JSGArray('first', _CONTEXT, INTEGER, 0, None, first)
         self.listFacet = listFacet
-        self.last = jsg_array.JSGArray(_CONTEXT, STRING, 0, None, last)
+        self.last = JSGArray('last', _CONTEXT, STRING, 0, None, last)
         super().__init__(self._context, **_kwargs)
 
 

@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/NodeConstraint.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/NodeConstraint.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,11 +10,11 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("stringFacet_1_")
 _CONTEXT.TYPE_EXCEPTIONS.append("stringFacet_2_")
 _CONTEXT.TYPE_EXCEPTIONS.append("numericFacet")
@@ -27,14 +27,14 @@ _CONTEXT.TYPE_EXCEPTIONS.append("NodeConstraint")
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
 
 
-class IRI(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]')
+class IRI(JSGString):
+    pattern = JSGPattern(r'[0-9]')
 
-class stringFacet_1_(jsg.JSGObject):
+class stringFacet_1_(JSGObject):
     _reference_types = []
     _members = {'length': int,
                 'minlength': int,
@@ -47,13 +47,13 @@ class stringFacet_1_(jsg.JSGObject):
                  maxlength: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(length)
-        self.minlength = jsg.Integer(minlength)
-        self.maxlength = jsg.Integer(maxlength)
+        self.length = Integer(length)
+        self.minlength = Integer(minlength)
+        self.maxlength = Integer(maxlength)
         super().__init__(self._context, **_kwargs)
 
 
-class stringFacet_2_(jsg.JSGObject):
+class stringFacet_2_(JSGObject):
     _reference_types = []
     _members = {'pattern': str,
                 'flags': Optional[str]}
@@ -64,12 +64,12 @@ class stringFacet_2_(jsg.JSGObject):
                  flags: Optional[str] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.pattern = jsg.String(pattern)
-        self.flags = jsg.String(flags)
+        self.pattern = String(pattern)
+        self.flags = String(flags)
         super().__init__(self._context, **_kwargs)
 
 
-class numericFacet(jsg.JSGObject):
+class numericFacet(JSGObject):
     _reference_types = []
     _members = {'mininclusive': int,
                 'minexclusive': int,
@@ -88,16 +88,16 @@ class numericFacet(jsg.JSGObject):
                  fractiondigits: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.mininclusive = jsg.Integer(mininclusive)
-        self.minexclusive = jsg.Integer(minexclusive)
-        self.maxinclusive = jsg.Integer(maxinclusive)
-        self.maxexclusive = jsg.Integer(maxexclusive)
-        self.totaldigits = jsg.Integer(totaldigits)
-        self.fractiondigits = jsg.Integer(fractiondigits)
+        self.mininclusive = Integer(mininclusive)
+        self.minexclusive = Integer(minexclusive)
+        self.maxinclusive = Integer(maxinclusive)
+        self.maxexclusive = Integer(maxexclusive)
+        self.totaldigits = Integer(totaldigits)
+        self.fractiondigits = Integer(fractiondigits)
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet_2_(jsg.JSGObject):
+class xsFacet_2_(JSGObject):
     _reference_types = [numericFacet]
     _members = {'mininclusive': int,
                 'minexclusive': int,
@@ -111,16 +111,16 @@ class xsFacet_2_(jsg.JSGObject):
                  numericFacet: numericFacet = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.mininclusive = jsg.Integer(numericFacet.mininclusive)
-        self.minexclusive = jsg.Integer(numericFacet.minexclusive)
-        self.maxinclusive = jsg.Integer(numericFacet.maxinclusive)
-        self.maxexclusive = jsg.Integer(numericFacet.maxexclusive)
-        self.totaldigits = jsg.Integer(numericFacet.totaldigits)
-        self.fractiondigits = jsg.Integer(numericFacet.fractiondigits)
+        self.mininclusive = Integer(numericFacet.mininclusive)
+        self.minexclusive = Integer(numericFacet.minexclusive)
+        self.maxinclusive = Integer(numericFacet.maxinclusive)
+        self.maxexclusive = Integer(numericFacet.maxexclusive)
+        self.totaldigits = Integer(numericFacet.totaldigits)
+        self.fractiondigits = Integer(numericFacet.fractiondigits)
         super().__init__(self._context, **_kwargs)
 
 
-class stringFacet(jsg.JSGObject):
+class stringFacet(JSGObject):
     _reference_types = [stringFacet_1_, stringFacet_2_]
     _members = {'length': int,
                 'minlength': int,
@@ -133,15 +133,15 @@ class stringFacet(jsg.JSGObject):
                  opt_: Union[stringFacet_1_, stringFacet_2_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(opt_.length) if isinstance(opt_, stringFacet_1_) else jsg.Integer(None)
-        self.minlength = jsg.Integer(opt_.minlength) if isinstance(opt_, stringFacet_1_) else jsg.Integer(None)
-        self.maxlength = jsg.Integer(opt_.maxlength) if isinstance(opt_, stringFacet_1_) else jsg.Integer(None)
-        self.pattern = jsg.String(opt_.pattern) if isinstance(opt_, stringFacet_2_) else jsg.String(None)
-        self.flags = jsg.String(opt_.flags) if opt_ else jsg.String(None) if isinstance(opt_, stringFacet_2_) else jsg.String(None)
+        self.length = Integer(opt_.length) if isinstance(opt_, stringFacet_1_) else Integer(None)
+        self.minlength = Integer(opt_.minlength) if isinstance(opt_, stringFacet_1_) else Integer(None)
+        self.maxlength = Integer(opt_.maxlength) if isinstance(opt_, stringFacet_1_) else Integer(None)
+        self.pattern = String(opt_.pattern) if isinstance(opt_, stringFacet_2_) else String(None)
+        self.flags = String(opt_.flags) if opt_ else String(None) if isinstance(opt_, stringFacet_2_) else String(None)
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet_1_(jsg.JSGObject):
+class xsFacet_1_(JSGObject):
     _reference_types = [stringFacet]
     _members = {'length': int,
                 'minlength': int,
@@ -154,15 +154,15 @@ class xsFacet_1_(jsg.JSGObject):
                  stringFacet: stringFacet = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(stringFacet.length)
-        self.minlength = jsg.Integer(stringFacet.minlength)
-        self.maxlength = jsg.Integer(stringFacet.maxlength)
-        self.pattern = jsg.String(stringFacet.pattern)
-        self.flags = jsg.String(stringFacet.flags) if stringFacet else jsg.String(None)
+        self.length = Integer(stringFacet.length)
+        self.minlength = Integer(stringFacet.minlength)
+        self.maxlength = Integer(stringFacet.maxlength)
+        self.pattern = String(stringFacet.pattern)
+        self.flags = String(stringFacet.flags) if stringFacet else String(None)
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet(jsg.JSGObject):
+class xsFacet(JSGObject):
     _reference_types = [xsFacet_1_, xsFacet_2_]
     _members = {'length': int,
                 'minlength': int,
@@ -181,21 +181,21 @@ class xsFacet(jsg.JSGObject):
                  opt_: Union[xsFacet_1_, xsFacet_2_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(opt_.length) if isinstance(opt_, xsFacet_1_) else jsg.Integer(None)
-        self.minlength = jsg.Integer(opt_.minlength) if isinstance(opt_, xsFacet_1_) else jsg.Integer(None)
-        self.maxlength = jsg.Integer(opt_.maxlength) if isinstance(opt_, xsFacet_1_) else jsg.Integer(None)
-        self.pattern = jsg.String(opt_.pattern) if isinstance(opt_, xsFacet_1_) else jsg.String(None)
-        self.flags = jsg.String(opt_.flags) if opt_ else jsg.String(None) if isinstance(opt_, xsFacet_1_) else jsg.String(None)
-        self.mininclusive = jsg.Integer(opt_.mininclusive) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
-        self.minexclusive = jsg.Integer(opt_.minexclusive) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
-        self.maxinclusive = jsg.Integer(opt_.maxinclusive) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
-        self.maxexclusive = jsg.Integer(opt_.maxexclusive) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
-        self.totaldigits = jsg.Integer(opt_.totaldigits) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
-        self.fractiondigits = jsg.Integer(opt_.fractiondigits) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
+        self.length = Integer(opt_.length) if isinstance(opt_, xsFacet_1_) else Integer(None)
+        self.minlength = Integer(opt_.minlength) if isinstance(opt_, xsFacet_1_) else Integer(None)
+        self.maxlength = Integer(opt_.maxlength) if isinstance(opt_, xsFacet_1_) else Integer(None)
+        self.pattern = String(opt_.pattern) if isinstance(opt_, xsFacet_1_) else String(None)
+        self.flags = String(opt_.flags) if opt_ else String(None) if isinstance(opt_, xsFacet_1_) else String(None)
+        self.mininclusive = Integer(opt_.mininclusive) if isinstance(opt_, xsFacet_2_) else Integer(None)
+        self.minexclusive = Integer(opt_.minexclusive) if isinstance(opt_, xsFacet_2_) else Integer(None)
+        self.maxinclusive = Integer(opt_.maxinclusive) if isinstance(opt_, xsFacet_2_) else Integer(None)
+        self.maxexclusive = Integer(opt_.maxexclusive) if isinstance(opt_, xsFacet_2_) else Integer(None)
+        self.totaldigits = Integer(opt_.totaldigits) if isinstance(opt_, xsFacet_2_) else Integer(None)
+        self.fractiondigits = Integer(opt_.fractiondigits) if isinstance(opt_, xsFacet_2_) else Integer(None)
         super().__init__(self._context, **_kwargs)
 
 
-class NodeConstraint(jsg.JSGObject):
+class NodeConstraint(JSGObject):
     _reference_types = [xsFacet]
     _members = {'nodeKind': Optional[_Anon1],
                 'datatype': Optional[IRI],
@@ -220,17 +220,17 @@ class NodeConstraint(jsg.JSGObject):
         self._context = _CONTEXT
         self.nodeKind = nodeKind
         self.datatype = datatype
-        self.length = jsg.Integer(xsFacet.length) if xsFacet else jsg.Integer(None)
-        self.minlength = jsg.Integer(xsFacet.minlength) if xsFacet else jsg.Integer(None)
-        self.maxlength = jsg.Integer(xsFacet.maxlength) if xsFacet else jsg.Integer(None)
-        self.pattern = jsg.String(xsFacet.pattern) if xsFacet else jsg.String(None)
-        self.flags = jsg.String(xsFacet.flags) if xsFacet else jsg.String(None)
-        self.mininclusive = jsg.Integer(xsFacet.mininclusive) if xsFacet else jsg.Integer(None)
-        self.minexclusive = jsg.Integer(xsFacet.minexclusive) if xsFacet else jsg.Integer(None)
-        self.maxinclusive = jsg.Integer(xsFacet.maxinclusive) if xsFacet else jsg.Integer(None)
-        self.maxexclusive = jsg.Integer(xsFacet.maxexclusive) if xsFacet else jsg.Integer(None)
-        self.totaldigits = jsg.Integer(xsFacet.totaldigits) if xsFacet else jsg.Integer(None)
-        self.fractiondigits = jsg.Integer(xsFacet.fractiondigits) if xsFacet else jsg.Integer(None)
+        self.length = Integer(xsFacet.length) if xsFacet else Integer(None)
+        self.minlength = Integer(xsFacet.minlength) if xsFacet else Integer(None)
+        self.maxlength = Integer(xsFacet.maxlength) if xsFacet else Integer(None)
+        self.pattern = String(xsFacet.pattern) if xsFacet else String(None)
+        self.flags = String(xsFacet.flags) if xsFacet else String(None)
+        self.mininclusive = Integer(xsFacet.mininclusive) if xsFacet else Integer(None)
+        self.minexclusive = Integer(xsFacet.minexclusive) if xsFacet else Integer(None)
+        self.maxinclusive = Integer(xsFacet.maxinclusive) if xsFacet else Integer(None)
+        self.maxexclusive = Integer(xsFacet.maxexclusive) if xsFacet else Integer(None)
+        self.totaldigits = Integer(xsFacet.totaldigits) if xsFacet else Integer(None)
+        self.fractiondigits = Integer(xsFacet.fractiondigits) if xsFacet else Integer(None)
         super().__init__(self._context, **_kwargs)
 
 

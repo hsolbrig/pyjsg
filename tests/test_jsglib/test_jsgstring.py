@@ -1,7 +1,7 @@
 
 import unittest
 
-from pyjsg.jsglib.jsg import JSGString, JSGPattern
+from pyjsg.jsglib import JSGString, JSGPattern
 from tests.test_jsglib.iri_defn import *
 
 

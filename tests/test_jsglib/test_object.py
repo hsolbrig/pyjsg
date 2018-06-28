@@ -6,24 +6,22 @@ from dict_compare import dict_compare
 from io import StringIO
 from jsonasobj import loads as json_loads
 
-from pyjsg.jsglib import jsg
-from pyjsg.jsglib.logger import Logger
-
-_CONTEXT = jsg.JSGContext()
+from pyjsg.jsglib import JSGNull, String, Integer, Boolean, Number, JSGContext, JSGObject, Null
+_CONTEXT = JSGContext()
 
 
 class ObjectTestCase(unittest.TestCase):
-    def check_json(self, t: jsg.JSGObject, c: str):
+    def check_json(self, t: JSGObject, c: str):
         self.assertTrue(dict_compare(json_loads(c)._as_dict, t._as_json_obj()))
 
     def test_simple_object(self):
-        class Person(jsg.JSGObject):
+        class Person(JSGObject):
             _reference_types = []
             _members = {'name': str,
                         'age': int,
                         'married': bool,
                         'weight': float,
-                        'tag': Optional[jsg.JSGNull]}
+                        'tag': Optional[JSGNull]}
             _strict = True
 
             def __init__(self,
@@ -31,13 +29,13 @@ class ObjectTestCase(unittest.TestCase):
                          age: int = None,
                          married: bool = None,
                          weight: float = None,
-                         tag: Optional[jsg.JSGNull] = None,
+                         tag: Optional[JSGNull] = None,
                          **_kwargs: Dict[str, object]):
                 super().__init__(_CONTEXT, **_kwargs)
-                self.name = jsg.String(name)
-                self.age = jsg.Integer(age)
-                self.married = jsg.Boolean(married)
-                self.weight = jsg.Number(weight)
+                self.name = String(name)
+                self.age = Integer(age)
+                self.married = Boolean(married)
+                self.weight = Number(weight)
                 self.tag = tag
 
         log = StringIO()
@@ -62,7 +60,7 @@ class ObjectTestCase(unittest.TestCase):
         x.weight = "112"
         self.assertTrue(x._is_valid())
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112}')
-        x.tag = jsg.Null
+        x.tag = Null
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112, "tag": null}')
         with self.assertRaises(ValueError):
             x.age = "abc"

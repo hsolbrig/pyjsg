@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/example_1.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/example_1.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,20 +10,20 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'ready')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'ready')
 
-class doc(jsg.JSGObject):
+class doc(JSGObject):
     _reference_types = []
     _members = {'status': _Anon1}
     _strict = True

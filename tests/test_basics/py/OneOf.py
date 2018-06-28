@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/OneOf.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/OneOf.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,11 +10,11 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("EachOf")
 _CONTEXT.TYPE_EXCEPTIONS.append("TripleConstraint")
 _CONTEXT.TYPE_EXCEPTIONS.append("OneOf")
@@ -22,22 +22,22 @@ _CONTEXT.TYPE_EXCEPTIONS.append("OneOf")
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'unbounded')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'unbounded')
 
 
-class IRI(jsg.String):
-    pattern = jsg.JSGPattern(r'')
+class IRI(String):
+    pattern = JSGPattern(r'')
 
 
-class BNODE(jsg.String):
-    pattern = jsg.JSGPattern(r'')
+class BNODE(String):
+    pattern = JSGPattern(r'')
 
 
-class INTEGER(jsg.String):
-    pattern = jsg.JSGPattern(r'')
+class INTEGER(String):
+    pattern = JSGPattern(r'')
 
-class EachOf(jsg.JSGObject):
+class EachOf(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -48,7 +48,7 @@ class EachOf(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class TripleConstraint(jsg.JSGObject):
+class TripleConstraint(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -63,7 +63,7 @@ tripleExprLabel = Union[IRI, BNODE]
 
 tripleExpr = Union[EachOf, "OneOf", tripleExprLabel]
 
-class OneOf(jsg.JSGObject):
+class OneOf(JSGObject):
     _reference_types = []
     _members = {'id': Optional[tripleExprLabel],
                 'expressions': List["tripleExpr"],

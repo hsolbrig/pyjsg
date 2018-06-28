@@ -13,7 +13,7 @@ from .parser_utils import as_token, flatten
 
 _class_template = """
 
-class {name}(jsg.JSGObject):
+class {name}(JSGObject):
     _reference_types = [{reference_types}]
     _members = {{{members}}}
     _strict = {strict}

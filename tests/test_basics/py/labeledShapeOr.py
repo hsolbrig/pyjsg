@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/labeledShapeOr.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/labeledShapeOr.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,25 +10,25 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("shapeExprLabel")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledShapeOr")
 
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'ShapeOr')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'ShapeOr')
 
 
-class SHAPEEXPR(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[a-z]')
+class SHAPEEXPR(JSGString):
+    pattern = JSGPattern(r'[a-z]')
 
-class shapeExprLabel(jsg.JSGObject):
+class shapeExprLabel(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -39,7 +39,7 @@ class shapeExprLabel(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class labeledShapeOr(jsg.JSGObject):
+class labeledShapeOr(JSGObject):
     _reference_types = []
     _members = {'type': _Anon1,
                 'id': shapeExprLabel,

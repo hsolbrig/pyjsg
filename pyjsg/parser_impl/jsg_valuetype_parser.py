@@ -1,5 +1,6 @@
 from typing import Optional, List, Set, Union, cast
 
+from pyjsg.jsglib.jsg_strings import JSGStringMeta
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 
@@ -21,7 +22,7 @@ class JSGValueType(jsgParserVisitor):
 
         # Note: both lexeridref and alttypelist can co-occur
         self._typeid = None             # type: Optional[str]
-        self._arrayDef = None           # type: Optional[JSGArrayExpr]
+        self._arrayDef = None           # type: Optional["JSGArrayExpr"]
         self._lexeridref = None         # type: Optional[str]
         self._builtintype = None        # type: Optional[JSGBuiltinValueType]
         self._alttypelist = []          # type: List[JSGValueType]
@@ -36,7 +37,7 @@ class JSGValueType(jsgParserVisitor):
             else:
                 typ = "ID: {}".format(self._typeid)
         elif self._builtintype:
-            typ = "builtinValueType: {}".format(self._builtintype.basetype)
+            typ = "builtinValueType: {}".format(self._builtintype.basetypename)
         elif self._alttypelist:
             lid_str = "({}) | ".format(self._lexerid_str()) if self._lexeridref else ""
             typ = "({}{})".format(lid_str, ' | '.join(ta.typeid for ta in self._alttypelist))
@@ -55,7 +56,7 @@ class JSGValueType(jsgParserVisitor):
             return "STRING: {}".format(self._context.grammarelts[self._lexeridref])
 
     def as_python(self, name: str) -> str:
-        return _valuetype_template.format(name, self.basetype if self._builtintype else self.typeid)
+        return _valuetype_template.format(name, self.basetypename if self._builtintype else self.typeid)
 
     @property
     def typeid(self) -> str:
@@ -74,7 +75,11 @@ class JSGValueType(jsgParserVisitor):
             types[0] if len(types) == 1 else "Union[{}]".format(', '.join(types))
 
     @property
-    def basetype(self) -> Optional[str]:
+    def basetypename(self) -> Optional[str]:
+        return self._builtintype.basetypename if self._builtintype else None
+
+    @property
+    def basetype(self) -> Optional[JSGStringMeta]:
         return self._builtintype.basetype if self._builtintype else None
 
     def dependencies(self) -> Set[str]:

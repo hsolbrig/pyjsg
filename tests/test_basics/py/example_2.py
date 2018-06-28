@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/example_2.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:40
+# Auto generated from test_basics/jsg/example_2.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,16 +10,16 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
 
 
-class doc(jsg.JSGObject):
+class doc(JSGObject):
     _reference_types = []
     _members = {'street': str,
                 'no': int}
@@ -30,8 +30,8 @@ class doc(jsg.JSGObject):
                  no: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.street = jsg.String(street)
-        self.no = jsg.Integer(no)
+        self.street = String(street)
+        self.no = Integer(no)
         super().__init__(self._context, **_kwargs)
 
 

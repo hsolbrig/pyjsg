@@ -1,5 +1,5 @@
-# Auto generated from tests/test_jsg_readme/jsg/pd1.jsg by PyJSG version 0.6.0
-# Generation date: 2018-06-26 12:41
+# Auto generated from test_jsg_readme/jsg/pd1.jsg by PyJSG version 0.7.0
+# Generation date: 2018-06-28 11:40
 #
 import sys
 from typing import Optional, Dict, List, Union
@@ -10,16 +10,16 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg, jsg_array
+from pyjsg.jsglib import *
 from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE = "id"
 
 
 
-class person(jsg.JSGObject):
+class person(JSGObject):
     _reference_types = []
     _members = {'name': str,
                 'age': int}
@@ -30,12 +30,12 @@ class person(jsg.JSGObject):
                  age: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.name = jsg.String(name)
-        self.age = jsg.Integer(age)
+        self.name = String(name)
+        self.age = Integer(age)
         super().__init__(self._context, **_kwargs)
 
 
-class membership(jsg.JSGObject):
+class membership(JSGObject):
     _reference_types = []
     _members = {'list_name': str,
                 'members': List[person]}
@@ -46,8 +46,8 @@ class membership(jsg.JSGObject):
                  members: List[person] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.list_name = jsg.String(list_name)
-        self.members = jsg_array.JSGArray(_CONTEXT, person, 0, None, members)
+        self.list_name = String(list_name)
+        self.members = JSGArray('members', _CONTEXT, person, 0, None, members)
         super().__init__(self._context, **_kwargs)
 
 

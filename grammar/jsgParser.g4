@@ -73,7 +73,7 @@ idref               : ID ;
 ebnfSuffix          : QMARK
 					| STAR
 					| PLUS
-					| OBRACE INT (COMMA (INT|STAR)?)? CBRACE
+					| OBRACE INT? (COMMA (INT|STAR)?)? CBRACE
 					;
 
 

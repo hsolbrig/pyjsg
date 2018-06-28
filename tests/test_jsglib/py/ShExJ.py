@@ -10,61 +10,61 @@ else:
     from typing import ForwardRef
     from pyjsg.jsglib import typing_patch_37
 
-from pyjsg.jsglib import jsg
+from pyjsg.jsglib import *
 
 
 # .TYPE and .IGNORE settings
-_CONTEXT = jsg.JSGContext()
+_CONTEXT = JSGContext()
 _CONTEXT.TYPE = "type"
 _CONTEXT.TYPE_EXCEPTIONS.append("ObjectLiteral")
 
 
 
 
-class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'http\:\/\/www\.w3\.org\/ns\/shex\.jsonld')
+class _Anon1(JSGString):
+    pattern = JSGPattern(r'http\:\/\/www\.w3\.org\/ns\/shex\.jsonld')
 
 
-class _Anon2(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
+class _Anon2(JSGString):
+    pattern = JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
 
 
-class LANGTAG(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[a-zA-Z]+(\-([a-zA-Z0-9])+)*')
+class LANGTAG(JSGString):
+    pattern = JSGPattern(r'[a-zA-Z]+(\-([a-zA-Z0-9])+)*')
 
 
-class PN_CHARS_BASE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[A-Z]|[a-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\u10000-\uEFFFF]')
+class PN_CHARS_BASE(JSGString):
+    pattern = JSGPattern(r'[A-Z]|[a-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\u10000-\uEFFFF]')
 
 
-class HEX(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'[0-9]|[A-F]|[a-f]')
+class HEX(JSGString):
+    pattern = JSGPattern(r'[0-9]|[A-F]|[a-f]')
 
 
-class PN_CHARS_U(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))
+class PN_CHARS_U(JSGString):
+    pattern = JSGPattern(r'({PN_CHARS_BASE})|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))
 
 
-class UCHAR(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'\\\\u({HEX})({HEX})({HEX})({HEX})|\\\\U({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})'.format(HEX=HEX.pattern))
+class UCHAR(JSGString):
+    pattern = JSGPattern(r'\\\\u({HEX})({HEX})({HEX})({HEX})|\\\\U({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})'.format(HEX=HEX.pattern))
 
 
-class IRIREF(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'([^\u0000-\u0020\u005C\u007B\u007D<>"|^`]|({UCHAR}))*'.format(UCHAR=UCHAR.pattern))
+class IRIREF(JSGString):
+    pattern = JSGPattern(r'([^\u0000-\u0020\u005C\u007B\u007D<>"|^`]|({UCHAR}))*'.format(UCHAR=UCHAR.pattern))
 
 
-class PN_CHARS(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|\\u00B7|[\u0300-\u036F]|[\u203F-\u2040]'.format(PN_CHARS_U=PN_CHARS_U.pattern))
+class PN_CHARS(JSGString):
+    pattern = JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|\\u00B7|[\u0300-\u036F]|[\u203F-\u2040]'.format(PN_CHARS_U=PN_CHARS_U.pattern))
 
 
-class BNODE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
+class BNODE(JSGString):
+    pattern = JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
 
 
-class PN_PREFIX(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))
+class PN_PREFIX(JSGString):
+    pattern = JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))
 
-class stringFacet_1_(jsg.JSGObject):
+class stringFacet_1_(JSGObject):
     _reference_types = []
     _members = {'length': int,
                 'minlength': int,
@@ -77,13 +77,13 @@ class stringFacet_1_(jsg.JSGObject):
                  maxlength: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(length)
-        self.minlength = jsg.Integer(minlength)
-        self.maxlength = jsg.Integer(maxlength)
+        self.length = Integer(length)
+        self.minlength = Integer(minlength)
+        self.maxlength = Integer(maxlength)
         super().__init__(self._context, **_kwargs)
 
 
-class stringFacet_2_(jsg.JSGObject):
+class stringFacet_2_(JSGObject):
     _reference_types = []
     _members = {'pattern': str,
                 'flags': Optional[str]}
@@ -94,12 +94,12 @@ class stringFacet_2_(jsg.JSGObject):
                  flags: Optional[str] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.pattern = jsg.String(pattern)
-        self.flags = jsg.String(flags)
+        self.pattern = String(pattern)
+        self.flags = String(flags)
         super().__init__(self._context, **_kwargs)
 
 
-class numericFacet(jsg.JSGObject):
+class numericFacet(JSGObject):
     _reference_types = []
     _members = {'mininclusive': float,
                 'minexclusive': float,
@@ -118,16 +118,16 @@ class numericFacet(jsg.JSGObject):
                  fractiondigits: int = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.mininclusive = jsg.Number(mininclusive)
-        self.minexclusive = jsg.Number(minexclusive)
-        self.maxinclusive = jsg.Number(maxinclusive)
-        self.maxexclusive = jsg.Number(maxexclusive)
-        self.totaldigits = jsg.Integer(totaldigits)
-        self.fractiondigits = jsg.Integer(fractiondigits)
+        self.mininclusive = Number(mininclusive)
+        self.minexclusive = Number(minexclusive)
+        self.maxinclusive = Number(maxinclusive)
+        self.maxexclusive = Number(maxexclusive)
+        self.totaldigits = Integer(totaldigits)
+        self.fractiondigits = Integer(fractiondigits)
         super().__init__(self._context, **_kwargs)
 
 
-class LiteralStem(jsg.JSGObject):
+class LiteralStem(JSGObject):
     _reference_types = []
     _members = {'stem': str}
     _strict = True
@@ -136,11 +136,11 @@ class LiteralStem(jsg.JSGObject):
                  stem: str = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.stem = jsg.String(stem)
+        self.stem = String(stem)
         super().__init__(self._context, **_kwargs)
 
 
-class Wildcard(jsg.JSGObject):
+class Wildcard(JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
@@ -151,7 +151,7 @@ class Wildcard(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet_2_(jsg.JSGObject):
+class xsFacet_2_(JSGObject):
     _reference_types = [numericFacet]
     _members = {'mininclusive': float,
                 'minexclusive': float,
@@ -165,16 +165,16 @@ class xsFacet_2_(jsg.JSGObject):
                  numericFacet: numericFacet = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.mininclusive = jsg.Number(numericFacet.mininclusive)
-        self.minexclusive = jsg.Number(numericFacet.minexclusive)
-        self.maxinclusive = jsg.Number(numericFacet.maxinclusive)
-        self.maxexclusive = jsg.Number(numericFacet.maxexclusive)
-        self.totaldigits = jsg.Integer(numericFacet.totaldigits)
-        self.fractiondigits = jsg.Integer(numericFacet.fractiondigits)
+        self.mininclusive = Number(numericFacet.mininclusive)
+        self.minexclusive = Number(numericFacet.minexclusive)
+        self.maxinclusive = Number(numericFacet.maxinclusive)
+        self.maxexclusive = Number(numericFacet.maxexclusive)
+        self.totaldigits = Integer(numericFacet.totaldigits)
+        self.fractiondigits = Integer(numericFacet.fractiondigits)
         super().__init__(self._context, **_kwargs)
 
 
-class stringFacet(jsg.JSGObject):
+class stringFacet(JSGObject):
     _reference_types = [stringFacet_1_, stringFacet_2_]
     _members = {'length': int,
                 'minlength': int,
@@ -187,15 +187,15 @@ class stringFacet(jsg.JSGObject):
                  opt_: Union[stringFacet_1_, stringFacet_2_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(opt_.length) if isinstance(opt_, stringFacet_1_) else jsg.Integer(None)
-        self.minlength = jsg.Integer(opt_.minlength) if isinstance(opt_, stringFacet_1_) else jsg.Integer(None)
-        self.maxlength = jsg.Integer(opt_.maxlength) if isinstance(opt_, stringFacet_1_) else jsg.Integer(None)
-        self.pattern = jsg.String(opt_.pattern) if isinstance(opt_, stringFacet_2_) else jsg.String(None)
-        self.flags = jsg.String(opt_.flags) if opt_ else jsg.String(None) if isinstance(opt_, stringFacet_2_) else jsg.String(None)
+        self.length = Integer(opt_.length) if isinstance(opt_, stringFacet_1_) else Integer(None)
+        self.minlength = Integer(opt_.minlength) if isinstance(opt_, stringFacet_1_) else Integer(None)
+        self.maxlength = Integer(opt_.maxlength) if isinstance(opt_, stringFacet_1_) else Integer(None)
+        self.pattern = String(opt_.pattern) if isinstance(opt_, stringFacet_2_) else String(None)
+        self.flags = String(opt_.flags) if opt_ else String(None) if isinstance(opt_, stringFacet_2_) else String(None)
         super().__init__(self._context, **_kwargs)
 
 
-class LiteralStemRange(jsg.JSGObject):
+class LiteralStemRange(JSGObject):
     _reference_types = []
     _members = {'stem': Union[str, Wildcard],
                 'exclusions': List[Union[str, LiteralStem]]}
@@ -211,7 +211,7 @@ class LiteralStemRange(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class Language(jsg.JSGObject):
+class Language(JSGObject):
     _reference_types = []
     _members = {'languageTag': LANGTAG}
     _strict = True
@@ -224,7 +224,7 @@ class Language(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class LanguageStem(jsg.JSGObject):
+class LanguageStem(JSGObject):
     _reference_types = []
     _members = {'stem': LANGTAG}
     _strict = True
@@ -237,7 +237,7 @@ class LanguageStem(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet_1_(jsg.JSGObject):
+class xsFacet_1_(JSGObject):
     _reference_types = [stringFacet]
     _members = {'length': int,
                 'minlength': int,
@@ -250,15 +250,15 @@ class xsFacet_1_(jsg.JSGObject):
                  stringFacet: stringFacet = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(stringFacet.length)
-        self.minlength = jsg.Integer(stringFacet.minlength)
-        self.maxlength = jsg.Integer(stringFacet.maxlength)
-        self.pattern = jsg.String(stringFacet.pattern)
-        self.flags = jsg.String(stringFacet.flags) if stringFacet else jsg.String(None)
+        self.length = Integer(stringFacet.length)
+        self.minlength = Integer(stringFacet.minlength)
+        self.maxlength = Integer(stringFacet.maxlength)
+        self.pattern = String(stringFacet.pattern)
+        self.flags = String(stringFacet.flags) if stringFacet else String(None)
         super().__init__(self._context, **_kwargs)
 
 
-class LanguageStemRange(jsg.JSGObject):
+class LanguageStemRange(JSGObject):
     _reference_types = []
     _members = {'stem': Union[LANGTAG, Wildcard],
                 'exclusions': List[Union[LANGTAG, LanguageStem]]}
@@ -274,7 +274,7 @@ class LanguageStemRange(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class xsFacet(jsg.JSGObject):
+class xsFacet(JSGObject):
     _reference_types = [xsFacet_1_, xsFacet_2_]
     _members = {'length': int,
                 'minlength': int,
@@ -293,21 +293,21 @@ class xsFacet(jsg.JSGObject):
                  opt_: Union[xsFacet_1_, xsFacet_2_] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.length = jsg.Integer(opt_.length) if isinstance(opt_, xsFacet_1_) else jsg.Integer(None)
-        self.minlength = jsg.Integer(opt_.minlength) if isinstance(opt_, xsFacet_1_) else jsg.Integer(None)
-        self.maxlength = jsg.Integer(opt_.maxlength) if isinstance(opt_, xsFacet_1_) else jsg.Integer(None)
-        self.pattern = jsg.String(opt_.pattern) if isinstance(opt_, xsFacet_1_) else jsg.String(None)
-        self.flags = jsg.String(opt_.flags) if opt_ else jsg.String(None) if isinstance(opt_, xsFacet_1_) else jsg.String(None)
-        self.mininclusive = jsg.Number(opt_.mininclusive) if isinstance(opt_, xsFacet_2_) else jsg.Number(None)
-        self.minexclusive = jsg.Number(opt_.minexclusive) if isinstance(opt_, xsFacet_2_) else jsg.Number(None)
-        self.maxinclusive = jsg.Number(opt_.maxinclusive) if isinstance(opt_, xsFacet_2_) else jsg.Number(None)
-        self.maxexclusive = jsg.Number(opt_.maxexclusive) if isinstance(opt_, xsFacet_2_) else jsg.Number(None)
-        self.totaldigits = jsg.Integer(opt_.totaldigits) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
-        self.fractiondigits = jsg.Integer(opt_.fractiondigits) if isinstance(opt_, xsFacet_2_) else jsg.Integer(None)
+        self.length = Integer(opt_.length) if isinstance(opt_, xsFacet_1_) else Integer(None)
+        self.minlength = Integer(opt_.minlength) if isinstance(opt_, xsFacet_1_) else Integer(None)
+        self.maxlength = Integer(opt_.maxlength) if isinstance(opt_, xsFacet_1_) else Integer(None)
+        self.pattern = String(opt_.pattern) if isinstance(opt_, xsFacet_1_) else String(None)
+        self.flags = String(opt_.flags) if opt_ else String(None) if isinstance(opt_, xsFacet_1_) else String(None)
+        self.mininclusive = Number(opt_.mininclusive) if isinstance(opt_, xsFacet_2_) else Number(None)
+        self.minexclusive = Number(opt_.minexclusive) if isinstance(opt_, xsFacet_2_) else Number(None)
+        self.maxinclusive = Number(opt_.maxinclusive) if isinstance(opt_, xsFacet_2_) else Number(None)
+        self.maxexclusive = Number(opt_.maxexclusive) if isinstance(opt_, xsFacet_2_) else Number(None)
+        self.totaldigits = Integer(opt_.totaldigits) if isinstance(opt_, xsFacet_2_) else Integer(None)
+        self.fractiondigits = Integer(opt_.fractiondigits) if isinstance(opt_, xsFacet_2_) else Integer(None)
         super().__init__(self._context, **_kwargs)
 
 
-class ObjectLiteral(jsg.JSGObject):
+class ObjectLiteral(JSGObject):
     _reference_types = []
     _members = {'value': str,
                 'language': Optional[LANGTAG],
@@ -320,13 +320,13 @@ class ObjectLiteral(jsg.JSGObject):
                  type: Optional[IRIREF] = None,
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
-        self.value = jsg.String(value)
+        self.value = String(value)
         self.language = language
         self.type = type
         super().__init__(self._context, **_kwargs)
 
 
-class IriStem(jsg.JSGObject):
+class IriStem(JSGObject):
     _reference_types = []
     _members = {'stem': IRIREF}
     _strict = True
@@ -339,7 +339,7 @@ class IriStem(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class SemAct(jsg.JSGObject):
+class SemAct(JSGObject):
     _reference_types = []
     _members = {'name': IRIREF,
                 'code': Optional[str]}
@@ -351,7 +351,7 @@ class SemAct(jsg.JSGObject):
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
         self.name = name
-        self.code = jsg.String(code)
+        self.code = String(code)
         super().__init__(self._context, **_kwargs)
 
 
@@ -359,7 +359,7 @@ shapeExprLabel = Union[IRIREF, BNODE]
 
 objectValue = Union[IRIREF, ObjectLiteral]
 
-class IriStemRange(jsg.JSGObject):
+class IriStemRange(JSGObject):
     _reference_types = []
     _members = {'stem': Union[IRIREF, Wildcard],
                 'exclusions': List[Union[IRIREF, IriStem]]}
@@ -377,7 +377,7 @@ class IriStemRange(jsg.JSGObject):
 
 tripleExprLabel = Union[IRIREF, BNODE]
 
-class ShapeOr(jsg.JSGObject):
+class ShapeOr(JSGObject):
     _reference_types = []
     _members = {'id': Optional[shapeExprLabel],
                 'shapeExprs': List["shapeExpr"]}
@@ -393,7 +393,7 @@ class ShapeOr(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class ShapeAnd(jsg.JSGObject):
+class ShapeAnd(JSGObject):
     _reference_types = []
     _members = {'id': Optional[shapeExprLabel],
                 'shapeExprs': List["shapeExpr"]}
@@ -409,7 +409,7 @@ class ShapeAnd(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class ShapeNot(jsg.JSGObject):
+class ShapeNot(JSGObject):
     _reference_types = []
     _members = {'id': Optional[shapeExprLabel],
                 'shapeExpr': "shapeExpr"}
@@ -425,7 +425,7 @@ class ShapeNot(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class ShapeExternal(jsg.JSGObject):
+class ShapeExternal(JSGObject):
     _reference_types = []
     _members = {'id': Optional[shapeExprLabel]}
     _strict = True
@@ -440,7 +440,7 @@ class ShapeExternal(jsg.JSGObject):
 
 valueSetValue = Union[objectValue, IriStem, IriStemRange, LiteralStem, LiteralStemRange, Language, LanguageStem, LanguageStemRange]
 
-class Annotation(jsg.JSGObject):
+class Annotation(JSGObject):
     _reference_types = []
     _members = {'predicate': IRIREF,
                 'object': objectValue}
@@ -456,7 +456,7 @@ class Annotation(jsg.JSGObject):
         super().__init__(self._context, **_kwargs)
 
 
-class NodeConstraint(jsg.JSGObject):
+class NodeConstraint(JSGObject):
     _reference_types = [xsFacet]
     _members = {'id': Optional[shapeExprLabel],
                 'nodeKind': Optional[_Anon2],
@@ -486,22 +486,22 @@ class NodeConstraint(jsg.JSGObject):
         self.id = id
         self.nodeKind = nodeKind
         self.datatype = datatype
-        self.length = jsg.Integer(xsFacet.length) if xsFacet else jsg.Integer(None)
-        self.minlength = jsg.Integer(xsFacet.minlength) if xsFacet else jsg.Integer(None)
-        self.maxlength = jsg.Integer(xsFacet.maxlength) if xsFacet else jsg.Integer(None)
-        self.pattern = jsg.String(xsFacet.pattern) if xsFacet else jsg.String(None)
-        self.flags = jsg.String(xsFacet.flags) if xsFacet else jsg.String(None)
-        self.mininclusive = jsg.Number(xsFacet.mininclusive) if xsFacet else jsg.Number(None)
-        self.minexclusive = jsg.Number(xsFacet.minexclusive) if xsFacet else jsg.Number(None)
-        self.maxinclusive = jsg.Number(xsFacet.maxinclusive) if xsFacet else jsg.Number(None)
-        self.maxexclusive = jsg.Number(xsFacet.maxexclusive) if xsFacet else jsg.Number(None)
-        self.totaldigits = jsg.Integer(xsFacet.totaldigits) if xsFacet else jsg.Integer(None)
-        self.fractiondigits = jsg.Integer(xsFacet.fractiondigits) if xsFacet else jsg.Integer(None)
+        self.length = Integer(xsFacet.length) if xsFacet else Integer(None)
+        self.minlength = Integer(xsFacet.minlength) if xsFacet else Integer(None)
+        self.maxlength = Integer(xsFacet.maxlength) if xsFacet else Integer(None)
+        self.pattern = String(xsFacet.pattern) if xsFacet else String(None)
+        self.flags = String(xsFacet.flags) if xsFacet else String(None)
+        self.mininclusive = Number(xsFacet.mininclusive) if xsFacet else Number(None)
+        self.minexclusive = Number(xsFacet.minexclusive) if xsFacet else Number(None)
+        self.maxinclusive = Number(xsFacet.maxinclusive) if xsFacet else Number(None)
+        self.maxexclusive = Number(xsFacet.maxexclusive) if xsFacet else Number(None)
+        self.totaldigits = Integer(xsFacet.totaldigits) if xsFacet else Integer(None)
+        self.fractiondigits = Integer(xsFacet.fractiondigits) if xsFacet else Integer(None)
         self.values = values
         super().__init__(self._context, **_kwargs)
 
 
-class Shape(jsg.JSGObject):
+class Shape(JSGObject):
     _reference_types = []
     _members = {'id': Optional[shapeExprLabel],
                 'closed': Optional[bool],
@@ -521,7 +521,7 @@ class Shape(jsg.JSGObject):
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
         self.id = id
-        self.closed = jsg.Boolean(closed)
+        self.closed = Boolean(closed)
         self.extra = extra
         self.expression = expression
         self.semActs = semActs
@@ -531,7 +531,7 @@ class Shape(jsg.JSGObject):
 
 tripleExpr = Union["EachOf", "OneOf", "TripleConstraint", tripleExprLabel]
 
-class EachOf(jsg.JSGObject):
+class EachOf(JSGObject):
     _reference_types = []
     _members = {'id': Optional[tripleExprLabel],
                 'expressions': List["tripleExpr"],
@@ -552,14 +552,14 @@ class EachOf(jsg.JSGObject):
         self._context = _CONTEXT
         self.id = id
         self.expressions = expressions
-        self.min = jsg.Integer(min)
-        self.max = jsg.Integer(max)
+        self.min = Integer(min)
+        self.max = Integer(max)
         self.semActs = semActs
         self.annotations = annotations
         super().__init__(self._context, **_kwargs)
 
 
-class OneOf(jsg.JSGObject):
+class OneOf(JSGObject):
     _reference_types = []
     _members = {'id': Optional[tripleExprLabel],
                 'expressions': List["tripleExpr"],
@@ -580,14 +580,14 @@ class OneOf(jsg.JSGObject):
         self._context = _CONTEXT
         self.id = id
         self.expressions = expressions
-        self.min = jsg.Integer(min)
-        self.max = jsg.Integer(max)
+        self.min = Integer(min)
+        self.max = Integer(max)
         self.semActs = semActs
         self.annotations = annotations
         super().__init__(self._context, **_kwargs)
 
 
-class TripleConstraint(jsg.JSGObject):
+class TripleConstraint(JSGObject):
     _reference_types = []
     _members = {'id': Optional[tripleExprLabel],
                 'inverse': Optional[bool],
@@ -611,17 +611,17 @@ class TripleConstraint(jsg.JSGObject):
                  **_kwargs: Dict[str, object]):
         self._context = _CONTEXT
         self.id = id
-        self.inverse = jsg.Boolean(inverse)
+        self.inverse = Boolean(inverse)
         self.predicate = predicate
         self.valueExpr = valueExpr
-        self.min = jsg.Integer(min)
-        self.max = jsg.Integer(max)
+        self.min = Integer(min)
+        self.max = Integer(max)
         self.semActs = semActs
         self.annotations = annotations
         super().__init__(self._context, **_kwargs)
 
 
-class Schema(jsg.JSGObject):
+class Schema(JSGObject):
     _reference_types = []
     _members = {'@context': _Anon1,
                 'imports': Optional[List[IRIREF]],

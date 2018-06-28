@@ -66,10 +66,10 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 
 def element_conforms(element, etype) -> bool:
-    from pyjsg.jsglib.jsg import EmptyAny
+    from pyjsg.jsglib.jsg import EmptyAny, AnyType
     if element is EmptyAny:
         return False
-    elif element is None and etype == object:
+    elif element is None and etype == object or issubclass(etype, AnyType):
         return True
     elif isinstance(etype, type(type)) and (issubclass(etype, type(None))):
         return element is None

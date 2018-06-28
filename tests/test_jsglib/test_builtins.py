@@ -1,7 +1,7 @@
 import unittest
 from typing import Union
 
-from pyjsg.jsglib.jsg import String, JSGPattern, Number, Integer, Boolean, Null, JSGNull
+from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, Null, JSGNull
 
 
 class JSGBuiltinsTestCase(unittest.TestCase):

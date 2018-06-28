@@ -1,6 +1,7 @@
 from typing import Optional, Tuple, Dict
 
-from pyjsg.jsglib.jsg import JSGStringMeta, String, Object, Integer, Number, JSGNull, Array, Boolean, AnyType
+from pyjsg.jsglib import String, Object, Integer, Number, JSGNull, Boolean, AnyType, Array
+from pyjsg.jsglib.jsg_strings import JSGStringMeta
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
@@ -25,16 +26,22 @@ class JSGBuiltinValueType(jsgParserVisitor):
             self.visit(ctx)
 
     def __str__(self):
-        return "builtinValueType: {}".format(self.basetype)
+        return "builtinValueType: {}".format(self.basetypename)
 
     @property
-    def typeid(self):
-        id = self.parserTypeToImplClass[self._value_type_text][1]
-        return "jsg.JSGNull" if id == JSGNull else id.__name__
+    def typeid(self) -> str:
+        id_ = self.parserTypeToImplClass[self._value_type_text][1]
+        return "JSGNull" if id_ == JSGNull else id_.__name__
 
     @property
-    def basetype(self):
-        return "jsg." + self.parserTypeToImplClass[self._value_type_text][0].__name__
+    def basetype(self) -> JSGStringMeta:
+        return self.parserTypeToImplClass[self._value_type_text][0]
+
+    @property
+    def basetypename(self) -> str:
+        obj = self.basetype
+        # return obj.__module__.rsplit('.', 1)[1] + '.' + obj.__name__
+        return obj.__name__
 
     def set_anytype(self) -> jsgParserVisitor:
         self._value_type_text = "."

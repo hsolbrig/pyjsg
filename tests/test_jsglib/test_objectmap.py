@@ -4,7 +4,7 @@ from typing import List
 
 from jsonasobj.jsonobj import as_json
 
-from pyjsg.jsglib.jsg import JSGObjectMap, JSGPattern, JSGContext, JSGString, Null
+from pyjsg.jsglib import JSGObjectMap, JSGPattern, JSGContext, JSGString, Null
 from tests.test_jsglib.iri_defn import *
 from jsonasobj import loads as jsonloads
 
