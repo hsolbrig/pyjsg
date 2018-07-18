@@ -1,8 +1,10 @@
-# Auto generated from test_basics/jsg/example_4.jsg by PyJSG version 0.7.0
-# Generation date: 2018-06-28 11:40
+# Auto generated from tests/test_basics/jsg/example_4.jsg by PyJSG version 0.7.0
+# Generation date: 2018-07-18 09:39
 #
 import sys
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Any
+from jsonasobj import JsonObj
+
 if sys.version_info < (3, 7):
     from typing import _ForwardRef as ForwardRef
     from pyjsg.jsglib import typing_patch_36
@@ -11,13 +13,10 @@ else:
     from pyjsg.jsglib import typing_patch_37
 
 from pyjsg.jsglib import *
-from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("doc")
-
-
 
 
 class NAME(JSGString):
@@ -27,19 +26,19 @@ class NAME(JSGString):
 class TEMPLATE(JSGString):
     pattern = JSGPattern(r'\{.*\}')
 
-nameOrTemplate = Union[NAME, TEMPLATE]
 
+
+nameOrTemplate = Union[NAME, TEMPLATE]
 class doc(JSGObject):
     _reference_types = []
-    _members = {'street': nameOrTemplate}
+    _members = {'street': Union[NAME, TEMPLATE]}
     _strict = True
-    
+
     def __init__(self,
-                 street: nameOrTemplate = None,
+                 street: Union[str, str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.street = street
-        super().__init__(self._context, **_kwargs)
 
 
 _CONTEXT.NAMESPACE = locals()

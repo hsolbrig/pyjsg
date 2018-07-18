@@ -31,7 +31,7 @@ json = """
 
 
 class ObjectLiteralTestCase(unittest.TestCase):
-    @unittest.skipIf(True, "Must be run standalone -- context issues prevent running in test suite")
+    @unittest.skipIf(False, "Must be run standalone -- context issues prevent running in test suite")
     def test_ol(self):
         """ Test that the 'type' variable in the ObjectLiteral is not mistaken as a real, unresolved type.
         """

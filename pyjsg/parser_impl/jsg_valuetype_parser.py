@@ -1,46 +1,45 @@
-from typing import Optional, List, Set, Union, cast
+from typing import Optional, List, Union, cast, Tuple
 
-from pyjsg.jsglib.jsg_strings import JSGStringMeta
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
-
-from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
 from pyjsg.parser_impl.jsg_builtinvaluetype_parser import JSGBuiltinValueType
-
-from .parser_utils import as_token, flatten
-
-_valuetype_template = """
-
-{} = {}"""
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
+from pyjsg.parser_impl.parser_utils import as_token, flatten_unique
 
 
-class JSGValueType(jsgParserVisitor):
+class JSGValueType(jsgParserVisitor, PythonGeneratorElement):
+    """ Parser for valueType production """
+
     def __init__(self, context: JSGDocContext,
                  ctx: Optional[Union[jsgParser.ValueTypeContext, jsgParser.ValueTypeMacroContext,
                                      jsgParser.NonRefValueTypeContext]] = None):
         self._context = context
 
-        # Note: both lexeridref and alttypelist can co-occur
-        self._typeid = None             # type: Optional[str]
-        self._arrayDef = None           # type: Optional["JSGArrayExpr"]
-        self._lexeridref = None         # type: Optional[str]
-        self._builtintype = None        # type: Optional[JSGBuiltinValueType]
-        self._alttypelist = []          # type: List[JSGValueType]
+        # With the exception of lexeridref and alttypelist, all options below are mutually exclusive
+        self._typeid: Optional[str] = None              # The name of a referenced (possibly anonymous) type
+        self._arrayDef: Optional[JSGArrayExpr] = None   # Type is an array
+        self._lexeridref: Optional[str] = None          # The name of a (possibly anonymous) string match pattern
+        self._builtintype: Optional[JSGBuiltinValueType] = None  # Type is a builtin type
+        self._alttypelist: List[JSGValueType] = []      # Two or more alternative types
+        self.text = ""
 
         if ctx:
+            self.text = ctx.getText()
             self.visit(ctx)
 
     def __str__(self):
         if self._typeid:
             if self._context.is_anon(self._typeid):
-                typ = "(inner): {}".format(self._context.grammarelts[self._typeid])
+                typ = f"(anonymous: {self._typeid}): {self._context.reference(self._typeid)}"
             else:
-                typ = "ID: {}".format(self._typeid)
+                typ = f"ID: {self._typeid}"
         elif self._builtintype:
-            typ = "builtinValueType: {}".format(self._builtintype.basetypename)
+            typ = str(self._builtintype)
         elif self._alttypelist:
-            lid_str = "({}) | ".format(self._lexerid_str()) if self._lexeridref else ""
-            typ = "({}{})".format(lid_str, ' | '.join(ta.typeid for ta in self._alttypelist))
+            lid_str = f"({self._lexerid_str()}) | " if self._lexeridref else ""
+            alts_str = ' | '.join(ta.signature_type() for ta in self._alttypelist)
+            typ = f"({lid_str}{alts_str})"
         elif self._lexeridref:
             typ = self._lexerid_str()
         elif self._arrayDef:
@@ -55,35 +54,43 @@ class JSGValueType(jsgParserVisitor):
         else:
             return "STRING: {}".format(self._context.grammarelts[self._lexeridref])
 
-    def as_python(self, name: str) -> str:
-        return _valuetype_template.format(name, self.basetypename if self._builtintype else self.typeid)
+    def python_type(self) -> str:
+        """ Return the official python type for the value. As an example, an '@int' aps to 'int' or a match pattern
+        maps to 'str'
+        """
+        types = []
+        if self._lexeridref:
+            types.append('str')
+        if self._typeid:
+            types.append(self._context.python_type(self._typeid))
+        if self._builtintype:
+            types.append(self._builtintype.python_type())
+        if self._alttypelist:
+            types += [e.python_type() for e in self._alttypelist]
+        if self._arrayDef:
+            types.append(self._arrayDef.python_type())
+        return "AnyType" if len(types) == 0 else \
+            types[0] if len(types) == 1 else "Union[{}]".format(', '.join(types))
 
-    @property
-    def typeid(self) -> str:
+    def signature_type(self) -> str:
+        """ Return the signature type for the value. As an example, an '@int' maps to 'Integer' or a match pattern
+        maps to the name of the JSGString class """
         types = []
         if self._lexeridref:
             types.append(self._lexeridref)
         if self._typeid:
-            types.append(self._context.reference_for(self._typeid))
+            types.append(self._context.signature_type(self._typeid))
         if self._builtintype:
-            types.append(self._builtintype.typeid)
+            types.append(self._builtintype.signature_type())
         if self._alttypelist:
-            types += [self._context.reference_for(e.typeid) for e in self._alttypelist]
+            types += [e.signature_type() for e in self._alttypelist]
         if self._arrayDef:
-            types.append(self._arrayDef.signature())
-        return "JSGAnyType" if len(types) == 0 else \
+            types.append(self._arrayDef.signature_type())
+        return "AnyType" if len(types) == 0 else \
             types[0] if len(types) == 1 else "Union[{}]".format(', '.join(types))
 
-    @property
-    def basetypename(self) -> Optional[str]:
-        return self._builtintype.basetypename if self._builtintype else None
-
-    @property
-    def basetype(self) -> Optional[JSGStringMeta]:
-        return self._builtintype.basetype if self._builtintype else None
-
-    def dependencies(self) -> Set[str]:
-        return set(self.dependency_list())
+    def mt_value(self) -> str:
+        return self._builtintype.mt_value() if self._builtintype else "None"
 
     def dependency_list(self) -> List[str]:
         rval = []
@@ -93,16 +100,19 @@ class JSGValueType(jsgParserVisitor):
         if self._lexeridref:
             rval.append(self._lexeridref)
         if self._arrayDef:
-            rval.append(self._arrayDef.dependency_list())
+            rval += flatten_unique((self._arrayDef.dependency_list()))
         if self._alttypelist:
-            rval += flatten([e.dependency_list() for e in self._alttypelist])
+            rval += flatten_unique([e.dependency_list() for e in self._alttypelist])
         return rval
+
+    def members_entries(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        return []
 
     # ***************
     #   Visitors
     # ***************
     def visitValueType(self, ctx: jsgParser.ValueTypeContext):
-        """ valueTYpe: idref | nonRefValueType """
+        """ valueType: idref | nonRefValueType """
         if ctx.idref():
             self._typeid = as_token(ctx)
         else:
@@ -111,7 +121,7 @@ class JSGValueType(jsgParserVisitor):
     def visitNonRefValueType(self, ctx: jsgParser.NonRefValueTypeContext):
         """ nonRefValueType: LEXER_ID_REF | STRING | builtinValueType | objectExpr | arrayExpr  
                              | OPREN typeAlternatives CPREN | ANY """
-        if ctx.LEXER_ID_REF():                # Reference to a lexer token
+        if ctx.LEXER_ID_REF():                  # Reference to a lexer token
             self._lexeridref = as_token(ctx)
         elif ctx.STRING():                      # Anonymous lexer token
             from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
@@ -119,8 +129,6 @@ class JSGValueType(jsgParserVisitor):
             lrb.add_string(ctx.getText()[1:-1], False)
             self._lexeridref = self._context.anon_id()
             self._context.grammarelts[self._lexeridref] = lrb
-        elif ctx.ANY():
-            self._builtintype = JSGBuiltinValueType(self._context).set_anytype()
         else:
             self.visitChildren(ctx)
 
@@ -139,6 +147,7 @@ class JSGValueType(jsgParserVisitor):
         self._arrayDef = JSGArrayExpr(self._context, ctx)
 
     def visitValueTypeMacro(self, ctx: jsgParser.ValueTypeMacroContext):
+        # valueTypeMacro: ID EQUALS nonRefValueType (BAR nonRefValueType)* SEMI;
         if len(ctx.nonRefValueType()) > 1:
             self._proc_value_types(ctx.nonRefValueType())
         else:
@@ -147,7 +156,9 @@ class JSGValueType(jsgParserVisitor):
     def visitTypeAlternatives(self, ctx: jsgParser.TypeAlternativesContext):
         self._proc_value_types(ctx.valueType())
 
-    def _proc_value_types(self, ctx: Union[List[jsgParser.ValueTypeContext], List[jsgParser.NonRefValueTypeContext]]):
+    def _proc_value_types(self,
+                          ctx: Union[List[jsgParser.ValueTypeContext],
+                                     List[jsgParser.NonRefValueTypeContext]]):
         from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
 
         stringalts = []                 # Aggregate multiple strings into a single type

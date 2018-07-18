@@ -81,7 +81,7 @@ LEXER_PLUS    : '+' -> type(PLUS);
 LEXER_OPREN   : '(' -> type(OPREN);
 LEXER_CPREN   : ')' -> type(CPREN);
 LEXER_COLON   : ':' -> type(COLON);
-LExER_BAR     : '|' -> type(BAR);
+LEXER_BAR     : '|' -> type(BAR);
 
 LEXER_STRING    : ('"' (~["] | '\\"')+ '"'
                 | '\'' (~['] | '\u005c\u0039')+ '\'') -> type(STRING) ;

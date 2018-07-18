@@ -19,7 +19,7 @@ grammarElt			: objectDef
 // JSON object definition
 objectDef			: ID objectExpr ;
 objectExpr			: OBRACE membersDef? CBRACE
-					| OBRACE (LEXER_ID_REF | JSON_STRING | ANY) MAPSTO valueType ebnfSuffix? CBRACE
+					| OBRACE (LEXER_ID_REF | ANY)? MAPSTO valueType ebnfSuffix? CBRACE
 					;
 
 // JSON object members
@@ -40,7 +40,7 @@ name                : ID|STRING ;
 
 // JSON array definition
 arrayDef			: ID arrayExpr ;
-arrayExpr			: OBRACKET valueType ebnfSuffix? CBRACKET;
+arrayExpr			: OBRACKET valueType (BAR valueType)* ebnfSuffix? CBRACKET;
 
 // Substitution parameters
 objectMacro         : ID EQUALS membersDef SEMI;
@@ -53,6 +53,7 @@ builtinValueType    : JSON_STRING
                     | JSON_NULL
                     | JSON_ARRAY
                     | JSON_OBJECT
+                    | ANY
                     ;
 valueType  		    : idref                             // reference to objectDef, arrayDef or valueTypeMacro
                     | nonRefValueType
@@ -63,7 +64,6 @@ nonRefValueType  	: LEXER_ID_REF                      // string / number / bool 
 					| objectExpr                        // unnamed objectDef
 					| arrayExpr                         // unnamed arrayDef
 					| OPREN typeAlternatives CPREN      // choice of any of the above
-					| ANY                               // any value
 					;
 typeAlternatives    : valueType (BAR valueType)+ ;
 
@@ -73,7 +73,7 @@ idref               : ID ;
 ebnfSuffix          : QMARK
 					| STAR
 					| PLUS
-					| OBRACE INT? (COMMA (INT|STAR)?)? CBRACE
+					| OBRACE INT (COMMA (INT|STAR)?)? CBRACE
 					;
 
 

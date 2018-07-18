@@ -1,165 +1,144 @@
-from typing import Optional, List, Set, Tuple
+from collections import OrderedDict
+from typing import Optional, List, Tuple, Dict
 
-from pyjsg.jsglib import EmptyAny, Array, Object, AnyType
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
-from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
 from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
-from .parser_utils import as_token, is_valid_python, optional
-
-_val_template_simple = "{prefix}{cooked_name}"
-_val_template_simple_raw = "_kwargs.pop('{raw_name}', None)"
-
-_val_template_builtin = "{basetype}({prefix}{cooked_name})"
-_val_template_builtin_raw = "{basetype}(_kwargs.pop('{raw_name}', None))"
-
-_init_template_cooked = "self.{raw_name} = {val}{opt_clause}"
-_init_template_multi_cooked = "self.{raw_name} = JSGArray('{raw_name}', _CONTEXT, {opt_clause}, " \
-                                     "{self._ebnf.min}, {self._ebnf.max}, {cooked_name})"
-
-_init_template_raw = "setattr(self, '{raw_name}', {val}){opt_clause}"
-_init_template_multi_raw = "setattr(self, '{raw_name}', JSGArray('{raw_name}', _CONTEXT, {opt_clause}, " \
-                                  "{self._ebnf.min}, {self._ebnf.max}, {val}))"
-
-_init_template_array_cooked = "self.{raw_name} = " \
-                              "Array('{raw_name}', _CONTEXT, AnyType, 0, None, {raw_name})"
-_init_template_array_raw = "setattr(self, '{raw_name}', " \
-                           "Array('{raw_name}', _CONTEXT, AnyType, 0, None, {cooked_name}))"
-
-_init_template_object_cooked = "self.{raw_name} = " \
-                               "Object('{raw_name}', _CONTEXT, **({{}} if {raw_name} is None else {raw_name}))"
-_init_template_object_raw = "setattr(self, '{raw_name}', " \
-                            "Object('{raw_name}', _CONTEXT, **({{}} if {cooked_name} is None else {cooked_name})))"
+from pyjsg.parser_impl.parser_utils import as_token, is_valid_python, get_terminal, esc_kw, flatten, t
 
 
-class JSGPairDef(jsgParserVisitor):
+class JSGPairDef(jsgParserVisitor, PythonGeneratorElement):
     def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.PairDefContext] = None):
         self._context = context
 
-        # Names is raw name / tokenized name tuple
-        self._names = []             # type: List[Tuple[str, str]]
-        self._typ = None             # type: Optional[JSGValueType]
+        # PairDef can be one of "name: valueType [ebnsuffix]", "(name [|] name ...): valueType [ebnsuffix]" or type_ref
+        self._typ: Optional[JSGValueType] = None       # If absent, then _type reference
+        self._names: Dict[str, str] = OrderedDict()    # List of names associated with _typ
 
-        self._type_reference = None  # type: Optional[str]
+        self._type_reference: Optional[str] = None     # Reference to external type
 
-        self._ebnf = None            # type: Optional[JSGEbnf]
+        self._ebnf = JSGEbnf(context)                  # Cardinality of either branch
+        self.text = ""
 
         if ctx:
+            self.text = ctx.getText()
             self.visit(ctx)
 
     def __str__(self):
-        if self._names:
-            namelist = ' | '.join(name[0] for name in self._names)
-            return "pairDef: {} : {}{}".format('({})'.format(namelist) if len(self._names) > 1 else namelist,
-                                               self._typ,
-                                               self._ebnf if self._ebnf else "")
+        if self._typ:
+            names = list(self._names.keys())
+            if len(names) > 1:
+                namelist = '(' + ' | '.join(name for name in names) + ')'
+            else:
+                namelist = names[0]
+            return f"pairDef: {namelist} : {self._typ}{self._ebnf}"
         else:
-            return "pairDef: typeReference: {}{}".format(self._type_reference, self._ebnf if self._ebnf else "")
-
-    def _card(self, e: str, all_are_optional: bool) -> str:
-        if self._ebnf and self._ebnf.is_optional:
-            return optional(e, True)
-        return optional(self._ebnf.python_type(e) if self._ebnf else e, all_are_optional)
+            return f"pairDef: typeReference: {self._type_reference}{self._ebnf}"
 
     def is_reference_type(self) -> bool:
         return self._type_reference is not None
 
-    def signature(self, all_are_optional: Optional[bool] = False) -> List[str]:
-        """ Return the __init__ signature element(s) """
-        if self._type_reference:
-            return [self._card(self._context.reference_for(self.typeid), all_are_optional)]
-        else:
-            return ["{}: {} = {}".format(n, self._card(self.typeid, all_are_optional),
-                                         "EmptyAny" if self._typ.basetype is AnyType and not self.is_list else "None")
-                    for _, n in self._names if is_valid_python(n)]
+    def members_entries(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        """ Generate a list quoted raw name, signature type entries for this pairdef, recursively traversing
+        reference types
 
-    def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
-        """
-        Return the name/type tuples represented by this pairdef
-        :param all_are_optional: If true, all types must be optional
-        :return: 
+        :param all_are_optional: If true, all types are forced optional
+        :return: raw name/ signature type for all elements in this pair
         """
         if self._type_reference:
-            if self._ebnf and self._ebnf.is_list:
-                return [(self.typeid, optional("List[{}]".format(self.typeid), all_are_optional))]
-            else:
-                return self._context.members(self.typeid, all_are_optional or (self._ebnf and self._ebnf.is_optional))
+            rval: List[Tuple[str, str]] = []
+            for n, t in self._context.reference(self._type_reference).members_entries(all_are_optional):
+                rval.append((n, self._ebnf.signature_cardinality(t, all_are_optional)))
+            return rval
         else:
-            member_type = self._card(self.typeid, all_are_optional)
-            return [(raw_name, member_type) for raw_name, _ in self._names]
+            sig = self._ebnf.signature_cardinality(self._typ.signature_type(), all_are_optional)
+            return [(name, sig.format(name=name)) for name in self._names]
 
-    @property
-    def typeid(self) -> str:
-        return self._typ.typeid if self._typ else self._type_reference
+    def signature_type(self) -> str:
+        base_type = self._typ.signature_type() if self._typ \
+            else self._context.reference(self._type_reference).signature_type()
+        return self._ebnf.signature_cardinality(base_type)
 
-    @property
-    def is_optional(self) -> bool:
-        return self._ebnf and self._ebnf.is_optional
+    def python_base_type(self) -> str:
+        return self._typ.python_type() if self._typ \
+            else self._context.reference(self._type_reference).python_type()
 
-    @property
-    def is_list(self) -> bool:
-        return self._ebnf is not None and self._ebnf.is_list
+    def python_type(self) -> str:
+        return self._ebnf.python_cardinality(self.python_base_type())
 
-    def _optional_clause(self, prefix: Optional[str], basetype: Optional[str], add_exists_clause: bool) -> str:
-        if self.is_list:
-            return str(basetype if basetype else self.typeid)
-        if prefix and self._context.is_optional(self._ebnf, add_exists_clause):
-            elsepart = "{}(None)".format(basetype) if basetype else "None"
-            return " if {} else {}".format(prefix, elsepart)
-        else:
-            return ""
+    def mt_value(self) -> str:
+        return self._typ.mt_value() if self._typ else self._context.reference(self._type_reference).mt_value()
 
-    def _initializer_for(self, raw_name: str, cooked_name: str, prefix: Optional[str], basetype: Optional[str],
-                         add_exists_clause: bool) -> str:
+    def signatures(self, all_are_optional: Optional[bool] = False) -> List[str]:
+        """ Return the __init__ signature element(s) (var: type = default value).  Note that signatures are not
+        generated for non-python names, although we do take the liberty of suffixing a '_' for reserved words
+        (e.g. class: @int  generates "class_: int = None"
+
+        :param all_are_optional: If True, all items are considered to be optional
+
+        :return: List of signatures
         """
-        Create an initializer entry for the entry
+        if self._type_reference:
+            # This assumes that references are to things that have signatures
+            ref = self._context.reference(self._type_reference)
+            if not getattr(ref, 'signatures', None):
+                raise NotImplementedError("Reference to " + self._type_reference + " is not valid")
+            return self._context.reference(self._type_reference).signatures(all_are_optional)
+        else:
+            return [f"{self._names[rn]}: {self.python_type()} = " 
+                    f"{self._ebnf.mt_value(self._typ)}" for rn, cn in self._names.items() if is_valid_python(cn)]
+
+    def _initializer_for(self, raw_name: str, cooked_name: str, prefix: Optional[str]) -> List[str]:
+        """Create an initializer entry for the entry
+
         :param raw_name: name unadjusted for python compatibility.
-        :param cooked_name: name tweaked to be compatible with python
-        :param prefix: owner of the element
-        :param basetype: JSON type to use as wrapper if it exists
-        :param add_exists_clause: if True, add on an existence test
-        :return: 
+        :param cooked_name: name that may or may not be python compatible
+
+        :param prefix: owner of the element - used when objects passed as arguments
+
+        :return: Initialization statements
         """
-        opt_clause = self._optional_clause(prefix, basetype, add_exists_clause)
-        prefix = "" if prefix is None else prefix + "."
-        base_type = self._typ.basetype if self._typ and self._typ.basetype else type(EmptyAny)
-        if is_valid_python(raw_name + '_'):
-            val_template = _val_template_builtin if basetype and not self.is_list else _val_template_simple
-            init_template = _init_template_array_cooked if issubclass(base_type, Array) else \
-                _init_template_object_cooked if issubclass(base_type, Object) else \
-                _init_template_multi_cooked if self.is_list else \
-                _init_template_cooked
+        mt_val = self._ebnf.mt_value(self._typ)
+        rval = []
+
+        if is_valid_python(raw_name):
+            if prefix:
+                # If a prefix exists, the input has already been processed - no if clause is necessary
+                rval.append(f"self.{raw_name} = {prefix}.{raw_name}")
+            else:
+                cons = raw_name
+                rval.append(f"self.{raw_name} = {cons}")
+        elif is_valid_python(cooked_name):
+            if prefix:
+                rval.append(f"setattr(self, '{raw_name}', getattr({prefix}, '{raw_name}')")
+            else:
+                cons = f"{cooked_name} if {cooked_name} is not {mt_val} else _kwargs.get('{raw_name}', {mt_val})"
+                rval.append(f"setattr(self, '{raw_name}', {cons})")
         else:
-            val_template = _val_template_builtin_raw if basetype and not self.is_list else _val_template_simple_raw
-            init_template = _init_template_array_raw if issubclass(base_type, Array) else \
-                _init_template_object_raw if issubclass(base_type, Object) else \
-                _init_template_multi_raw if self.is_list else \
-                _init_template_raw
+            getter = f"_kwargs.get('{raw_name}', {mt_val})"
+            if prefix:
+                rval.append(f"setattr(self, '{raw_name}', getattr({prefix}, '{getter}')")
+            else:
+                rval.append(f"setattr(self, '{raw_name}', {getter})")
 
-        val = val_template.format(**locals())
-        return init_template.format(**locals())
+        return rval
 
-    def initializer(self, prefix: Optional[str] = None, add_exists_clause: bool=False) -> List[str]:
+    def initializers(self, prefix: Optional[str] = None) -> List[str]:
         """ Return the __init__ initializer assignment block """
-        add_exists_clause = self._context.is_optional(self._ebnf, add_exists_clause)
         if self._type_reference:
-            return self._context.initializer(self._type_reference, prefix, add_exists_clause)
+            # This assumes that references are to things that have initializers
+            # TODO: Remove this check once we are certian things are good
+            ref = self._context.reference(self._type_reference)
+            if not getattr(ref, 'signatures', None):
+                raise NotImplementedError("Reference to " + self._type_reference + " is not valid")
+            return self._context.reference(self._type_reference).initializers(prefix)
         else:
-            return [self._initializer_for(rn, cn, prefix, self._typ.basetypename, add_exists_clause)
-                    for rn, cn in self._names]
-
-    def none_initializer(self) -> List[str]:
-        if self._type_reference:
-            return self._context.none_initializer(self._type_reference)
-        else:
-            return ["{}(None)".format(self._typ.basetypename) if self._typ.basetype else "None" for _ in self._names]
+            return flatten([self._initializer_for(rn, cn, prefix) for rn, cn in self._names.items()])
 
     def dependency_list(self) -> List[str]:
         return self._typ.dependency_list() if self._typ else [self._type_reference]
-
-    def dependencies(self) -> Set[str]:
-        return set(self.dependency_list())
 
     # ***************
     #   Visitors
@@ -169,7 +148,7 @@ class JSGPairDef(jsgParserVisitor):
                      | idref ebnfSuffix?
                      | OPREN name (BAR? name)+ CPREN COLON valueType ebnfSuffix?
         """
-        if ctx.name():
+        if ctx.name():          # Options 1 or 3
             self.visitChildren(ctx)
         else:
             self._type_reference = as_token(ctx)
@@ -178,14 +157,12 @@ class JSGPairDef(jsgParserVisitor):
 
     def visitName(self, ctx: jsgParser.NameContext):
         """ name: ID | STRING """
-        self._names.append((ctx.ID().getText() if ctx.ID() else ctx.STRING().getText()[1:-1], as_token(ctx)))
+        rtkn = get_terminal(ctx)
+        tkn = esc_kw(rtkn)
+        self._names[rtkn] = tkn
 
     def visitValueType(self, ctx: jsgParser.ValueTypeContext):
         self._typ = JSGValueType(self._context, ctx)
-        if self._typ.basetype is Array:
-            self._ebnf = JSGEbnf(self._context)
-            self._ebnf.min = 0
-            self._ebnf.max = None
 
     def visitEbnfSuffix(self, ctx: jsgParser.EbnfSuffixContext):
         self._ebnf = JSGEbnf(self._context, ctx)

@@ -1,6 +1,7 @@
 
 import os
 import unittest
+from shutil import copyfile
 
 from pyjsg.validate_json import JSGPython
 
@@ -36,9 +37,12 @@ class NamespaceTestIssue(unittest.TestCase):
         # # First load done from the testing namespace
         pyfile = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_basics', 'py', 'ShExJ.py'))
         evaluate("test_namespace", pyfile, False)
+        result = JSGPython(None, pyfile).conforms(json_str)
+        self.assertTrue(result.success)
 
         # Second load from a different file
         pyfile2 = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_jsglib', 'py', 'ShExJ.py'))
+        copyfile(pyfile, pyfile2)
         result = JSGPython(None, pyfile2).conforms(json_str)
         if not result.success:
             print(result.fail_reason)

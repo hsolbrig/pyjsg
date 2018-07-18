@@ -7,7 +7,7 @@ import os
 
 class IsInstanceTestCase(unittest.TestCase):
     def test_isinstance_issue(self):
-        from pyjsg.jsglib.jsg import isinstance_
+        from pyjsg.jsglib.jsg_base import isinstance_
         x = Union[int, str]
         with self.assertRaises(TypeError):
             isinstance(17, x)

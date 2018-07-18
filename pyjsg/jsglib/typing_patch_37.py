@@ -26,6 +26,12 @@ def is_typing_type(etype) -> bool:
     return is_union(etype) or is_dict(etype) or is_iterable(etype)
 
 
+def instantiate(element, etype, namespace: Dict[str, Any]):
+    if is_forward(etype):
+        etype = etype._evaluate(namespace, namespace)
+    return etype(element)
+
+
 def is_forward(etype) -> bool:
     return type(etype) is ForwardRef
 
@@ -57,8 +63,9 @@ def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 
 def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if element is None and is_iterable(etype):
-        element = []
+    # TODO: Remove this
+    # if element is None and is_iterable(etype):
+    #     element = []
     if is_iterable(etype) and isinstance(element, Iterable):
         vt = etype.__args__[0]
         return all(conforms(e, vt, namespace) for e in element)
@@ -66,10 +73,10 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 
 def element_conforms(element, etype) -> bool:
-    from pyjsg.jsglib.jsg import EmptyAny, AnyType
+    from pyjsg.jsglib.jsg_base import EmptyAny, AnyType
     if element is EmptyAny:
         return False
-    elif element is None and etype == object or issubclass(etype, AnyType):
+    elif element is None and (etype == object or etype is AnyType):
         return True
     elif isinstance(etype, type(type)) and (issubclass(etype, type(None))):
         return element is None

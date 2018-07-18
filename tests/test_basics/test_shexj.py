@@ -13,18 +13,16 @@ from pyjsg.validate_json import JSGPython
 
 shexJSGSource = ""
 shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=master"
+# shexTestRepository = os.path.expanduser('~/Development/git/shexSpec/shexTest/schemas')
 
 shexTestJson = ""
-# shexTestJson = "https://raw.githubusercontent.com/shexSpec/shexTest/2.0/schemas/" \
-#                "1refbnode_with_spanning_PN_CHARS_BASE1.json"
-
 
 # If there is a path here, we use the local ShExJ.jsg rather than the one on the github site
 LOCAL_PARSER_IMAGE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'jsg', 'ShExJ.jsg')
 
 # You can't debug if you compile inline -- change to a static image if you have to test
 # LOCAL_PARSER_IMAGE = None
-USE_EXISTING_SHEX = True
+
 
 STOP_ON_ERROR = False
 
@@ -62,17 +60,29 @@ def validate_shexj_json(json_str: str, input_fname: str, parser: JSGPython) -> b
     return True
 
 
-def validate_file(download_url: str, parser: JSGPython) -> bool:
-    fname = download_url.rsplit('/', 1)[1]
-    if fname not in skip:
-        resp = requests.get(download_url)
-        if resp.ok:
-            return validate_shexj_json(resp.text, download_url, parser)
-        else:
-            print("Error {}: {}".format(resp.status_code, resp.reason))
-            return False
-    print("Skipping {}".format(download_url))
-    return True
+class FileValidator:
+    def __init__(self):
+        self.nvalidated = 0
+        self.nskipped = 0
+
+    def validate_file(self, download_file: str, parser: JSGPython) -> bool:
+        fname = download_file.rsplit('/', 1)[1]
+        if fname not in skip and 'futureWork' not in download_file:
+            if '://' in download_file:
+                resp = requests.get(download_file)
+                if resp.ok:
+                    text = resp.text
+                else:
+                    print("Error {}: {}".format(resp.status_code, resp.reason))
+                    return False
+            else:
+                with open(download_file) as f:
+                    text = f.read()
+            self.nvalidated += 1
+            return validate_shexj_json(text, download_file, parser)
+        print("Skipping {}".format(download_file))
+        self.nskipped += 1
+        return True
 
 
 def download_github_file(github_url: str) -> Optional[str]:
@@ -91,21 +101,25 @@ def download_github_file(github_url: str) -> Optional[str]:
     return None
 
 
-def validate_shex_schemas(parser: JSGPython) -> bool:
+def validate_shex_schemas(parser: JSGPython, validator: FileValidator) -> bool:
     if not shexTestJson:
-        resp = requests.get(shexTestRepository)
-        if resp.ok:
-            if STOP_ON_ERROR:
-                return all(validate_file(f['download_url'], parser) for f in resp.json()
-                           if f['name'].endswith('.json'))
+        filelist = []
+        if '://' in shexTestRepository:
+            resp = requests.get(shexTestRepository)
+            if resp.ok:
+                filelist = [f['download_url'] for f in resp.json() if f['name'].endswith('.json')]
             else:
-                return all([validate_file(f['download_url'], parser) for f in resp.json()
-                            if f['name'].endswith('.json')])
+                print("Error {}: {}".format(resp.status_code, resp.reason))
+                return False
         else:
-            print("Error {}: {}".format(resp.status_code, resp.reason))
+            for dirpath, _, filenames in os.walk(shexTestRepository):
+                filelist += [os.path.join(dirpath, f) for f in filenames if f.endswith('.json')]
+        if STOP_ON_ERROR:
+            return all(validator.validate_file(f, parser) for f in filelist)
+        else:
+            return all([validator.validate_file(f, parser) for f in filelist])
     else:
-        return validate_file(shexTestJson, parser)
-    return False
+        return validator.validate_file(shexTestJson, parser)
 
 
 class ShExJValidationTestCase(unittest.TestCase):
@@ -114,9 +128,11 @@ class ShExJValidationTestCase(unittest.TestCase):
     def test_shex_schema(self):
         parser = JSGPython(LOCAL_PARSER_IMAGE if LOCAL_PARSER_IMAGE else shexJSGSource)
         log_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs', 'test_shex_schema.log')
+        validator = FileValidator()
         with open(log_path, 'w') as logf:
             with redirect_stdout(logf):
-                self.assertTrue(validate_shex_schemas(parser), f"See {log_path} for reasons")
+                self.assertTrue(validate_shex_schemas(parser, validator), f"See {log_path} for reasons")
+        print(f"{validator.nvalidated} files validated - {validator.nskipped} skipped")
 
 
 if __name__ == '__main__':

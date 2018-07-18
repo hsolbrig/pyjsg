@@ -1,35 +1,48 @@
 import ast
 import keyword
+from collections import OrderedDict
 from collections.abc import Iterable
 from typing import List, Set
 
 from pyjsg.parser.jsgParser import ParserRuleContext
 
 
+def t(n: int=1) -> str:
+    return '    ' * n
+
+
 def flatten(l: Iterable) -> List:
-    """
-    Return a list of all non-list items in l
+    """Return a list of all non-list items in l
+
     :param l: list to be flattened
     :return:
     """
     rval = []
     for e in l:
         if not isinstance(e, str) and isinstance(e, Iterable):
-            rval += flatten(e)
+            if len(list(e)):
+                rval += flatten(e)
         else:
             rval.append(e)
     return rval
 
 
-def optional(v: str, always_optional: bool) -> str:
-    return v if not always_optional or v.startswith("Optional[") else "Optional[{}]".format(v)
+def flatten_unique(l: Iterable) -> List:
+    """ Return a list of UNIQUE non-list items in l """
+    rval = OrderedDict()
+    for e in l:
+        if not isinstance(e, str) and isinstance(e, Iterable):
+            for ev in flatten_unique(e):
+                rval[ev] = None
+        else:
+            rval[e] = None
+    return list(rval.keys())
 
 
 def as_set(l: Iterable) -> Set:
-    """
-    Return the set of all terminals in list l
+    """ Return the set of all terminals in list l
+
     :param l:
-    :return:
     """
     return set(flatten(l))
 
@@ -37,23 +50,41 @@ def as_set(l: Iterable) -> Set:
 identifier_types = ['ID', 'LEXER_ID', 'LEXER_ID_REF', 'idref', 'STRING']
 
 
-def as_token(ctx: ParserRuleContext) -> str:
-    """
-    Return a tokenized identifier from ctx.
-    :param ctx: JSG parser item with some sort of identifier
-    :return:
-    """
+def get_terminal(ctx: ParserRuleContext) -> str:
+    """ Extract the token for an identifier from the context. Tokens can be:
+        * ID - The name of a JSG definition
+        * idref -- A reference to an existing JSG definition
+        * LEXER_ID - The name of a match pattern definition
+        * LEXER_ID_REF - A reference to an existing match pattern definition
+        * STRING -- A JSG item name enclosed in quotes
+
+        :param ctx: JSG parser item with some sort of identifier
+        :return:
+        """
     tkn = None
     for ele_name in identifier_types:
         ele = getattr(ctx, ele_name, None)
         if ele and ele():
             tkn = ele().getText()[1:-1] if ele_name == 'STRING' else ele().getText()
-    return esc_kw(str(tkn))
+    return str(tkn)
+
+def as_token(ctx: ParserRuleContext) -> str:
+    """ Extract the token for an identifier from the context. Tokens can be:
+    * ID - The name of a JSG definition
+    * idref -- A reference to an existing JSG definition
+    * LEXER_ID - The name of a match pattern definition
+    * LEXER_ID_REF - A reference to an existing match pattern definition
+    * STRING -- A JSG item name enclosed in quotes
+
+    :param ctx: JSG parser item with some sort of identifier
+    :return:
+    """
+    return esc_kw(get_terminal(ctx))
 
 
 def as_tokens(ctx: List[ParserRuleContext]) -> List[str]:
-    """
-    Return a stringified list of identifiers in ctx
+    """Return a stringified list of identifiers in ctx
+
     :param ctx: JSG parser item with a set of identifiers
     :return:
     """
@@ -61,8 +92,8 @@ def as_tokens(ctx: List[ParserRuleContext]) -> List[str]:
 
 
 def is_valid_python(tkn: str) -> bool:
-    """
-    Determine whether tkn is a valid python identifier
+    """Determine whether tkn is a valid python identifier
+
     :param tkn:
     :return:
     """
@@ -70,12 +101,12 @@ def is_valid_python(tkn: str) -> bool:
         root = ast.parse(tkn)
     except SyntaxError:
         return False
-    return len(root.body) == 1 and isinstance(root.body[0].value, ast.Name)
+    return len(root.body) == 1 and isinstance(root.body[0], ast.Expr) and isinstance(root.body[0].value, ast.Name)
 
 
 def esc_kw(token: str) -> str:
-    """
-    Escape python keywords
+    """ Escape python keywords
+
     :param token: token
     :return: token with '_' suffixed if it is a keyword
     """

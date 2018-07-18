@@ -1,3 +1,5 @@
+import sys
+from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 from typing import List, Set, Optional, Dict, Union, Tuple
 
@@ -5,7 +7,69 @@ from .parser_utils import as_set
 from pyjsg.parser_impl.anonymousidentifierfactory import AnonymousIdentifierFactory
 
 
-BUILTIN_TYPES = ["String, Number, Int, Bool, Null, Object, AnyType"]
+class PythonGeneratorElement(metaclass=ABCMeta):
+    @abstractmethod
+    def python_type(self) -> str:
+        """ Return the native python type of this element """
+        ...
+
+    @abstractmethod
+    def signature_type(self) -> str:
+        """ Return the formal JSG type of this element """
+        ...
+
+    @abstractmethod
+    def mt_value(self) -> str:
+        """ Return the empty (missing) value token fo rthis element """
+
+    @abstractmethod
+    def members_entries(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        """ Return the name / type initializers for the _members section of the generated python """
+        ...
+
+    @abstractmethod
+    def dependency_list(self) -> List[str]:
+        """ Return an ordered list of element names that this is dependent on """
+        ...
+
+
+
+class UndefinedElement(PythonGeneratorElement):
+    def __init__(self, name) -> None:
+        self.name = f"Undefined({name})"
+
+    def __str__(self):
+        return self.name
+
+    def python_type(self) -> str:
+        return self.name
+
+    def signature_type(self) -> str:
+        return self.name
+
+    def mt_value(self) -> str:
+        return "None"
+
+    def members_entries(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+        return []
+
+    def dependency_list(self) -> List[str]:
+        return []
+
+    def signatures(self, all_are_optional: bool=False) -> List[str]:
+        return []
+
+    def initializers(self, prefix: Optional[str] = None) -> List[str]:
+        return []
+
+
+class JSGForwardRef:
+    def __init__(self, ref: str):
+        self._ref = ref
+
+    @property
+    def label(self) -> str:
+        return '"{}"'.format(self._ref)
 
 
 class JSGDocContext:
@@ -17,92 +81,61 @@ class JSGDocContext:
         from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
         from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
         from pyjsg.parser_impl.jsg_builtinvaluetype_parser import JSGBuiltinValueType
-        from pyjsg.parser_impl.jsg_forwardref import JSGForwardRef
 
-        self.directives = []                # type: List[str]
-        self.grammarelts = OrderedDict()    # type: Dict[str, Union[JSGLexerRuleBlock, JSGObjectExpr,  JSGArrayExpr, JSGForwardRef, JSGBuiltinValueType]]
-        self.dependency_map = {}            # type: Dict[str, List[str]]
-        self.forward_refs = {}              # type: Dict[str, str]
-        self.depths = {}                    # type: Dict[str, int]
+        self.directives: List[str] = []
+        self.grammarelts: Dict[str, Union[JSGLexerRuleBlock, JSGObjectExpr,  JSGArrayExpr,
+                                          JSGForwardRef, JSGBuiltinValueType]] = OrderedDict()
+        self.dependency_map: Dict[str, List[str]] = {}
+        self.forward_refs: Dict[str, str] = {}
+        self.depths: Dict[str, int] = {}
+        self.has_typeid: bool = False
 
         self._id_factory = AnonymousIdentifierFactory()
 
-    def anon_id(self):
+    def anon_id(self) -> str:
+        """ Generate a new anonymous identifier
+        """
         return self._id_factory.next_id()
 
     def is_anon(self, tkn: str) -> bool:
+        """ Determine whther tkn represents an anonymous identifier """
         return self._id_factory.is_anon(tkn)
 
-    def is_optional(self, ebnf, flag: bool ) -> bool:
-        """
-        Pass through optional setting for initialization
-        :param ebnf: ebnf of current state (type Optional[JSGEbnf])
-        :param flag: current flag pass through -- once true, always true
-        :return: new setting
-        """
-        return flag or (ebnf is not None and ebnf.is_optional)
+    def reference(self, tkn: str):
+        """ Return the element that tkn represents"""
+        return self.grammarelts[tkn] if tkn in self.grammarelts else UndefinedElement(tkn)
 
-    def initializer(self, tkn: str, prefix: Optional[str], add_exists_clause=False) -> List[str]:
-        tkn = self.reference_for(tkn)
-        if tkn in self.grammarelts:
-            initializer = getattr(self.grammarelts[tkn], "initializer", None)
-            if not initializer:
-                # TODO: Report this error properly
-                raise NotImplementedError("Token {} doesn't have an initializer".format(tkn))
-            return self.grammarelts[tkn].initializer(prefix, add_exists_clause)
-        else:
-            return []
+    def python_type(self, tkn: str) -> str:
+        from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
 
-    def none_initializer(self, tkn: str) -> List[str]:
-        tkn = self.reference_for(tkn)
-        if tkn in self.grammarelts:
-            none_initializer = getattr(self.grammarelts[tkn], "none_initializer", None)
-            if not none_initializer:
-                raise NotImplementedError("Token {} doesn't have a none_initializer".format(tkn))
-            return self.grammarelts[tkn].none_initializer()
-        else:
-            raise NotImplementedError("Token {} is not in grammarelts".format(tkn))
+        typ = self.reference(tkn)
+        if tkn in self.forward_refs and isinstance(typ, JSGObjectExpr):
+            return self.forward_refs[tkn]
+        return typ.python_type()
 
-    def reference_for(self, tkn: str) -> str:
-        return self.forward_refs.get(tkn, tkn)
 
-    def signature(self, tkn: str, all_are_optional: Optional[bool]=False) -> List[str]:
-        """
-        Return the __init__ signature for tkn
-        :param tkn: Token to retrieve signature for
-        :param all_are_optional: If True, all parameters are forced optional
-        :return: 
-        """
-        tkn = self.reference_for(tkn)
-        if tkn in self.grammarelts:
-            return self.grammarelts[tkn].signature(all_are_optional)
-        else:
-            return []
+    def signature_type(self, tkn: str) -> str:
+        from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
 
-    def members(self, tkn: str, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
-        tkn = self.reference_for(tkn)
-        if tkn in self.grammarelts:
-            return self.grammarelts[tkn].members(all_are_optional)
-        else:
-            raise NotImplementedError("Token {} is not in grammarelts".format(tkn))
+        typ = self.reference(tkn)
+        if tkn in self.forward_refs and isinstance(typ, JSGObjectExpr):
+            return self.forward_refs[tkn]
+        return typ.signature_type()
 
     def dependency_list(self, tkn: str) -> List[str]:
-        """
-        Return a list all of the grammarelts that depend on tkn
+        """Return a list all of the grammarelts that depend on tkn
+
         :param tkn: 
         :return:
         """
         if tkn not in self.dependency_map:
             self.dependency_map[tkn] = [tkn]        # Force a circular reference
-            if tkn in self.grammarelts:
-                self.dependency_map[tkn] = self.grammarelts[tkn].dependency_list()
-            else:
-                self.dependency_map[tkn] = []
+            self.dependency_map[tkn] = self.reference(tkn).dependency_list()
         return self.dependency_map[tkn]
 
     def dependencies(self, tkn: str) -> Set[str]:
-        """
-        Return all the items that tkn depends on as a set
+        """Return all the items that tkn depends on as a set
+
         :param tkn:
         :return:
         """
@@ -110,7 +143,7 @@ class JSGDocContext:
 
     def undefined_entries(self) -> Set[str]:
         """ Return the set of tokens that are referenced but not defined. """
-        return as_set([[d for d in self.dependencies(k) if d not in self.grammarelts and d not in BUILTIN_TYPES]
+        return as_set([[d for d in self.dependencies(k) if d not in self.grammarelts]
                        for k in self.grammarelts.keys()])
 
     def dependency_closure(self, tkn: str, seen: Optional[Set[str]]=None) -> Set[str]:
@@ -144,8 +177,6 @@ class JSGDocContext:
         Create forward references for all circular references
         :return:
         """
-        from pyjsg.parser_impl.jsg_forwardref import JSGForwardRef
-
         circulars = self.circular_references()
         for c in circulars:
             fwdref = JSGForwardRef(c)
@@ -162,7 +193,6 @@ class JSGDocContext:
         """
         from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
         from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
-        from pyjsg.parser_impl.jsg_forwardref import JSGForwardRef
         from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
         from pyjsg.parser_impl.jsg_builtinvaluetype_parser import JSGBuiltinValueType
         from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
@@ -177,10 +207,7 @@ class JSGDocContext:
         max_depth = max(self.depths.values()) if self.depths else 0
         while state >= 0:
             iter_ = iter([])
-            if state == 0:          # Forward references
-                iter_ = (k for k, v in sorted(self.grammarelts.items()) if isinstance(v, JSGForwardRef))
-                state += 1
-            elif state == 1:
+            if state == 0:
                 depth += 1
                 if depth <= max_depth:
                     iter_ = (k for k, v in self.grammarelts.items()
@@ -188,11 +215,21 @@ class JSGDocContext:
                 else:
                     depth = -1
                     state += 1
-            elif state == 2:
+            elif state == 1:
                 depth += 1
                 if depth <= max_depth:
                     iter_ = (k for k, v in self.grammarelts.items()
-                             if isinstance(v, (JSGObjectExpr, JSGArrayExpr, JSGValueType)) and self.depths[k] == depth)
+                             if isinstance(v, (JSGObjectExpr, JSGArrayExpr, JSGValueType)) and
+                             self.depths[k] == depth and k not in self.forward_refs)
+                else:
+                    depth = -1
+                    state += 1
+            elif state == 2:          # Forward references
+                depth += 1
+                if depth <= max_depth:
+                    iter_ = (k for k, v in self.grammarelts.items()
+                             if isinstance(v, (JSGObjectExpr, JSGArrayExpr, JSGValueType)) and
+                             self.depths[k] == depth and k in self.forward_refs)
                 else:
                     state = -1
             while state >= 0:
@@ -202,7 +239,6 @@ class JSGDocContext:
                 yield rval
 
     def calc_depths(self, k: str) -> int:
-
         if k in self.depths:
             return self.depths[k]
         if k in self.forward_refs:

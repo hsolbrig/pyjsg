@@ -2,11 +2,11 @@
 import unittest
 from typing import List
 
+from jsonasobj import loads as jsonloads
 from jsonasobj.jsonobj import as_json
 
-from pyjsg.jsglib import JSGObjectMap, JSGPattern, JSGContext, JSGString, Null
+from pyjsg.jsglib import JSGObjectMap, JSGContext, Null, Boolean, JSGArray
 from tests.test_jsglib.iri_defn import *
-from jsonasobj import loads as jsonloads
 
 _CONTEXT = JSGContext()
 
@@ -15,21 +15,22 @@ class ObjectMapTestCase(unittest.TestCase):
 
     def test_basic_map(self):
         class IntObjectMap(JSGObjectMap):
-            _name_filter = JSGPattern(r'[A-Za-z][0-9]+')
+            _name_filter = HEX
             _value_type = List[int]
 
             def __init__(self,
                          **_kwargs):
                 super().__init__(_CONTEXT, **_kwargs)
 
+
         x = IntObjectMap()
-        x.a17 = [1,2,3]
+        x.E = [1,2,3]
         self.assertTrue(x._is_valid())
-        self.assertEqual(as_json(x), as_json(jsonloads('{"a17":[1,2,3]}')))
+        self.assertEqual(as_json(x), as_json(jsonloads('{"E":[1,2,3]}')))
         with self.assertRaises(ValueError):
-            x.ab = [1, 2, 4]
+            x.G = [1, 2, 4]
         with self.assertRaises(ValueError):
-            x.t1 = 1
+            x.C = 1
         with self.assertRaises(ValueError):
             x = IntObjectMap(aa=[1])
 
@@ -52,7 +53,7 @@ class ObjectMapTestCase(unittest.TestCase):
 
     def test_any_value(self):
         class IRIKey(JSGObjectMap):
-            _name_filter = IRI.pattern
+            _name_filter = IRI
 
             def __init__(self,
                          **_kwargs):

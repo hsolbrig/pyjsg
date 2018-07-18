@@ -9,6 +9,9 @@ except ImportError:
 
 requires = ["antlr4-python3-runtime>=4.7", "jsonasobj>=1.2.0", "requests"]
 
+if sys.version_info < (3, 7):
+    requires.append("dataclasses")
+
 
 setup(
     name='PyJSG',

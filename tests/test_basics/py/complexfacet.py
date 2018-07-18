@@ -1,8 +1,10 @@
-# Auto generated from test_basics/jsg/complexfacet.jsg by PyJSG version 0.7.0
-# Generation date: 2018-06-28 11:40
+# Auto generated from tests/test_basics/jsg/complexfacet.jsg by PyJSG version 0.7.0
+# Generation date: 2018-07-18 09:39
 #
 import sys
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Any
+from jsonasobj import JsonObj
+
 if sys.version_info < (3, 7):
     from typing import _ForwardRef as ForwardRef
     from pyjsg.jsglib import typing_patch_36
@@ -11,7 +13,6 @@ else:
     from pyjsg.jsglib import typing_patch_37
 
 from pyjsg.jsglib import *
-from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
@@ -29,8 +30,6 @@ _CONTEXT.TYPE_EXCEPTIONS.append("listReq")
 _CONTEXT.TYPE_EXCEPTIONS.append("listList")
 
 
-
-
 class INTEGER(JSGString):
     pattern = JSGPattern(r'[0-9]*')
 
@@ -46,279 +45,313 @@ class DOUBLE(JSGString):
 class STRING(JSGString):
     pattern = JSGPattern(r'[a-z]*')
 
-numericLiteral = Union[INTEGER, DECIMAL, DOUBLE]
 
+
+numericLiteral = Union[INTEGER, DECIMAL, DOUBLE]
 class optFacet(JSGObject):
     _reference_types = []
-    _members = {'mininclusive': Optional[numericLiteral],
-                'minexclusive': Optional[numericLiteral],
-                'maxinclusive': Optional[numericLiteral],
-                'maxexclusive': Optional[numericLiteral]}
+    _members = {'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]]}
     _strict = True
-    
+
     def __init__(self,
-                 mininclusive: Optional[numericLiteral] = None,
-                 minexclusive: Optional[numericLiteral] = None,
-                 maxinclusive: Optional[numericLiteral] = None,
-                 maxexclusive: Optional[numericLiteral] = None,
+                 mininclusive: Optional[Union[str, str, str]] = None,
+                 minexclusive: Optional[Union[str, str, str]] = None,
+                 maxinclusive: Optional[Union[str, str, str]] = None,
+                 maxexclusive: Optional[Union[str, str, str]] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
         self.maxinclusive = maxinclusive
         self.maxexclusive = maxexclusive
-        super().__init__(self._context, **_kwargs)
 
 
 class reqFacet(JSGObject):
     _reference_types = []
-    _members = {'mininclusive': numericLiteral,
-                'minexclusive': numericLiteral,
-                'maxinclusive': numericLiteral,
-                'maxexclusive': numericLiteral}
+    _members = {'mininclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'minexclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'maxinclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'maxexclusive': Union[INTEGER, DECIMAL, DOUBLE]}
     _strict = True
-    
+
     def __init__(self,
-                 mininclusive: numericLiteral = None,
-                 minexclusive: numericLiteral = None,
-                 maxinclusive: numericLiteral = None,
-                 maxexclusive: numericLiteral = None,
+                 mininclusive: Union[str, str, str] = None,
+                 minexclusive: Union[str, str, str] = None,
+                 maxinclusive: Union[str, str, str] = None,
+                 maxexclusive: Union[str, str, str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
         self.maxinclusive = maxinclusive
         self.maxexclusive = maxexclusive
-        super().__init__(self._context, **_kwargs)
 
 
 class listFacet(JSGObject):
     _reference_types = []
-    _members = {'mininclusive': List[numericLiteral],
-                'minexclusive': List[numericLiteral],
-                'maxinclusive': List[numericLiteral],
-                'maxexclusive': List[numericLiteral]}
+    _members = {'mininclusive': ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'minexclusive': ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'maxinclusive': ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'maxexclusive': ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)}
     _strict = True
-    
+
     def __init__(self,
-                 mininclusive: List[numericLiteral] = None,
-                 minexclusive: List[numericLiteral] = None,
-                 maxinclusive: List[numericLiteral] = None,
-                 maxexclusive: List[numericLiteral] = None,
+                 mininclusive: List[Union[str, str, str]] = None,
+                 minexclusive: List[Union[str, str, str]] = None,
+                 maxinclusive: List[Union[str, str, str]] = None,
+                 maxexclusive: List[Union[str, str, str]] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.mininclusive = JSGArray('mininclusive', _CONTEXT, numericLiteral, 0, None, mininclusive)
-        self.minexclusive = JSGArray('minexclusive', _CONTEXT, numericLiteral, 0, None, minexclusive)
-        self.maxinclusive = JSGArray('maxinclusive', _CONTEXT, numericLiteral, 0, None, maxinclusive)
-        self.maxexclusive = JSGArray('maxexclusive', _CONTEXT, numericLiteral, 0, None, maxexclusive)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
 
 
 class optOpt(JSGObject):
     _reference_types = [optFacet]
     _members = {'first': Optional[INTEGER],
-                'mininclusive': Optional[numericLiteral],
-                'minexclusive': Optional[numericLiteral],
-                'maxinclusive': Optional[numericLiteral],
-                'maxexclusive': Optional[numericLiteral],
-                'last': List[STRING]}
+                'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: Optional[INTEGER] = None,
-                 optFacet: Optional[optFacet] = None,
-                 last: List[STRING] = None,
+                 first: Optional[str] = None,
+                 mininclusive: Optional[Union[str, str, str]] = None,
+                 minexclusive: Optional[Union[str, str, str]] = None,
+                 maxinclusive: Optional[Union[str, str, str]] = None,
+                 maxexclusive: Optional[Union[str, str, str]] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.first = first
-        self.mininclusive = optFacet.mininclusive if optFacet else None
-        self.minexclusive = optFacet.minexclusive if optFacet else None
-        self.maxinclusive = optFacet.maxinclusive if optFacet else None
-        self.maxexclusive = optFacet.maxexclusive if optFacet else None
-        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
-        super().__init__(self._context, **_kwargs)
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class optReq(JSGObject):
     _reference_types = [optFacet]
-    _members = {'first': int,
-                'mininclusive': Optional[numericLiteral],
-                'minexclusive': Optional[numericLiteral],
-                'maxinclusive': Optional[numericLiteral],
-                'maxexclusive': Optional[numericLiteral],
-                'last': str}
+    _members = {'first': Integer,
+                'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'last': String}
     _strict = True
-    
+
     def __init__(self,
                  first: int = None,
-                 optFacet: optFacet = None,
+                 mininclusive: Optional[Union[str, str, str]] = None,
+                 minexclusive: Optional[Union[str, str, str]] = None,
+                 maxinclusive: Optional[Union[str, str, str]] = None,
+                 maxexclusive: Optional[Union[str, str, str]] = None,
                  last: str = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.first = Integer(first)
-        self.mininclusive = optFacet.mininclusive if optFacet else None
-        self.minexclusive = optFacet.minexclusive if optFacet else None
-        self.maxinclusive = optFacet.maxinclusive if optFacet else None
-        self.maxexclusive = optFacet.maxexclusive if optFacet else None
-        self.last = String(last)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.first = first
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class optList(JSGObject):
     _reference_types = [optFacet]
-    _members = {'first': List[INTEGER],
-                'optFacet': List[optFacet],
-                'last': List[STRING]}
+    _members = {'first': ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
+                'mininclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
+                'minexclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
+                'maxinclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
+                'maxexclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
+                'last': ArrayFactory('last', _CONTEXT, STRING, 0, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: List[INTEGER] = None,
-                 optFacet: List[optFacet] = None,
-                 last: List[STRING] = None,
+                 first: List[str] = None,
+                 mininclusive: Optional[Union[str, str, str]] = None,
+                 minexclusive: Optional[Union[str, str, str]] = None,
+                 maxinclusive: Optional[Union[str, str, str]] = None,
+                 maxexclusive: Optional[Union[str, str, str]] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.first = JSGArray('first', _CONTEXT, INTEGER, 0, None, first)
-        self.optFacet = optFacet
-        self.last = JSGArray('last', _CONTEXT, STRING, 0, None, last)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.first = first
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class reqOpt(JSGObject):
     _reference_types = [reqFacet]
     _members = {'first': Optional[INTEGER],
-                'mininclusive': Optional[numericLiteral],
-                'minexclusive': Optional[numericLiteral],
-                'maxinclusive': Optional[numericLiteral],
-                'maxexclusive': Optional[numericLiteral],
-                'last': List[STRING]}
+                'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
+                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: Optional[INTEGER] = None,
-                 reqFacet: Optional[reqFacet] = None,
-                 last: List[STRING] = None,
+                 first: Optional[str] = None,
+                 mininclusive: Union[str, str, str] = None,
+                 minexclusive: Union[str, str, str] = None,
+                 maxinclusive: Union[str, str, str] = None,
+                 maxexclusive: Union[str, str, str] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.first = first
-        self.mininclusive = reqFacet.mininclusive if reqFacet else None
-        self.minexclusive = reqFacet.minexclusive if reqFacet else None
-        self.maxinclusive = reqFacet.maxinclusive if reqFacet else None
-        self.maxexclusive = reqFacet.maxexclusive if reqFacet else None
-        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
-        super().__init__(self._context, **_kwargs)
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class reqReq(JSGObject):
     _reference_types = [reqFacet]
-    _members = {'first': int,
-                'mininclusive': numericLiteral,
-                'minexclusive': numericLiteral,
-                'maxinclusive': numericLiteral,
-                'maxexclusive': numericLiteral,
-                'last': str}
+    _members = {'first': Integer,
+                'mininclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'minexclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'maxinclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'maxexclusive': Union[INTEGER, DECIMAL, DOUBLE],
+                'last': String}
     _strict = True
-    
+
     def __init__(self,
                  first: int = None,
-                 reqFacet: reqFacet = None,
+                 mininclusive: Union[str, str, str] = None,
+                 minexclusive: Union[str, str, str] = None,
+                 maxinclusive: Union[str, str, str] = None,
+                 maxexclusive: Union[str, str, str] = None,
                  last: str = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.first = Integer(first)
-        self.mininclusive = reqFacet.mininclusive
-        self.minexclusive = reqFacet.minexclusive
-        self.maxinclusive = reqFacet.maxinclusive
-        self.maxexclusive = reqFacet.maxexclusive
-        self.last = String(last)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.first = first
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class reqList(JSGObject):
     _reference_types = [reqFacet]
-    _members = {'first': List[INTEGER],
-                'reqFacet': List[reqFacet],
-                'last': List[STRING]}
+    _members = {'first': ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
+                'mininclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'minexclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'maxinclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'maxexclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'last': ArrayFactory('last', _CONTEXT, STRING, 0, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: List[INTEGER] = None,
-                 reqFacet: List[reqFacet] = None,
-                 last: List[STRING] = None,
+                 first: List[str] = None,
+                 mininclusive: Union[str, str, str] = None,
+                 minexclusive: Union[str, str, str] = None,
+                 maxinclusive: Union[str, str, str] = None,
+                 maxexclusive: Union[str, str, str] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.first = JSGArray('first', _CONTEXT, INTEGER, 0, None, first)
-        self.reqFacet = reqFacet
-        self.last = JSGArray('last', _CONTEXT, STRING, 0, None, last)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.first = first
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class listOpt(JSGObject):
     _reference_types = [listFacet]
     _members = {'first': Optional[INTEGER],
-                'mininclusive': Optional[List[numericLiteral]],
-                'minexclusive': Optional[List[numericLiteral]],
-                'maxinclusive': Optional[List[numericLiteral]],
-                'maxexclusive': Optional[List[numericLiteral]],
-                'last': List[STRING]}
+                'mininclusive': Optional[ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
+                'minexclusive': Optional[ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
+                'maxinclusive': Optional[ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
+                'maxexclusive': Optional[ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
+                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: Optional[INTEGER] = None,
-                 listFacet: Optional[listFacet] = None,
-                 last: List[STRING] = None,
+                 first: Optional[str] = None,
+                 mininclusive: List[Union[str, str, str]] = None,
+                 minexclusive: List[Union[str, str, str]] = None,
+                 maxinclusive: List[Union[str, str, str]] = None,
+                 maxexclusive: List[Union[str, str, str]] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.first = first
-        self.mininclusive = JSGArray('mininclusive', _CONTEXT, numericLiteral, 0, None, mininclusive)
-        self.minexclusive = JSGArray('minexclusive', _CONTEXT, numericLiteral, 0, None, minexclusive)
-        self.maxinclusive = JSGArray('maxinclusive', _CONTEXT, numericLiteral, 0, None, maxinclusive)
-        self.maxexclusive = JSGArray('maxexclusive', _CONTEXT, numericLiteral, 0, None, maxexclusive)
-        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
-        super().__init__(self._context, **_kwargs)
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class listReq(JSGObject):
     _reference_types = [listFacet]
-    _members = {'first': int,
-                'mininclusive': List[numericLiteral],
-                'minexclusive': List[numericLiteral],
-                'maxinclusive': List[numericLiteral],
-                'maxexclusive': List[numericLiteral],
-                'last': str}
+    _members = {'first': Integer,
+                'mininclusive': ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'minexclusive': ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'maxinclusive': ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'maxexclusive': ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
+                'last': String}
     _strict = True
-    
+
     def __init__(self,
                  first: int = None,
-                 listFacet: listFacet = None,
+                 mininclusive: List[Union[str, str, str]] = None,
+                 minexclusive: List[Union[str, str, str]] = None,
+                 maxinclusive: List[Union[str, str, str]] = None,
+                 maxexclusive: List[Union[str, str, str]] = None,
                  last: str = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.first = Integer(first)
-        self.mininclusive = JSGArray('mininclusive', _CONTEXT, numericLiteral, 0, None, mininclusive)
-        self.minexclusive = JSGArray('minexclusive', _CONTEXT, numericLiteral, 0, None, minexclusive)
-        self.maxinclusive = JSGArray('maxinclusive', _CONTEXT, numericLiteral, 0, None, maxinclusive)
-        self.maxexclusive = JSGArray('maxexclusive', _CONTEXT, numericLiteral, 0, None, maxexclusive)
-        self.last = String(last)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.first = first
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 class listList(JSGObject):
     _reference_types = [listFacet]
-    _members = {'first': List[INTEGER],
-                'listFacet': List[listFacet],
-                'last': List[STRING]}
+    _members = {'first': ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
+                'mininclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
+                'minexclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
+                'maxinclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
+                'maxexclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
+                'last': ArrayFactory('last', _CONTEXT, STRING, 0, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: List[INTEGER] = None,
-                 listFacet: List[listFacet] = None,
-                 last: List[STRING] = None,
+                 first: List[str] = None,
+                 mininclusive: List[Union[str, str, str]] = None,
+                 minexclusive: List[Union[str, str, str]] = None,
+                 maxinclusive: List[Union[str, str, str]] = None,
+                 maxexclusive: List[Union[str, str, str]] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.first = JSGArray('first', _CONTEXT, INTEGER, 0, None, first)
-        self.listFacet = listFacet
-        self.last = JSGArray('last', _CONTEXT, STRING, 0, None, last)
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.first = first
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.last = last
 
 
 _CONTEXT.NAMESPACE = locals()

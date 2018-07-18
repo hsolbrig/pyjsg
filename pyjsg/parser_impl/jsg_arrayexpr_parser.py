@@ -1,51 +1,68 @@
-from typing import Optional, List, Set, Dict, Tuple
+from typing import Optional, List, Tuple
 
-from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
-from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 from pyjsg.parser.jsgParser import *
-
-
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
-from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
+from pyjsg.parser_impl.parser_utils import flatten_unique
 
 
-_array_template = """
-
-{} = {}
-"""
-
-
-class JSGArrayExpr(jsgParserVisitor):
+class JSGArrayExpr(jsgParserVisitor, PythonGeneratorElement):
     def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.ArrayExprContext] = None):
-        self._context = context
+        from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
+        from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
 
-        self._typ = None                     # type: JSGValueType
-        self._ebnf = None                    # type: Optional[JSGEbnf]
+        self._context = context
+        self._types: List[JSGValueType] = None
+        self._ebnf: JSGEbnf = JSGEbnf(context)
+        self._ebnf.min = 0
+        self._ebnf.max = None
+        self.text = ""
 
         if ctx:
+            self.text = ctx.getText()
             self.visit(ctx)
 
     def __str__(self):
-        return "arrayExpr: [{}{}]".format(self._typ, self._ebnf if self._ebnf else "")
+        type_list = ' | '.join([str(t) for t in self._types])
+        if len(self._types) != 1:
+            type_list = f'({type_list})'
+        return f"arrayExpr: [{type_list}{self._ebnf}]"
 
-    def as_python(self, name: str) -> str:
-        return _array_template.format(name, self.signature())
+    def python_type(self) -> str:
+        type_list = ', '.join([t.python_type() for t in self._types])
+        if len(self._types) > 1:
+            type_list = f'Union[{type_list}]'
+        return f"List[{type_list}]"
 
-    def signature(self, all_are_optional: Optional[bool]=False) -> str:
-        fstr = "List[{}]" if not all_are_optional else "Optional[List[{}]]"
-        return fstr.format(self._context.reference_for(self._typ.typeid))
+    def _inner_signature(self) -> str:
+        type_list = ', '.join([t.signature_type() for t in self._types])
+        if len(self._types) > 1:
+            type_list = f'Union[{type_list}]'
+        return type_list
 
-    def members(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
+    def signature_type(self) -> str:
+        return f"ArrayFactory('{{name}}', _CONTEXT, {self._inner_signature()}, {self._ebnf.min}, {self._ebnf.max})"
+
+    def mt_value(self) -> str:
+        return "None"
+
+    def members_entries(self, all_are_optional: Optional[bool] = False) -> List[Tuple[str, str]]:
         return []
 
     def dependency_list(self) -> List[str]:
-        return self._typ.dependency_list()
+        return flatten_unique([t.dependency_list() for t in self._types])
 
-    def dependencies(self) -> Set[str]:
-        return set(self.dependency_list())
+    def constructor(self, raw_name: str, getter: str) -> str:
+        return ""
 
+    # ***************
+    #   Visitors
+    # ***************
     def visitArrayExpr(self, ctx: jsgParser.ArrayExprContext):
         """ arrayExpr: OBRACKET valueType (BAR valueType)* ebnfSuffix? CBRACKET; """
-        self._typ = JSGValueType(self._context, ctx.valueType())
+        from pyjsg.parser_impl.jsg_ebnf_parser import JSGEbnf
+
+        from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
+        self._types = [JSGValueType(self._context, vt) for vt in ctx.valueType()]
         if ctx.ebnfSuffix():
             self._ebnf = JSGEbnf(self._context, ctx.ebnfSuffix())

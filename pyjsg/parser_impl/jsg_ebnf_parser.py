@@ -2,39 +2,81 @@ from typing import Optional
 
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
-from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
+from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 
 
 class JSGEbnf(jsgParserVisitor):
+    """ Cardinality processing """
     def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.EbnfSuffixContext] = None):
         self._context = context
         self._ebnftext = ""                 # type: str
         self.min = 1                        # type: int
         self.max = 1                        # type: Optional[int]
+        self.text = ""
 
         if ctx:
+            self.text = ctx.getText()
             self.visit(ctx)
 
     def __str__(self):
         return self._ebnftext
 
     @property
-    def is_optional(self):
+    def one_optional_element(self) -> bool:
+        """ Return True if exactly one optional element """
         return self.min == 0 and self.max == 1
 
     @property
-    def is_list(self):
+    def multiple_elements(self) -> bool:
+        """ Return True if cardinality is > 1"""
         return self.max is None or self.max > 1
 
-    def python_type(self, subject: str) -> str:
-        """
-        Add the appropriate python typing to subject (e.g. Optional, List, ...)
+
+    def python_cardinality(self, subject: str, all_are_optional: bool = False) -> str:
+        """Add the appropriate python typing to subject (e.g. Optional, List, ...)
+
         :param subject: Subject to be decorated
+        :param all_are_optional: Force everything to be optional
         :return: Typed subject
         """
-        return "List[{}]".format(subject) if self.is_list else\
-            "Optional[{}]".format(subject) if self.is_optional else "None" if self.max == 0 else subject
+        if self.multiple_elements:
+            rval = f"List[{subject}]"
+        elif self.one_optional_element:
+            rval = subject if subject.startswith("Optional[") else f"Optional[{subject}]"
+        elif self.max == 0:
+            rval = "type(None)"
+        else:
+            rval = subject
+        if all_are_optional and not self.one_optional_element:
+            rval = f"Optional[{rval}]"
+        return rval
 
+    def signature_cardinality(self, subject: str, all_are_optional: bool = False) -> str:
+        """Add the appropriate python typing to subject (e.g. Optional, List, ...)
+
+        :param subject: Subject to be decorated
+        :param all_are_optional: Force everything to be optional
+        :return: Typed subject
+        """
+        if self.multiple_elements:
+            rval = f"ArrayFactory('{{name}}', _CONTEXT, {subject}, {self.min}, {self.max})"
+        elif self.one_optional_element:
+            rval = subject if subject.startswith("Optional[") else f"Optional[{subject}]"
+        elif self.max == 0:
+            rval = "type(None)"
+        else:
+            rval = subject
+        if all_are_optional and not self.one_optional_element:
+            rval = f"Optional[{rval}]"
+        return rval
+
+    def mt_value(self, typ: JSGValueType) -> str:
+        return "None" if self.multiple_elements else typ.mt_value()
+
+    # ***************
+    #   Visitors
+    # ***************
     def visitEbnfSuffix(self, ctx: jsgParser.EbnfSuffixContext):
         """ ebnfSuffix: QMARK | STAR | PLUS | OBRACE INT (COMMA (INT|STAR)?)? CBRACE """
         self._ebnftext = ctx.getText()

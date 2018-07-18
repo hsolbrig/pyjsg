@@ -6,7 +6,8 @@ from dict_compare import dict_compare
 from io import StringIO
 from jsonasobj import loads as json_loads
 
-from pyjsg.jsglib import JSGNull, String, Integer, Boolean, Number, JSGContext, JSGObject, Null
+from pyjsg.jsglib import JSGNull, String, Integer, Boolean, Number, JSGContext, JSGObject, Null, EmptyAny
+
 _CONTEXT = JSGContext()
 
 
@@ -17,10 +18,10 @@ class ObjectTestCase(unittest.TestCase):
     def test_simple_object(self):
         class Person(JSGObject):
             _reference_types = []
-            _members = {'name': str,
-                        'age': int,
-                        'married': bool,
-                        'weight': float,
+            _members = {'name': String,
+                        'age': Integer,
+                        'married': Boolean,
+                        'weight': Number,
                         'tag': Optional[JSGNull]}
             _strict = True
 
@@ -29,14 +30,14 @@ class ObjectTestCase(unittest.TestCase):
                          age: int = None,
                          married: bool = None,
                          weight: float = None,
-                         tag: Optional[JSGNull] = None,
+                         tag: Optional[type(None)] = EmptyAny,
                          **_kwargs: Dict[str, object]):
                 super().__init__(_CONTEXT, **_kwargs)
-                self.name = String(name)
-                self.age = Integer(age)
-                self.married = Boolean(married)
-                self.weight = Number(weight)
-                self.tag = tag
+                self.name = String(name) if name is not None else None
+                self.age = Integer(age) if age is not None else None
+                self.married = Boolean(married) if married is not None else None
+                self.weight = Number(weight) if weight is not None else None
+                self.tag = JSGNull(tag) if tag is not EmptyAny else EmptyAny
 
         log = StringIO()
 

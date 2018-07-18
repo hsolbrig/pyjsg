@@ -319,7 +319,7 @@ class jsgLexer(Lexer):
                   "LEXER_JSON_ARRAY", "LEXER_JSON_OBJECT", "LEXER_SEMI", 
                   "LEXER_DASH", "LEXER_OBRACE", "LEXER_CBRACE", "LEXER_COMMA", 
                   "LEXER_STAR", "LEXER_QMARK", "LEXER_PLUS", "LEXER_OPREN", 
-                  "LEXER_CPREN", "LEXER_COLON", "LExER_BAR", "LEXER_STRING", 
+                  "LEXER_CPREN", "LEXER_COLON", "LEXER_BAR", "LEXER_STRING", 
                   "LEXER_ANY", "LEXER_CHAR_SET", "LEXER_INT", "LEXER_PASS", 
                   "LEXER_COMMENT" ]
 

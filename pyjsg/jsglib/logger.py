@@ -1,7 +1,5 @@
 from io import StringIO
-
-from abc import ABC, abstractmethod
-from typing import Optional, List, cast, IO, TextIO
+from typing import Optional, TextIO, cast, Any
 
 
 class Logger:
@@ -20,9 +18,9 @@ class Logger:
         self._logfile = logfile
 
     def log(self, txt: str) -> bool:
-        """
-        Log txt (if any) to the log file (if any). Return value indicates whether it is ok to terminate on the first
+        """ Log txt (if any) to the log file (if any). Return value indicates whether it is ok to terminate on the first
         error or whether we need to continue processing.
+
         :param txt: text to log.
         :return: True if we aren't logging, False if we are.
         """
@@ -31,11 +29,21 @@ class Logger:
             print(txt, file=self._logfile)
         return not self.logging
 
+    @staticmethod
+    def json_repr(item: Any) -> str:
+        return f"'{item}'" if isinstance(item, str) else item
+
     @property
     def logging(self):
-        """
-        Return logging status
-        :return: True if logging is occurring (meaning we want all errors) or False if we just want to find an error
+        """ Return True if errors are being recorded in the log, false if just checking for anything wrong
         """
         return self._logfile is not None
 
+    def getvalue(self) -> Optional[str]:
+        """ Return the current contents of the log file, if any """
+        return self._logfile.read() if self._logfile else None
+
+
+def logger():
+    """ Return a """
+    return Logger(cast(TextIO, StringIO()))

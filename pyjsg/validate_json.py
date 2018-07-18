@@ -6,7 +6,7 @@ from typing import cast, TextIO, NamedTuple, Optional
 
 import requests
 
-from pyjsg.jsglib.jsg import loads, JSGException, Logger, is_valid
+from pyjsg.jsglib.jsg_base import loads, Logger, is_valid
 from pyjsg.parser_impl.generate_python import parse
 
 
@@ -22,17 +22,20 @@ class ValidationResult(NamedTuple):
 
 
 class JSGPython:
-    def __init__(self, jsg: Optional[str]=None, python: Optional[str]=None) -> None:
+    def __init__(self, jsg: Optional[str]=None, python: Optional[str]=None, print_python: bool=False) -> None:
         """ Construct a jsg validation module
 
         :param jsg: JSG specification.  If none, use python
         :param python: Python specification.
+        :param print_python: True means print Python to stdout
         """
         if jsg is not None:
             self.schema = self._to_string(jsg) if not self._is_jsg(jsg) else jsg
         else:
             self.schema = None
         self.python = parse(self.schema, self.__class__.__name__) if self.schema else self._to_string(python)
+        if print_python:
+            print(self.python)
         self.json_obj = None
         if not self.python:
             raise ValueError("JSGPython: jsg parsing error")
@@ -75,7 +78,7 @@ class JSGPython:
             self.json_obj = loads(json, self.module)
         except ValueError as v:
             return ValidationResult(False, str(v), name, None)
-        except JSGException as v:
+        except ValueError as v:
             return ValidationResult(False, str(v), name, None)
         logfile = StringIO()
         logger = Logger(cast(TextIO, logfile))      # cast because of bug in ide
@@ -93,6 +96,7 @@ def genargs() -> ArgumentParser:
     parser = ArgumentParser()
     parser.add_argument("spec", help="JSG specification - can be file name, URI or string")
     parser.add_argument("-o", "--outfile", help="Output python file - if omitted, python is not saved")
+    parser.add_argument("-p", "--print", help="Print python file to stdout")
     parser.add_argument("-id", "--inputdir", help="Input directory with JSON files")
     parser.add_argument("-i", "--json", help="URL, file name or json text", nargs='*')
     return parser
@@ -112,7 +116,7 @@ def validate_json(argv) -> bool:
                 return False
 
     opts = genargs().parse_args(argv)
-    validator = JSGPython(opts.spec)
+    validator = JSGPython(opts.spec, print_python=opts.print)
     all_pass = True
 
     if opts.outfile:

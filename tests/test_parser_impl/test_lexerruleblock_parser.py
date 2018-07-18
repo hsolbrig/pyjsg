@@ -1,8 +1,11 @@
 import sys
 import unittest
+from tokenize import Double
 from typing import cast
 
-from pyjsg.jsglib import *
+from jsonasobj import JsonObj
+
+from pyjsg.jsglib import JSGString, JSGPattern, String, Number, Boolean, Integer, JSGNull, Array
 from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
 from tests.test_basics.parser import parse
 
@@ -10,17 +13,24 @@ from tests.test_basics.parser import parse
 # when deciding what to escape.  The escape call itself can be found in jsg_lexerruleblock_parser.py.add_string().
 # This is why the conditionals below
 
+# Force the needed imports
+_x = isinstance(1, (JSGPattern, JSGString, String, Number, Double, Boolean, Integer, JSGNull, Array, JsonObj))
+
+
 # Required to get the lexer in the correct state
 terminals = """@terminals
 """
 
 
-t1 = "IRI : (PN_CHARS | '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&' | UCHAR)* ; # <http://www.w3.org/TR/turtle/#grammar-production-IRIREF> "
-t2 = "BNODE : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; # <http://www.w3.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>"
+t1 = "IRI : (PN_CHARS | '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&' | UCHAR)* ; " \
+     "# <http://www.w3.org/TR/turtle/#grammar-production-IRIREF> "
+t2 = "BNODE : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; " \
+     "# <http://www.w3.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>"
 t3 = 'BOOL : "true" | "false" ; # JSON boolean tokens'
 t4 = 'INTEGER : [+-]? [0-9] + ; # <http://www.w3.org/TR/turtle/#grammar-production-INTEGER>'
 t5 = "DECIMAL : [+-]? [0-9]* '.' [0-9] + ; # <http://www.w3.org/TR/turtle/#grammar-production-DECIMAL>"
-t6 = "DOUBLE : [+-]? ([0-9] + '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT) ; # <http://www.w3.org/TR/turtle/#grammar-production-DOUBLE>"
+t6 = "DOUBLE : [+-]? ([0-9] + '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT) ; " \
+     "# <http://www.w3.org/TR/turtle/#grammar-production-DOUBLE>"
 t7 = 'STRING : .* ;'
 
 t8 = "PN_PREFIX  : PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)? ;"
@@ -41,8 +51,9 @@ t17 = "NUMBER_ : .* @number ;"
 t18 = "INT_: .* @int ;"
 t19 = "BOOL_ : .* @bool ;"
 t20 = "NULL_: .* @null ;"
-t21 = "ARRAY_ : .* @array ;"
-t22 = "OBJECT_: .* @object ;"
+# TODO: Figure out how these even parsed
+# t21 = "ARRAY_ : .* @array ;"
+# t22 = "OBJECT_: .* @object ;"
 t23 = "POS_INT : [0]|([1-9][0-9]*) @int ;"
 
 if sys.version_info < (3, 7):
@@ -137,11 +148,10 @@ r20 = '''class NULL_(JSGNull):
     pattern = JSGPattern(r'.*')'''
 r21 = '''class ARRAY_(Array):
     pattern = JSGPattern(r'.*')'''
-r22 = '''class OBJECT_(Object):
+r22 = '''class OBJECT_(JsonObj):
     pattern = JSGPattern(r'.*')'''
 r23 = '''class POS_INT(Integer):
     pattern = JSGPattern(r'[0]|([1-9][0-9]*)')'''
-
 
 
 exec(r13)
@@ -157,7 +167,8 @@ tests = [(t1, 'IRI', r1, s1), (t2, 'BNODE', r2, s2), (t3, 'BOOL', r3, s3), (t4, 
          (t9, 'PN_CHARS_BASE', r9, s9), (t10, 'PN_CHARS', r10, s10), (t11, 'PN_CHARS_U', r11, s11),
          (t12, 'UCHAR', r12, s12), (t13, 'HEX', r13, s13), (t14, 'EXPONENT', r14, s14), (t15, 'LANGTAG', r15, s15),
          (t16, 'STR_', r16, s16), (t17, 'NUMBER_', r17, s17), (t18, 'INT_', r18, s18),
-         (t19, 'BOOL_', r19, s19), (t20, 'NULL_', r20, s20), (t21, 'ARRAY_', r21, s21), (t22, 'OBJECT_', r22, s22),
+         (t19, 'BOOL_', r19, s19), (t20, 'NULL_', r20, s20),
+         # (t21, 'ARRAY_', r21, s21), (t22, 'OBJECT_', r22, s22),
          (t23, 'POS_INT', r23, s23)]
 
 

@@ -3,13 +3,13 @@ from io import StringIO
 from types import ModuleType
 from typing import cast, TextIO
 
-from pyjsg.jsglib.jsg import loads, JSGException, Logger, is_valid
+from pyjsg.jsglib.jsg_base import loads, Logger, is_valid
 from pyjsg.parser_impl.generate_python import parse
 
 
 class Harness(unittest.TestCase):
 
-    def do_test(self, jsg: str, json: str, should_pass: bool=True, jsg_exception: bool=True,
+    def do_test(self, jsg: str, json: str, should_pass: bool=True, _: bool=True,
                 fails_validation: bool=False, expected: str=None) \
             -> None:
         """ Validate JSON against JSG
@@ -17,7 +17,7 @@ class Harness(unittest.TestCase):
         :param jsg: JSG definition
         :param json: JSON to validate
         :param should_pass: True means expect success
-        :param jsg_exception: True means JSGException, False means ValueError
+        :param jsg_exception: (unused)
         :param fails_validation: True means fails is_valid, false means raises exception
         :param expected:
         :return:
@@ -39,5 +39,5 @@ class Harness(unittest.TestCase):
                 print(logf.getvalue())
             self.assertTrue(logger.nerrors > 0)
         else:
-            with self.assertRaises(JSGException if jsg_exception else ValueError):
+            with self.assertRaises(ValueError):
                 is_valid(loads(json, module))

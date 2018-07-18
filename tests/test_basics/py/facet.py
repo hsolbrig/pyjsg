@@ -1,8 +1,10 @@
-# Auto generated from test_basics/jsg/facet.jsg by PyJSG version 0.7.0
-# Generation date: 2018-06-28 11:40
+# Auto generated from tests/test_basics/jsg/facet.jsg by PyJSG version 0.7.0
+# Generation date: 2018-07-18 09:39
 #
 import sys
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Any
+from jsonasobj import JsonObj
+
 if sys.version_info < (3, 7):
     from typing import _ForwardRef as ForwardRef
     from pyjsg.jsglib import typing_patch_36
@@ -11,7 +13,6 @@ else:
     from pyjsg.jsglib import typing_patch_37
 
 from pyjsg.jsglib import *
-from pyjsg.jsglib.jsg import isinstance_
 
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext()
@@ -19,8 +20,6 @@ _CONTEXT.TYPE_EXCEPTIONS.append("stringFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("numericFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("xsFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledNodeConstraint")
-
-
 
 
 class INTEGER(JSGString):
@@ -38,6 +37,7 @@ class DOUBLE(JSGString):
 class STRING(JSGString):
     pattern = JSGPattern(r'[A-Z]*')
 
+
 class stringFacet(JSGObject):
     _reference_types = []
     _members = {'length': Optional[INTEGER],
@@ -46,21 +46,20 @@ class stringFacet(JSGObject):
                 'pattern': STRING,
                 'flags': Optional[STRING]}
     _strict = True
-    
+
     def __init__(self,
-                 length: Optional[INTEGER] = None,
-                 minlength: Optional[INTEGER] = None,
-                 maxlength: Optional[INTEGER] = None,
-                 pattern: STRING = None,
-                 flags: Optional[STRING] = None,
+                 length: Optional[str] = None,
+                 minlength: Optional[str] = None,
+                 maxlength: Optional[str] = None,
+                 pattern: str = None,
+                 flags: Optional[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.length = length
         self.minlength = minlength
         self.maxlength = maxlength
         self.pattern = pattern
         self.flags = flags
-        super().__init__(self._context, **_kwargs)
 
 
 class numericFacet(JSGObject):
@@ -72,23 +71,22 @@ class numericFacet(JSGObject):
                 'totaldigits': Optional[INTEGER],
                 'fractiondigits': Optional[INTEGER]}
     _strict = True
-    
+
     def __init__(self,
-                 mininclusive: Optional[DOUBLE] = None,
-                 minexclusive: Optional[DOUBLE] = None,
-                 maxinclusive: Optional[DOUBLE] = None,
-                 maxexclusive: Optional[DOUBLE] = None,
-                 totaldigits: Optional[INTEGER] = None,
-                 fractiondigits: Optional[INTEGER] = None,
+                 mininclusive: Optional[str] = None,
+                 minexclusive: Optional[str] = None,
+                 maxinclusive: Optional[str] = None,
+                 maxexclusive: Optional[str] = None,
+                 totaldigits: Optional[str] = None,
+                 fractiondigits: Optional[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
         self.maxinclusive = maxinclusive
         self.maxexclusive = maxexclusive
         self.totaldigits = totaldigits
         self.fractiondigits = fractiondigits
-        super().__init__(self._context, **_kwargs)
 
 
 class xsFacet(JSGObject):
@@ -105,46 +103,80 @@ class xsFacet(JSGObject):
                 'totaldigits': Optional[INTEGER],
                 'fractiondigits': Optional[INTEGER]}
     _strict = True
-    
+
     def __init__(self,
-                 choice: Union[stringFacet, numericFacet] = None,
+                 length: Optional[str] = None,
+                 minlength: Optional[str] = None,
+                 maxlength: Optional[str] = None,
+                 pattern: str = None,
+                 flags: Optional[str] = None,
+                 mininclusive: Optional[str] = None,
+                 minexclusive: Optional[str] = None,
+                 maxinclusive: Optional[str] = None,
+                 maxexclusive: Optional[str] = None,
+                 totaldigits: Optional[str] = None,
+                 fractiondigits: Optional[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
-        self.stringFacet = stringFacet
-        self.numericFacet = numericFacet
-        
-        self.length = choice.length if choice else None if isinstance(choice, stringFacet) else None
-        self.minlength = choice.minlength if choice else None if isinstance(choice, stringFacet) else None
-        self.maxlength = choice.maxlength if choice else None if isinstance(choice, stringFacet) else None
-        self.pattern = choice.pattern if isinstance(choice, stringFacet) else None
-        self.flags = choice.flags if choice else None if isinstance(choice, stringFacet) else None
-        
-        self.mininclusive = choice.mininclusive if choice else None if isinstance(choice, numericFacet) else None
-        self.minexclusive = choice.minexclusive if choice else None if isinstance(choice, numericFacet) else None
-        self.maxinclusive = choice.maxinclusive if choice else None if isinstance(choice, numericFacet) else None
-        self.maxexclusive = choice.maxexclusive if choice else None if isinstance(choice, numericFacet) else None
-        self.totaldigits = choice.totaldigits if choice else None if isinstance(choice, numericFacet) else None
-        self.fractiondigits = choice.fractiondigits if choice else None if isinstance(choice, numericFacet) else None
-        super().__init__(self._context, **_kwargs)
+        super().__init__(_CONTEXT, **_kwargs)
+        self.length = length
+        self.minlength = minlength
+        self.maxlength = maxlength
+        self.pattern = pattern
+        self.flags = flags
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.totaldigits = totaldigits
+        self.fractiondigits = fractiondigits
 
 
 class labeledNodeConstraint(JSGObject):
     _reference_types = [xsFacet]
     _members = {'first': Optional[INTEGER],
-                'xsFacet': List[xsFacet],
-                'last': List[STRING]}
+                'length': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
+                'minlength': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
+                'maxlength': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
+                'pattern': ArrayFactory('{name}', _CONTEXT, STRING, 0, None),
+                'flags': ArrayFactory('{name}', _CONTEXT, Optional[STRING], 0, None),
+                'mininclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
+                'minexclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
+                'maxinclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
+                'maxexclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
+                'totaldigits': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
+                'fractiondigits': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
+                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
-    
+
     def __init__(self,
-                 first: Optional[INTEGER] = None,
-                 xsFacet: List[xsFacet] = None,
-                 last: List[STRING] = None,
+                 first: Optional[str] = None,
+                 length: Optional[str] = None,
+                 minlength: Optional[str] = None,
+                 maxlength: Optional[str] = None,
+                 pattern: str = None,
+                 flags: Optional[str] = None,
+                 mininclusive: Optional[str] = None,
+                 minexclusive: Optional[str] = None,
+                 maxinclusive: Optional[str] = None,
+                 maxexclusive: Optional[str] = None,
+                 totaldigits: Optional[str] = None,
+                 fractiondigits: Optional[str] = None,
+                 last: List[str] = None,
                  **_kwargs: Dict[str, object]):
-        self._context = _CONTEXT
+        super().__init__(_CONTEXT, **_kwargs)
         self.first = first
-        self.xsFacet = xsFacet
-        self.last = JSGArray('last', _CONTEXT, STRING, 1, None, last)
-        super().__init__(self._context, **_kwargs)
+        self.length = length
+        self.minlength = minlength
+        self.maxlength = maxlength
+        self.pattern = pattern
+        self.flags = flags
+        self.mininclusive = mininclusive
+        self.minexclusive = minexclusive
+        self.maxinclusive = maxinclusive
+        self.maxexclusive = maxexclusive
+        self.totaldigits = totaldigits
+        self.fractiondigits = fractiondigits
+        self.last = last
 
 
 _CONTEXT.NAMESPACE = locals()

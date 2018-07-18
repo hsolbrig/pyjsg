@@ -7,10 +7,11 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 * 0.5.3 -- Simplified Logger - now uses StringIO instead of MemLogger
 * 0.6.0 -- Beginning of cleanup and jupyter documentation
 * 0.7.0 -- Added array processing elements
+* 0.7b1 -- Beta Release -- mapping added
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
-[![PyPi](https://version-image.appspot.com/pypi/?name=PyJSG)](https://pypi.python.org/pypi/PyJSG)
+[![PyPi](https://img.shields.io/pypi/v/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
 ## Examples
 

@@ -1,7 +1,6 @@
 import datetime
 from typing import List, Optional
 
-from pyjsg.parser_impl.jsg_forwardref import JSGForwardRef
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser_impl import __version__
 from pyjsg.parser_impl.jsg_arrayexpr_parser import JSGArrayExpr
@@ -10,7 +9,7 @@ from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
 from pyjsg.parser_impl.jsg_valuetype_parser import JSGValueType
 
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
-from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, JSGForwardRef
 from .parser_utils import as_token, as_tokens
 
 # Outermost python template
@@ -19,7 +18,9 @@ _jsg_python_template = '''# Auto generated from {infile} by PyJSG version {versi
 # Generation date: {gendate}
 #
 import sys
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Any
+from jsonasobj import JsonObj
+
 if sys.version_info < (3, 7):
     from typing import _ForwardRef as ForwardRef
     from pyjsg.jsglib import typing_patch_36
@@ -28,11 +29,9 @@ else:
     from pyjsg.jsglib import typing_patch_37
 
 from pyjsg.jsglib import *
-from pyjsg.jsglib.jsg import isinstance_
-
+{original_shex}
 # .TYPE and .IGNORE settings
 _CONTEXT = JSGContext(){body}
-
 _CONTEXT.NAMESPACE = locals()
 '''
 
@@ -41,31 +40,29 @@ class JSGDocParser(jsgParserVisitor):
     def __init__(self, context: Optional[JSGDocContext] = None):
         jsgParserVisitor.__init__(self)
         self._context = JSGDocContext() if context is None else context
+        self.text: str = ""
 
-    def as_python(self, infile):
+    def as_python(self, infile, include_original_shex: bool=False):
+        """ Return the python representation of the document """
         self._context.resolve_circular_references()            # add forwards for any circular entries
         body = ''
         for k in self._context.ordered_elements():
             v = self._context.grammarelts[k]
-            if isinstance(v, JSGLexerRuleBlock):
+            if isinstance(v, (JSGLexerRuleBlock, JSGObjectExpr)):
                 body += v.as_python(k)
-            elif isinstance(v, JSGObjectExpr):
-                body += v.as_python(k)
-                # TODO: See whether this needs to be escaped
-                # If there is no context type, add all objects to the list of exceptions
-                if not any(e.startswith('_CONTEXT.TYPE = ') for e in self._context.directives):
-                    self._context.directives.append('_CONTEXT.TYPE_EXCEPTIONS.append("{}")'.format(str(k)))
-            elif isinstance(v, JSGValueType):
-                body += v.as_python(k)
-            elif isinstance(v, JSGArrayExpr):
-                body += v.as_python(k)
+                if isinstance(v, JSGObjectExpr) and not self._context.has_typeid:
+                    self._context.directives.append(f'_CONTEXT.TYPE_EXCEPTIONS.append("{k}")')
             elif isinstance(v, JSGForwardRef):
-                body += v.as_python()
+                pass
+            elif isinstance(v, (JSGValueType, JSGArrayExpr)):
+                body += f"\n\n{k} = {v.signature_type()}"
             else:
                 raise NotImplementedError("Unknown grammar elt for {}".format(k))
+            self._context.forward_refs.pop(k, None)
 
         body = '\n' + '\n'.join(self._context.directives) + '\n\n' + body
         return _jsg_python_template.format(infile=infile,
+                                           original_shex= '# ' + self.text if include_original_shex else "",
                                            version=__version__,
                                            gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
                                            body=body)
@@ -80,9 +77,14 @@ class JSGDocParser(jsgParserVisitor):
     # ****************************
     # Directives
     # ****************************
+    def visitDoc(self, ctx:jsgParser.DocContext):
+        self.text = ctx.getText()
+        self.visitChildren(ctx)
+
     def visitTypeDirective(self, ctx: jsgParser.TypeDirectiveContext):
         """ directive: '.TYPE' name typeExceptions? SEMI """
         self._context.directives.append('_CONTEXT.TYPE = "{}"'.format(as_token(ctx.name())))
+        self._context.has_typeid = True
         self.visitChildren(ctx)
 
     def visitTypeExceptions(self, ctx: jsgParser.TypeExceptionsContext):

@@ -1,54 +1,67 @@
 import re
-from typing import List, Set, Optional
+from typing import List, Set, Optional, Tuple
 
 from pyjsg.parser_impl.jsg_builtinvaluetype_parser import JSGBuiltinValueType
 from pyjsg.parser_impl.parser_utils import as_token
 from pyjsg.parser.jsgParser import *
 
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
-from pyjsg.parser_impl.jsg_doc_context import JSGDocContext
+from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
 
 python_template = """
+class {name}({base_type}):
+    pattern = {pattern}
+
+"""
 
 
-class {}({}):
-    pattern = {}"""
+class JSGLexerRuleBlock(jsgParserVisitor, PythonGeneratorElement):
 
-json_class_template = """
-    typ = {}"""
+    def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.lexerRuleBlock] = None) -> None:
+        self._context = context
 
-
-class JSGLexerRuleBlock(jsgParserVisitor):
-
-    def __init__(self, context, ctx: Optional[jsgParser.lexerRuleBlock] = None):
-        self._context = context                 # type: JSGDocContext
-
-        self._rulePattern = ""                  # type: str
-        self._ruleTokens = set()                # type: Set[str]
-        self._jsontype = None                   # type: Optional[JSGBuiltinValueType]
+        self._rulePattern: str = ""
+        self._ruleTokens: Set[str] = set()
+        self._jsontype: Optional[JSGBuiltinValueType] = None
+        self.text = ""
 
         if ctx:
+            self.text = ctx.getText()
             self.visit(ctx)
 
     def __str__(self):
         return "pattern: r'{}'".format(self._rulePattern)
 
+    def dependency_list(self) -> List[str]:
+        return list(self._ruleTokens)
+
+    def members_entries(self, all_are_optional: bool=False) -> List[Tuple[str, str]]:
+        return []
+
+    def python_type(self) -> str:
+        return 'str'
+
+    def signature_type(self) -> str:
+        if self._jsontype:
+            return self._jsontype.signature_type()
+        if self._ruleTokens:
+            return "JSGPattern(r'{}'.format({}))".\
+                format(self._rulePattern, ', '.join(['{v}={v}.pattern'.format(v=v) for v in sorted(self._ruleTokens)]))
+        else:
+            return "JSGPattern(r'{}')".format(self._rulePattern)
+
+    def mt_value(self) -> str:
+        return "None"
+
     def as_python(self, name: str) -> str:
         """ Return the python constructor """
-        base_type = self._jsontype.basetypename if self._jsontype else "JSGString"
         if self._ruleTokens:
             pattern = "JSGPattern(r'{}'.format({}))".\
                 format(self._rulePattern, ', '.join(['{v}={v}.pattern'.format(v=v) for v in sorted(self._ruleTokens)]))
         else:
             pattern = "JSGPattern(r'{}')".format(self._rulePattern)
-        return python_template.format(name, base_type, pattern)
-
-    # Note: the following two methods cannot be static
-    def dependencies(self) -> Set[str]:
-        return self._ruleTokens
-
-    def dependency_list(self) -> List[str]:
-        return list(self._ruleTokens)
+        base_type = self._jsontype.signature_type() if self._jsontype else "JSGString"
+        return python_template.format(name=name, base_type=base_type, pattern=pattern)
 
     # ***************
     #   Visitors

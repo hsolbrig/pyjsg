@@ -1,30 +1,36 @@
 import unittest
 from typing import Union
 
-from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, Null, JSGNull
+from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, JSGNull, Null
 
 
 class JSGBuiltinsTestCase(unittest.TestCase):
     def do_test(self,
                 cls,
                 val: Union[str, int, float, bool, None],
-                rslt: Union[str, int, float, bool]=None) -> Union[str, int, float, bool]:
-        t = cls(val)
-        self.assertTrue(t._is_valid())
-        self.assertEqual(rslt if rslt is not None else val, t.val)
-        return t.val
+                rslt: Union[str, int, float, bool]=None,
+                fail: bool=False) -> Union[str, int, float, bool]:
+        if fail:
+            with self.assertRaises(ValueError):
+                cls(val)
+        else:
+            t = cls(val)
+            self.assertEqual(rslt if rslt is not None else val, t)
+            if not isinstance(t, bool):
+                self.assertEqual(rslt if rslt is not None else val, t.val)
+            return t
 
     def test_string(self):
         self.do_test(String, "a simple string")
-        # self.do_test(String, True, "true")
-        # self.do_test(String, False, "false")
-        # self.do_test(String, 143, "143")
-        # self.do_test(String, 95.221E+5, "9522100.0")
+        self.do_test(String, True, "true", fail=True)
+        self.do_test(String, False, "false", fail=True)
+        self.do_test(String, 143, "143", fail=True)
+        self.do_test(String, 95.221E+5, "9522100.0", fail=True)
         self.do_test(String, "95.221E+5")
         self.do_test(String, "^<80>߿ࠀ࿿က쿿퀀퟿�𐀀𿿽񀀀󿿽􀀀􏿽$/")
         self.do_test(String, "^\/\t\n\r\-\\\u0061\U0001D4B8$", "^\\/\t\n\r\\-\\a𝒸$")
-        self.assertIsNone(String(None).val)
-        # self.do_test(String, -119, "-119")
+        self.do_test(String, None, fail=True)
+        self.do_test(String, -119, "-119", fail=True)
 
         class PAT_STR(String):
             pattern = JSGPattern(r'[a-z][0-9]+')
@@ -33,8 +39,6 @@ class JSGBuiltinsTestCase(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             x = PAT_STR('17')
-        x = PAT_STR('17', validate=False)
-        self.assertFalse(x._is_valid())
 
         class INT_STR(String):
             pattern = JSGPattern(r'0|([1-9][0-9]*)')
@@ -47,8 +51,8 @@ class JSGBuiltinsTestCase(unittest.TestCase):
             x = INT_STR("something")
 
     def test_number(self):
-        self.assertIsInstance(self.do_test(Number, 42), int)
-        self.assertIsInstance(self.do_test(Number, -173), int)
+        self.assertIsInstance(self.do_test(Number, 42), float)
+        self.assertIsInstance(self.do_test(Number, -173), float)
         self.assertIsInstance(self.do_test(Number, 0.1723), float)
         with self.assertRaises(ValueError):
             x = Number("+173.0003E-5")          # JSON doesn't allow plus signs
@@ -78,7 +82,8 @@ class JSGBuiltinsTestCase(unittest.TestCase):
             x = Integer("")
         with self.assertRaises(ValueError):
             x = Integer(False)
-        self.assertIsNone(Integer(None).val)
+        with self.assertRaises(ValueError):
+            x = Integer(None)
 
         class NEG_INTEGER(Integer):
             pattern = JSGPattern(r'-(0|[1-9][0-9]*)')
@@ -94,7 +99,8 @@ class JSGBuiltinsTestCase(unittest.TestCase):
         self.assertIsInstance(self.do_test(Boolean, False), bool)
         self.assertIsInstance(self.do_test(Boolean, "False", False), bool)
         self.assertIsInstance(self.do_test(Boolean, "false", False), bool)
-        self.assertIsNone(Boolean(None).val)
+        with self.assertRaises(ValueError):
+            Boolean(None)
         with self.assertRaises(ValueError):
             x = Boolean(0)
         with self.assertRaises(ValueError):
@@ -111,15 +117,16 @@ class JSGBuiltinsTestCase(unittest.TestCase):
         class INCOMPAT(Integer):
             pattern = JSGPattern(r'[a-z]+')
 
-        x = INCOMPAT("a")
+        with self.assertRaises(ValueError):
+            x = INCOMPAT("a")
 
         with self.assertRaises(ValueError):
             x = INCOMPAT(17)
 
     def test_null(self):
         self.assertIsNone(JSGNull(None).val)
-        self.assertIsNotNone(Null.val)
-        self.assertEqual("null", str(Null))
+        self.assertIsNone(JSGNull('null').val)
+        self.assertIsNone(Null.val)
 
 if __name__ == '__main__':
     unittest.main()
