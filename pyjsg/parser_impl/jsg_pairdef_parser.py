@@ -50,16 +50,19 @@ class JSGPairDef(jsgParserVisitor, PythonGeneratorElement):
         if self._type_reference:
             rval: List[Tuple[str, str]] = []
             for n, t in self._context.reference(self._type_reference).members_entries(all_are_optional):
-                rval.append((n, self._ebnf.signature_cardinality(t, all_are_optional)))
+                rval.append((n, self._ebnf.signature_cardinality(t, all_are_optional).format(name=n)))
             return rval
         else:
-            sig = self._ebnf.signature_cardinality(self._typ.signature_type(), all_are_optional)
+            sig = self._ebnf.signature_cardinality(self._typ.reference_type(), all_are_optional)
             return [(name, sig.format(name=name)) for name in self._names]
 
     def signature_type(self) -> str:
         base_type = self._typ.signature_type() if self._typ \
             else self._context.reference(self._type_reference).signature_type()
         return self._ebnf.signature_cardinality(base_type)
+
+    def reference_type(self) -> str:
+        return self.signature_type()
 
     def python_base_type(self) -> str:
         return self._typ.python_type() if self._typ \

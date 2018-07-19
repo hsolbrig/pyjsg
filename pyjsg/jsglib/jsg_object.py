@@ -4,14 +4,14 @@ from typing import List, Dict, Any, cast, Type, Optional, Union, TextIO, Tuple
 
 from jsonasobj import JsonObj
 
-from pyjsg.jsglib import JSGArray, JSGPattern, JSGString
+from pyjsg.jsglib import JSGArray, JSGString
 from pyjsg.jsglib.jsg_base import JSGValidateable, JSGContext, EmptyAny, AnyType
 from pyjsg.jsglib.logger import Logger
 
 if sys.version_info < (3, 7):
-    from .typing_patch_36 import conforms, is_union, instantiate
+    from .typing_patch_36 import conforms, is_union, proc_forward
 else:
-    from .typing_patch_37 import conforms, is_union, instantiate
+    from .typing_patch_37 import conforms, is_union, proc_forward
 
 
 class JSGObjectMeta(type):
@@ -47,6 +47,9 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             self[context.TYPE] = self._class_name
         for k, v in kwargs.items():
             setattr(self, k, kwargs[k])
+        for k, v in self._members.items():
+            if k not in self.__dict__:
+                self[k] = None
 
     def __setattr__(self, key: str, value: Any) -> None:
         """ Attribute setter.  Any attribute that is part of the members list or not validated passes.  Otherwise
@@ -179,9 +182,9 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
 
         return log.nerrors == nerrors
 
-    def _jsg_type_for(self, name: str, element: Any, poss_types: Union[type, Tuple[type]]) -> JSGValidateable:
+    def _map_jsg_type(self, name: str, element: Any, poss_types: Union[type, Tuple[type]]) -> Optional[JSGValidateable]:
         def _wrap(ty, el):
-            return el if isinstance(el, JSGValidateable) else instantiate(el, ty, self._context.NAMESPACE)
+            return el if isinstance(el, JSGValidateable) else ty(el)
 
         for typ in poss_types if isinstance(poss_types, tuple) else (poss_types, ):
             if isinstance(typ, str):
@@ -189,14 +192,22 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
                     typ = self._context.NAMESPACE[typ]
                 else:
                     raise ValueError(f"Unknown type: {typ}")
+            typ = proc_forward(typ, self._context.NAMESPACE)
             if is_union(typ):
                 for t in typ.__args__:
-                    if conforms(element, t, self._context.NAMESPACE):
-                        return _wrap(t, element)
+                    et = self._map_jsg_type(name, element, t)
+                    if et is not None:
+                        return et
             elif conforms(element, typ, self._context.NAMESPACE):
                 return _wrap(typ, element)
+        return None
+
+    def _jsg_type_for(self, name: str, element: Any, poss_types: Union[type, Tuple[type]]) -> JSGValidateable:
+        et = self._map_jsg_type(name, element, poss_types)
+        if et is not None:
+            return et
         raise ValueError(f"Wrong type for {name}: {Logger.json_repr(element)} - expected:"
-                         f" {typ} got {type(element).__name__}")
+                         f" {poss_types} got {type(element).__name__}")
 
 
 class ObjectWrapperMeta(type):
@@ -290,4 +301,3 @@ class Object(JSGObject):
         if value is not None and not isinstance(value, JsonObj):
             raise ValueError(f'{variable_name}: Invalid {self._class_name} value: "{value}"')
         super().__init__(_context, **({} if value is None else value.__dict__))
-

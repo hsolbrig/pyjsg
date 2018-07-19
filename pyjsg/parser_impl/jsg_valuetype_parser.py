@@ -69,8 +69,8 @@ class JSGValueType(jsgParserVisitor, PythonGeneratorElement):
             types += [e.python_type() for e in self._alttypelist]
         if self._arrayDef:
             types.append(self._arrayDef.python_type())
-        return "AnyType" if len(types) == 0 else \
-            types[0] if len(types) == 1 else "Union[{}]".format(', '.join(types))
+        return "jsg.AnyType" if len(types) == 0 else \
+            types[0] if len(types) == 1 else "typing.Union[{}]".format(', '.join(types))
 
     def signature_type(self) -> str:
         """ Return the signature type for the value. As an example, an '@int' maps to 'Integer' or a match pattern
@@ -86,11 +86,28 @@ class JSGValueType(jsgParserVisitor, PythonGeneratorElement):
             types += [e.signature_type() for e in self._alttypelist]
         if self._arrayDef:
             types.append(self._arrayDef.signature_type())
-        return "AnyType" if len(types) == 0 else \
-            types[0] if len(types) == 1 else "Union[{}]".format(', '.join(types))
+        return "jsg.AnyType" if len(types) == 0 else \
+            types[0] if len(types) == 1 else "typing.Union[{}]".format(', '.join(types))
+
+    def reference_type(self) -> str:
+        types = []
+        if self._lexeridref:
+            types.append(self._lexeridref)
+        if self._typeid:
+            types.append(self._context.reference_type(self._typeid))
+        if self._builtintype:
+            types.append(self._builtintype.reference_type())
+        if self._alttypelist:
+            types += [e.reference_type() for e in self._alttypelist]
+        if self._arrayDef:
+            types.append(self._arrayDef.reference_type())
+        return "jsg.AnyType" if len(types) == 0 else \
+            types[0] if len(types) == 1 else "typing.Union[{}]".format(', '.join(types))
+
 
     def mt_value(self) -> str:
         return self._builtintype.mt_value() if self._builtintype else "None"
+
 
     def dependency_list(self) -> List[str]:
         rval = []

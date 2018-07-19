@@ -1,4 +1,5 @@
-{ "type": "company",
+{"_ERROR" : "Missing \"type\" element",
+  "type": "company",
   "name": "AB Jones",
   "year founded": 1942,
   "employees": [

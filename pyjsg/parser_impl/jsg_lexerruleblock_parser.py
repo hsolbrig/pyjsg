@@ -9,10 +9,10 @@ from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
 
 python_template = """
-class {name}({base_type}):
-    pattern = {pattern}
 
-"""
+
+class {name}({base_type}):
+    pattern = {pattern}"""
 
 
 class JSGLexerRuleBlock(jsgParserVisitor, PythonGeneratorElement):
@@ -30,7 +30,7 @@ class JSGLexerRuleBlock(jsgParserVisitor, PythonGeneratorElement):
             self.visit(ctx)
 
     def __str__(self):
-        return "pattern: r'{}'".format(self._rulePattern)
+        return f"pattern: r'{self._rulePattern}'"
 
     def dependency_list(self) -> List[str]:
         return list(self._ruleTokens)
@@ -45,22 +45,25 @@ class JSGLexerRuleBlock(jsgParserVisitor, PythonGeneratorElement):
         if self._jsontype:
             return self._jsontype.signature_type()
         if self._ruleTokens:
-            return "JSGPattern(r'{}'.format({}))".\
+            return "jsg.JSGPattern(r'{}'.format({}))".\
                 format(self._rulePattern, ', '.join(['{v}={v}.pattern'.format(v=v) for v in sorted(self._ruleTokens)]))
         else:
-            return "JSGPattern(r'{}')".format(self._rulePattern)
+            return "jsg.JSGPattern(r'{}')".format(self._rulePattern)
+
+    def reference_type(self) -> str:
+        return self.signature_type()
 
     def mt_value(self) -> str:
         return "None"
 
     def as_python(self, name: str) -> str:
-        """ Return the python constructor """
+        """ Return the python representation """
         if self._ruleTokens:
-            pattern = "JSGPattern(r'{}'.format({}))".\
+            pattern = "jsg.JSGPattern(r'{}'.format({}))".\
                 format(self._rulePattern, ', '.join(['{v}={v}.pattern'.format(v=v) for v in sorted(self._ruleTokens)]))
         else:
-            pattern = "JSGPattern(r'{}')".format(self._rulePattern)
-        base_type = self._jsontype.signature_type() if self._jsontype else "JSGString"
+            pattern = "jsg.JSGPattern(r'{}')".format(self._rulePattern)
+        base_type = self._jsontype.signature_type() if self._jsontype else "jsg.JSGString"
         return python_template.format(name=name, base_type=base_type, pattern=pattern)
 
     # ***************

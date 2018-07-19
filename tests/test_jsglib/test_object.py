@@ -33,11 +33,11 @@ class ObjectTestCase(unittest.TestCase):
                          tag: Optional[type(None)] = EmptyAny,
                          **_kwargs: Dict[str, object]):
                 super().__init__(_CONTEXT, **_kwargs)
-                self.name = String(name) if name is not None else None
-                self.age = Integer(age) if age is not None else None
-                self.married = Boolean(married) if married is not None else None
-                self.weight = Number(weight) if weight is not None else None
-                self.tag = JSGNull(tag) if tag is not EmptyAny else EmptyAny
+                self.name = name
+                self.age = age
+                self.married = married
+                self.weight = weight
+                self.tag = tag
 
         log = StringIO()
 

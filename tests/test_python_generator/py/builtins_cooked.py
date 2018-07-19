@@ -1,34 +1,24 @@
-# Auto generated from JSGPython by PyJSG version 0.7.0
-# Generation date: 2018-07-17 11:12
+# Auto generated from JSGPython by PyJSG version 0.7b2
+# Generation date: 2018-07-18 18:06
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 _CONTEXT.TYPE_EXCEPTIONS.append("another_object")
 
 
-class doc(JSGObject):
+class doc(jsg.JSGObject):
     _reference_types = []
-    _members = {'v1': String,
-                'v2': Number,
-                'v3': Integer,
-                'v4': Boolean,
-                'v5': JSGNull,
-                'v6': ArrayFactory('v6', _CONTEXT, AnyType, 0, None),
-                'v7': ObjectFactory('v7', _CONTEXT, Object)}
+    _members = {'v1': jsg.String,
+                'v2': jsg.Number,
+                'v3': jsg.Integer,
+                'v4': jsg.Boolean,
+                'v5': jsg.JSGNull,
+                'v6': jsg.ArrayFactory('v6', _CONTEXT, jsg.AnyType, 0, None),
+                'v7': jsg.ObjectFactory('v7', _CONTEXT, jsg.Object)}
     _strict = True
 
     def __init__(self,
@@ -36,10 +26,10 @@ class doc(JSGObject):
                  v2: float = None,
                  v3: int = None,
                  v4: bool = None,
-                 v5: type(None) = EmptyAny,
+                 v5: type(None) = jsg.EmptyAny,
                  v6: list = None,
                  v7: object = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.v1 = v1
         self.v2 = v2
@@ -50,13 +40,14 @@ class doc(JSGObject):
         self.v7 = v7
 
 
-class another_object(JSGObject):
+
+class another_object(jsg.JSGObject):
     _reference_types = []
     _members = {}
     _strict = False
 
     def __init__(self,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
 
 

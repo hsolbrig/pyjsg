@@ -4,6 +4,8 @@ from typing import Union
 
 import os
 
+from pyjsg.jsglib import isinstance_
+
 
 class IsInstanceTestCase(unittest.TestCase):
     def test_isinstance_issue(self):
@@ -20,7 +22,7 @@ class IsInstanceTestCase(unittest.TestCase):
         py_path = os.path.abspath(os.path.join(data_root, 'py', 'ShExJ.py'))
         self.assertTrue(generate([jsg_path, "-o", py_path, "-e"]))
         from tests.test_basics.py import ShExJ
-        self.assertTrue(ShExJ.isinstance_(ShExJ.IRIREF("http://foo.bar"), ShExJ.shapeExprLabel))
+        self.assertTrue(isinstance_(ShExJ.IRIREF("http://foo.bar"), ShExJ.shapeExprLabel))
 
 if __name__ == '__main__':
     unittest.main()

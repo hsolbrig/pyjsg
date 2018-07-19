@@ -4,10 +4,10 @@ import sys
 
 # Note: ModuleType and _ForwardRef and _Union IDE errors are expected
 from types import ModuleType
+from collections import Iterable
 
 if sys.version_info < (3, 7):
     from typing import GenericMeta, Dict, Any, List, Union, _ForwardRef
-from collections import Iterable
 
 
 # TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
@@ -15,8 +15,8 @@ from collections import Iterable
 def conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     if isinstance(element, str) and element == '_context':
         return True
-    elif is_forward(etype):
-        etype = etype._eval_type(namespace, namespace)
+    else:
+        etype = proc_forward(etype, namespace)
     if is_union(etype):
         return union_conforms(element, etype, namespace)
     elif is_dict(etype):
@@ -31,14 +31,8 @@ def is_typing_type(etype) -> bool:
     return is_union(etype) or is_dict(etype) or is_iterable(etype)
 
 
-def is_forward(etype) -> bool:
-    return type(etype) is _ForwardRef
-
-
-def instantiate(element, etype, namespace: Dict[str, Any]):
-    if is_forward(etype):
-        etype = etype._eval_type(namespace, namespace)
-    return etype(element)
+def proc_forward(etype, namespace: Dict[str, Any]):
+    return etype._eval_type(namespace, namespace) if type(etype) is _ForwardRef else etype
 
 
 def is_union(etype) -> bool:
@@ -79,6 +73,8 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 def element_conforms(element, etype) -> bool:
     from pyjsg.jsglib.jsg_base import EmptyAny, AnyType
+    if (element is None or element is EmptyAny) and issubclass(etype, type(None)):
+        return True
     if element is EmptyAny:
         return False
     elif element is None and (etype == object or etype is AnyType):

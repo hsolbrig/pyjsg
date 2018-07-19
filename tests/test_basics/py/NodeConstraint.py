@@ -1,21 +1,11 @@
-# Auto generated from tests/test_basics/jsg/NodeConstraint.jsg by PyJSG version 0.7.0
-# Generation date: 2018-07-18 09:39
+# Auto generated from test_basics/jsg/NodeConstraint.jsg by PyJSG version 0.7b2
+# Generation date: 2018-07-19 14:55
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("stringFacet_1_")
 _CONTEXT.TYPE_EXCEPTIONS.append("stringFacet_2_")
 _CONTEXT.TYPE_EXCEPTIONS.append("numericFacet")
@@ -26,55 +16,57 @@ _CONTEXT.TYPE_EXCEPTIONS.append("xsFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("NodeConstraint")
 
 
-class _Anon1(JSGString):
-    pattern = JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
+class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
 
 
-class IRI(JSGString):
-    pattern = JSGPattern(r'[0-9]')
+class IRI(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]')
 
 
-class stringFacet_1_(JSGObject):
+class stringFacet_1_(jsg.JSGObject):
     _reference_types = []
-    _members = {'length': Integer,
-                'minlength': Integer,
-                'maxlength': Integer}
+    _members = {'length': jsg.Integer,
+                'minlength': jsg.Integer,
+                'maxlength': jsg.Integer}
     _strict = True
 
     def __init__(self,
                  length: int = None,
                  minlength: int = None,
                  maxlength: int = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.length = length
         self.minlength = minlength
         self.maxlength = maxlength
 
 
-class stringFacet_2_(JSGObject):
+
+class stringFacet_2_(jsg.JSGObject):
     _reference_types = []
-    _members = {'pattern': String,
-                'flags': Optional[String]}
+    _members = {'pattern': jsg.String,
+                'flags': typing.Optional[jsg.String]}
     _strict = True
 
     def __init__(self,
                  pattern: str = None,
-                 flags: Optional[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 flags: typing.Optional[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.pattern = pattern
         self.flags = flags
 
 
-class numericFacet(JSGObject):
+
+class numericFacet(jsg.JSGObject):
     _reference_types = []
-    _members = {'mininclusive': Integer,
-                'minexclusive': Integer,
-                'maxinclusive': Integer,
-                'maxexclusive': Integer,
-                'totaldigits': Integer,
-                'fractiondigits': Integer}
+    _members = {'mininclusive': jsg.Integer,
+                'minexclusive': jsg.Integer,
+                'maxinclusive': jsg.Integer,
+                'maxexclusive': jsg.Integer,
+                'totaldigits': jsg.Integer,
+                'fractiondigits': jsg.Integer}
     _strict = True
 
     def __init__(self,
@@ -84,7 +76,7 @@ class numericFacet(JSGObject):
                  maxexclusive: int = None,
                  totaldigits: int = None,
                  fractiondigits: int = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
@@ -94,14 +86,15 @@ class numericFacet(JSGObject):
         self.fractiondigits = fractiondigits
 
 
-class xsFacet_2_(JSGObject):
+
+class xsFacet_2_(jsg.JSGObject):
     _reference_types = [numericFacet]
-    _members = {'mininclusive': Integer,
-                'minexclusive': Integer,
-                'maxinclusive': Integer,
-                'maxexclusive': Integer,
-                'totaldigits': Integer,
-                'fractiondigits': Integer}
+    _members = {'mininclusive': jsg.Integer,
+                'minexclusive': jsg.Integer,
+                'maxinclusive': jsg.Integer,
+                'maxexclusive': jsg.Integer,
+                'totaldigits': jsg.Integer,
+                'fractiondigits': jsg.Integer}
     _strict = True
 
     def __init__(self,
@@ -111,7 +104,7 @@ class xsFacet_2_(JSGObject):
                  maxexclusive: int = None,
                  totaldigits: int = None,
                  fractiondigits: int = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
@@ -121,18 +114,19 @@ class xsFacet_2_(JSGObject):
         self.fractiondigits = fractiondigits
 
 
-class stringFacet(JSGObject):
+
+class stringFacet(jsg.JSGObject):
     _reference_types = [stringFacet_1_, stringFacet_2_]
-    _members = {'length': Optional[Integer],
-                'minlength': Optional[Integer],
-                'maxlength': Optional[Integer],
-                'pattern': Optional[String],
-                'flags': Optional[String]}
+    _members = {'length': typing.Optional[jsg.Integer],
+                'minlength': typing.Optional[jsg.Integer],
+                'maxlength': typing.Optional[jsg.Integer],
+                'pattern': typing.Optional[jsg.String],
+                'flags': typing.Optional[jsg.String]}
     _strict = True
 
     def __init__(self,
-                 opts_: Union[stringFacet_1_, stringFacet_2_] = None,
-                 **_kwargs: Dict[str, object]):
+                 opts_: typing.Union[stringFacet_1_, stringFacet_2_] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         if opts_ is not None:
             if isinstance(opts_, stringFacet_1_):
@@ -146,18 +140,19 @@ class stringFacet(JSGObject):
                 raise ValueError(f"Unrecognized value type: {opts_}")
 
 
-class xsFacet_1_(JSGObject):
+
+class xsFacet_1_(jsg.JSGObject):
     _reference_types = [stringFacet]
-    _members = {'length': Optional[Integer],
-                'minlength': Optional[Integer],
-                'maxlength': Optional[Integer],
-                'pattern': Optional[String],
-                'flags': Optional[String]}
+    _members = {'length': typing.Optional[jsg.Integer],
+                'minlength': typing.Optional[jsg.Integer],
+                'maxlength': typing.Optional[jsg.Integer],
+                'pattern': typing.Optional[jsg.String],
+                'flags': typing.Optional[jsg.String]}
     _strict = True
 
     def __init__(self,
-                 opts_: Union[stringFacet_1_, stringFacet_2_] = None,
-                 **_kwargs: Dict[str, object]):
+                 opts_: typing.Union[stringFacet_1_, stringFacet_2_] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         if opts_ is not None:
             if isinstance(opts_, stringFacet_1_):
@@ -171,24 +166,25 @@ class xsFacet_1_(JSGObject):
                 raise ValueError(f"Unrecognized value type: {opts_}")
 
 
-class xsFacet(JSGObject):
+
+class xsFacet(jsg.JSGObject):
     _reference_types = [xsFacet_1_, xsFacet_2_]
-    _members = {'length': Optional[Optional[Integer]],
-                'minlength': Optional[Optional[Integer]],
-                'maxlength': Optional[Optional[Integer]],
-                'pattern': Optional[Optional[String]],
-                'flags': Optional[Optional[String]],
-                'mininclusive': Optional[Optional[Integer]],
-                'minexclusive': Optional[Optional[Integer]],
-                'maxinclusive': Optional[Optional[Integer]],
-                'maxexclusive': Optional[Optional[Integer]],
-                'totaldigits': Optional[Optional[Integer]],
-                'fractiondigits': Optional[Optional[Integer]]}
+    _members = {'length': typing.Optional[typing.Optional[jsg.Integer]],
+                'minlength': typing.Optional[typing.Optional[jsg.Integer]],
+                'maxlength': typing.Optional[typing.Optional[jsg.Integer]],
+                'pattern': typing.Optional[typing.Optional[jsg.String]],
+                'flags': typing.Optional[typing.Optional[jsg.String]],
+                'mininclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'minexclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'maxinclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'maxexclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'totaldigits': typing.Optional[typing.Optional[jsg.Integer]],
+                'fractiondigits': typing.Optional[typing.Optional[jsg.Integer]]}
     _strict = True
 
     def __init__(self,
-                 opts_: Union[xsFacet_1_, xsFacet_2_] = None,
-                 **_kwargs: Dict[str, object]):
+                 opts_: typing.Union[xsFacet_1_, xsFacet_2_] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         if opts_ is not None:
             if isinstance(opts_, xsFacet_1_):
@@ -213,28 +209,29 @@ class xsFacet(JSGObject):
                 raise ValueError(f"Unrecognized value type: {opts_}")
 
 
-class NodeConstraint(JSGObject):
+
+class NodeConstraint(jsg.JSGObject):
     _reference_types = [xsFacet]
-    _members = {'nodeKind': Optional[_Anon1],
-                'datatype': Optional[IRI],
-                'length': Optional[Optional[Integer]],
-                'minlength': Optional[Optional[Integer]],
-                'maxlength': Optional[Optional[Integer]],
-                'pattern': Optional[Optional[String]],
-                'flags': Optional[Optional[String]],
-                'mininclusive': Optional[Optional[Integer]],
-                'minexclusive': Optional[Optional[Integer]],
-                'maxinclusive': Optional[Optional[Integer]],
-                'maxexclusive': Optional[Optional[Integer]],
-                'totaldigits': Optional[Optional[Integer]],
-                'fractiondigits': Optional[Optional[Integer]]}
+    _members = {'nodeKind': typing.Optional[_Anon1],
+                'datatype': typing.Optional[IRI],
+                'length': typing.Optional[typing.Optional[jsg.Integer]],
+                'minlength': typing.Optional[typing.Optional[jsg.Integer]],
+                'maxlength': typing.Optional[typing.Optional[jsg.Integer]],
+                'pattern': typing.Optional[typing.Optional[jsg.String]],
+                'flags': typing.Optional[typing.Optional[jsg.String]],
+                'mininclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'minexclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'maxinclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'maxexclusive': typing.Optional[typing.Optional[jsg.Integer]],
+                'totaldigits': typing.Optional[typing.Optional[jsg.Integer]],
+                'fractiondigits': typing.Optional[typing.Optional[jsg.Integer]]}
     _strict = True
 
     def __init__(self,
-                 nodeKind: Optional[str] = None,
-                 datatype: Optional[str] = None,
-                 opts_: Union[xsFacet_1_, xsFacet_2_] = None,
-                 **_kwargs: Dict[str, object]):
+                 nodeKind: typing.Optional[str] = None,
+                 datatype: typing.Optional[str] = None,
+                 opts_: typing.Union[xsFacet_1_, xsFacet_2_] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.nodeKind = nodeKind
         self.datatype = datatype

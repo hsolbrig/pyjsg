@@ -1,21 +1,11 @@
-# Auto generated from tests/test_basics/jsg/shapes.jsg by PyJSG version 0.7.0
-# Generation date: 2018-07-18 09:39
+# Auto generated from test_basics/jsg/shapes.jsg by PyJSG version 0.7b2
+# Generation date: 2018-07-19 14:55
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("ShapeExternal")
 _CONTEXT.TYPE_EXCEPTIONS.append("NodeConstraint")
 _CONTEXT.TYPE_EXCEPTIONS.append("Shape")
@@ -25,54 +15,58 @@ _CONTEXT.TYPE_EXCEPTIONS.append("ShapeAnd")
 _CONTEXT.TYPE_EXCEPTIONS.append("ShapeNot")
 
 
-class _Anon1(JSGString):
-    pattern = JSGPattern(r'ShapeNot')
+class _Anon1(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'ShapeNot')
 
 
-class ShapeExternal(JSGObject):
+class ShapeExternal(jsg.JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
 
     def __init__(self,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
 
 
-class NodeConstraint(JSGObject):
+
+class NodeConstraint(jsg.JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
 
     def __init__(self,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
 
 
-class Shape(JSGObject):
+
+class Shape(jsg.JSGObject):
     _reference_types = []
     _members = {}
     _strict = True
 
     def __init__(self,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
 
 
 
-shapeExprLabel = String
-class labeledShapeNot(JSGObject):
+shapeExprLabel = jsg.String
+
+
+class labeledShapeNot(jsg.JSGObject):
     _reference_types = []
     _members = {'type': _Anon1,
-                'id': String,
-                'shapeExpr': Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, String, ShapeExternal]}
+                'id': shapeExprLabel,
+                'shapeExpr': "shapeExpr"}
     _strict = True
 
     def __init__(self,
                  type: str = None,
                  id: str = None,
-                 shapeExpr: Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, str, ShapeExternal] = None,
-                 **_kwargs: Dict[str, object]):
+                 shapeExpr: typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, str, ShapeExternal] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.type = type
         self.id = id
@@ -80,41 +74,46 @@ class labeledShapeNot(JSGObject):
 
 
 
-labeledShapeExpr = Union[labeledShapeNot, String]
+labeledShapeExpr = typing.Union[labeledShapeNot, jsg.String]
 
-shapeExpr = Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, String, ShapeExternal]
-class ShapeOr(JSGObject):
+
+shapeExpr = typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, jsg.String, ShapeExternal]
+
+
+class ShapeOr(jsg.JSGObject):
     _reference_types = []
-    _members = {'shapeExprs': ArrayFactory('shapeExprs', _CONTEXT, Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, String, ShapeExternal], 2, None)}
+    _members = {'shapeExprs': jsg.ArrayFactory('shapeExprs', _CONTEXT, typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, jsg.String, ShapeExternal], 2, None)}
     _strict = True
 
     def __init__(self,
-                 shapeExprs: List[Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, str, ShapeExternal]] = None,
-                 **_kwargs: Dict[str, object]):
+                 shapeExprs: typing.List[typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, Shape, str, ShapeExternal]] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.shapeExprs = shapeExprs
 
 
-class ShapeAnd(JSGObject):
+
+class ShapeAnd(jsg.JSGObject):
     _reference_types = []
-    _members = {'shapeExprs': ArrayFactory('shapeExprs', _CONTEXT, Union[ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, Shape, String, ShapeExternal], 2, None)}
+    _members = {'shapeExprs': jsg.ArrayFactory('shapeExprs', _CONTEXT, typing.Union[ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, Shape, jsg.String, ShapeExternal], 2, None)}
     _strict = True
 
     def __init__(self,
-                 shapeExprs: List[Union[ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, Shape, str, ShapeExternal]] = None,
-                 **_kwargs: Dict[str, object]):
+                 shapeExprs: typing.List[typing.Union[ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, Shape, str, ShapeExternal]] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.shapeExprs = shapeExprs
 
 
-class ShapeNot(JSGObject):
+
+class ShapeNot(jsg.JSGObject):
     _reference_types = []
-    _members = {'shapeExpr': Union[ShapeOr, ShapeAnd, "ShapeNot", NodeConstraint, Shape, String, ShapeExternal]}
+    _members = {'shapeExpr': shapeExpr}
     _strict = True
 
     def __init__(self,
-                 shapeExpr: Union[ShapeOr, ShapeAnd, "ShapeNot", NodeConstraint, Shape, str, ShapeExternal] = None,
-                 **_kwargs: Dict[str, object]):
+                 shapeExpr: typing.Union[ShapeOr, ShapeAnd, "ShapeNot", NodeConstraint, Shape, str, ShapeExternal] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.shapeExpr = shapeExpr
 

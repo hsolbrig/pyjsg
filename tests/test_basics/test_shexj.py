@@ -12,8 +12,8 @@ from jsonasobj.jsonobj import as_dict, as_json
 from pyjsg.validate_json import JSGPython
 
 shexJSGSource = ""
-shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=master"
-# shexTestRepository = os.path.expanduser('~/Development/git/shexSpec/shexTest/schemas')
+# shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=master"
+shexTestRepository = os.path.expanduser('~/Development/git/shexSpec/shexTest/schemas')
 
 shexTestJson = ""
 

@@ -28,7 +28,7 @@ class JSGReadMeTestCase(unittest.TestCase):
         basefile = fn.rsplit('.', 1)[0]
         outfile = os.path.abspath(os.path.join(cwd, "py", basefile + ".py"))
         generate([os.path.relpath(os.path.join(dirpath, fn)), "-o", outfile])
-        mod = import_module("tests.test_jsg_readme.py." + basefile)
+        mod = import_module("tests_standalone.test_jsg_readme.py." + basefile)
         num_evaluated = 0
         for dirpath, _, filenames in os.walk(os.path.join(cwd, "json")):
             for filename in filenames:
@@ -43,7 +43,7 @@ class JSGReadMeTestCase(unittest.TestCase):
         # TODO: complete this test
         # self.assertTrue(num_evaluated > 0, f"{fn} has no json equivalents")
 
-    @unittest.skipIf(True, "This test has to be run alone -- namespace conflicts otherwise ")
+    @unittest.skipIf(False, "This test has to be run alone -- namespace conflicts otherwise ")
     def test_jsg_readme(self):
         cwd = os.path.abspath(os.path.dirname(__file__))
         num_evaluated = 0
@@ -54,6 +54,10 @@ class JSGReadMeTestCase(unittest.TestCase):
                     self.eval_python(cwd, dirpath, fn)
         self.assertEqual(6, num_evaluated)
 
+    @unittest.skipIf(True, "Outsdanding issue here on get")
+    def test_gsg_1(self):
+        # TODO: Fix this problem!
+        self.assertTrue(False, "Rename ge1_f1.json to get.json")
 
 if __name__ == '__main__':
     unittest.main()

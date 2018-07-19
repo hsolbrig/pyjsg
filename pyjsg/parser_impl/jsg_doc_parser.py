@@ -17,21 +17,12 @@ from .parser_utils import as_token, as_tokens
 _jsg_python_template = '''# Auto generated from {infile} by PyJSG version {version}
 # Generation date: {gendate}
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 {original_shex}
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext(){body}
+_CONTEXT = jsg.JSGContext(){body}
+
 _CONTEXT.NAMESPACE = locals()
 '''
 
@@ -55,14 +46,14 @@ class JSGDocParser(jsgParserVisitor):
             elif isinstance(v, JSGForwardRef):
                 pass
             elif isinstance(v, (JSGValueType, JSGArrayExpr)):
-                body += f"\n\n{k} = {v.signature_type()}"
+                body += f"\n\n\n{k} = {v.signature_type()}"
             else:
                 raise NotImplementedError("Unknown grammar elt for {}".format(k))
             self._context.forward_refs.pop(k, None)
 
-        body = '\n' + '\n'.join(self._context.directives) + '\n\n' + body
+        body = '\n' + '\n'.join(self._context.directives) + body
         return _jsg_python_template.format(infile=infile,
-                                           original_shex= '# ' + self.text if include_original_shex else "",
+                                           original_shex='# ' + self.text if include_original_shex else "",
                                            version=__version__,
                                            gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
                                            body=body)
@@ -77,7 +68,7 @@ class JSGDocParser(jsgParserVisitor):
     # ****************************
     # Directives
     # ****************************
-    def visitDoc(self, ctx:jsgParser.DocContext):
+    def visitDoc(self, ctx: jsgParser.DocContext):
         self.text = ctx.getText()
         self.visitChildren(ctx)
 

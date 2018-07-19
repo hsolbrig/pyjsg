@@ -12,26 +12,27 @@ from pyjsg.parser_impl.parser_utils import t, flatten
 from .parser_utils import as_token, flatten_unique, is_valid_python
 
 _class_template = """
-class {name}(JSGObject):
+
+
+class {name}(jsg.JSGObject):
     _reference_types = [{reference_types}]
     _members = {{{members}}}
     _strict = {strict}
 
-{init_fctn}
-"""
+{init_fctn}"""
 
 _map_template = """
-class {name}(JSGObjectMap):{name_filter}{value_type}
+
+
+class {name}(jsg.JSGObjectMap):{name_filter}{value_type}
 
     def __init__(self,
                  **_kwargs):
-        super().__init__(_CONTEXT, **_kwargs)
-
-"""
+        super().__init__(_CONTEXT, **_kwargs)"""
 
 
 _init_template = """    def __init__(self{signatures},
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs){initializers}
 """
 indent0 = ",\n                "
@@ -80,7 +81,7 @@ class JSGObjectExpr(jsgParserVisitor, PythonGeneratorElement):
         if self._map_valuetype is not None:
             typ = self._map_valuetype.python_type()
         else:
-            typ = "AnyType"
+            typ = "jsg.AnyType"
         value_type = f"{indent1n}_value_type = {typ}"
         return _map_template.format(**locals())
 
@@ -132,6 +133,9 @@ class JSGObjectExpr(jsgParserVisitor, PythonGeneratorElement):
     def signature_type(self) -> str:
         return self._name
 
+    def reference_type(self):
+        return self._name
+
     def mt_value(self) -> str:
         return 'None'
 
@@ -141,7 +145,7 @@ class JSGObjectExpr(jsgParserVisitor, PythonGeneratorElement):
         elif self._choices:
             pair_signatures = ', '.join(self._choices)
             if len(self._choices) > 1:
-                pair_signatures = f'opts_: Union[{pair_signatures}] = None'
+                pair_signatures = f'opts_: typing.Union[{pair_signatures}] = None'
             else:
                 pair_signatures = f'{self._choices[0]}: {pair_signatures} = None'
             return [pair_signatures]
@@ -213,9 +217,6 @@ class JSGObjectExpr(jsgParserVisitor, PythonGeneratorElement):
             return self._map_valuetype.dependency_list()
         else:
             return flatten_unique(self._context.dependency_list(c) + [c] for c in self._choices)
-
-    def constructor(self, _: str, getter: str) -> str:
-        return f"{self._name}({getter})"
 
     # ***************
     #   Visitors

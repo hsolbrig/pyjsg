@@ -1,21 +1,11 @@
-# Auto generated from tests/test_basics/jsg/complexfacet.jsg by PyJSG version 0.7.0
-# Generation date: 2018-07-18 09:39
+# Auto generated from test_basics/jsg/complexfacet.jsg by PyJSG version 0.7b2
+# Generation date: 2018-07-19 14:55
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("optFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("reqFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("listFacet")
@@ -30,38 +20,39 @@ _CONTEXT.TYPE_EXCEPTIONS.append("listReq")
 _CONTEXT.TYPE_EXCEPTIONS.append("listList")
 
 
-class INTEGER(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class INTEGER(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class DECIMAL(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class DECIMAL(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class DOUBLE(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class DOUBLE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class STRING(JSGString):
-    pattern = JSGPattern(r'[a-z]*')
+class STRING(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[a-z]*')
 
 
+numericLiteral = typing.Union[INTEGER, DECIMAL, DOUBLE]
 
-numericLiteral = Union[INTEGER, DECIMAL, DOUBLE]
-class optFacet(JSGObject):
+
+class optFacet(jsg.JSGObject):
     _reference_types = []
-    _members = {'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]]}
+    _members = {'mininclusive': typing.Optional[numericLiteral],
+                'minexclusive': typing.Optional[numericLiteral],
+                'maxinclusive': typing.Optional[numericLiteral],
+                'maxexclusive': typing.Optional[numericLiteral]}
     _strict = True
 
     def __init__(self,
-                 mininclusive: Optional[Union[str, str, str]] = None,
-                 minexclusive: Optional[Union[str, str, str]] = None,
-                 maxinclusive: Optional[Union[str, str, str]] = None,
-                 maxexclusive: Optional[Union[str, str, str]] = None,
-                 **_kwargs: Dict[str, object]):
+                 mininclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
@@ -69,20 +60,21 @@ class optFacet(JSGObject):
         self.maxexclusive = maxexclusive
 
 
-class reqFacet(JSGObject):
+
+class reqFacet(jsg.JSGObject):
     _reference_types = []
-    _members = {'mininclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'minexclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'maxinclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'maxexclusive': Union[INTEGER, DECIMAL, DOUBLE]}
+    _members = {'mininclusive': numericLiteral,
+                'minexclusive': numericLiteral,
+                'maxinclusive': numericLiteral,
+                'maxexclusive': numericLiteral}
     _strict = True
 
     def __init__(self,
-                 mininclusive: Union[str, str, str] = None,
-                 minexclusive: Union[str, str, str] = None,
-                 maxinclusive: Union[str, str, str] = None,
-                 maxexclusive: Union[str, str, str] = None,
-                 **_kwargs: Dict[str, object]):
+                 mininclusive: typing.Union[str, str, str] = None,
+                 minexclusive: typing.Union[str, str, str] = None,
+                 maxinclusive: typing.Union[str, str, str] = None,
+                 maxexclusive: typing.Union[str, str, str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
@@ -90,20 +82,21 @@ class reqFacet(JSGObject):
         self.maxexclusive = maxexclusive
 
 
-class listFacet(JSGObject):
+
+class listFacet(jsg.JSGObject):
     _reference_types = []
-    _members = {'mininclusive': ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'minexclusive': ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'maxinclusive': ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'maxexclusive': ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)}
+    _members = {'mininclusive': jsg.ArrayFactory('mininclusive', _CONTEXT, numericLiteral, 0, None),
+                'minexclusive': jsg.ArrayFactory('minexclusive', _CONTEXT, numericLiteral, 0, None),
+                'maxinclusive': jsg.ArrayFactory('maxinclusive', _CONTEXT, numericLiteral, 0, None),
+                'maxexclusive': jsg.ArrayFactory('maxexclusive', _CONTEXT, numericLiteral, 0, None)}
     _strict = True
 
     def __init__(self,
-                 mininclusive: List[Union[str, str, str]] = None,
-                 minexclusive: List[Union[str, str, str]] = None,
-                 maxinclusive: List[Union[str, str, str]] = None,
-                 maxexclusive: List[Union[str, str, str]] = None,
-                 **_kwargs: Dict[str, object]):
+                 mininclusive: typing.List[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
@@ -111,24 +104,25 @@ class listFacet(JSGObject):
         self.maxexclusive = maxexclusive
 
 
-class optOpt(JSGObject):
+
+class optOpt(jsg.JSGObject):
     _reference_types = [optFacet]
-    _members = {'first': Optional[INTEGER],
-                'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
+    _members = {'first': typing.Optional[INTEGER],
+                'mininclusive': typing.Optional[numericLiteral],
+                'minexclusive': typing.Optional[numericLiteral],
+                'maxinclusive': typing.Optional[numericLiteral],
+                'maxexclusive': typing.Optional[numericLiteral],
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
 
     def __init__(self,
-                 first: Optional[str] = None,
-                 mininclusive: Optional[Union[str, str, str]] = None,
-                 minexclusive: Optional[Union[str, str, str]] = None,
-                 maxinclusive: Optional[Union[str, str, str]] = None,
-                 maxexclusive: Optional[Union[str, str, str]] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 first: typing.Optional[str] = None,
+                 mininclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -138,24 +132,25 @@ class optOpt(JSGObject):
         self.last = last
 
 
-class optReq(JSGObject):
+
+class optReq(jsg.JSGObject):
     _reference_types = [optFacet]
-    _members = {'first': Integer,
-                'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'last': String}
+    _members = {'first': jsg.Integer,
+                'mininclusive': typing.Optional[numericLiteral],
+                'minexclusive': typing.Optional[numericLiteral],
+                'maxinclusive': typing.Optional[numericLiteral],
+                'maxexclusive': typing.Optional[numericLiteral],
+                'last': jsg.String}
     _strict = True
 
     def __init__(self,
                  first: int = None,
-                 mininclusive: Optional[Union[str, str, str]] = None,
-                 minexclusive: Optional[Union[str, str, str]] = None,
-                 maxinclusive: Optional[Union[str, str, str]] = None,
-                 maxexclusive: Optional[Union[str, str, str]] = None,
+                 mininclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.Optional[typing.Union[str, str, str]] = None,
                  last: str = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -165,24 +160,25 @@ class optReq(JSGObject):
         self.last = last
 
 
-class optList(JSGObject):
+
+class optList(jsg.JSGObject):
     _reference_types = [optFacet]
-    _members = {'first': ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
-                'mininclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
-                'minexclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
-                'maxinclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
-                'maxexclusive': ArrayFactory('{name}', _CONTEXT, Optional[Union[INTEGER, DECIMAL, DOUBLE]], 0, None),
-                'last': ArrayFactory('last', _CONTEXT, STRING, 0, None)}
+    _members = {'first': jsg.ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
+                'mininclusive': jsg.ArrayFactory('mininclusive', _CONTEXT, typing.Optional[numericLiteral], 0, None),
+                'minexclusive': jsg.ArrayFactory('minexclusive', _CONTEXT, typing.Optional[numericLiteral], 0, None),
+                'maxinclusive': jsg.ArrayFactory('maxinclusive', _CONTEXT, typing.Optional[numericLiteral], 0, None),
+                'maxexclusive': jsg.ArrayFactory('maxexclusive', _CONTEXT, typing.Optional[numericLiteral], 0, None),
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 0, None)}
     _strict = True
 
     def __init__(self,
-                 first: List[str] = None,
-                 mininclusive: Optional[Union[str, str, str]] = None,
-                 minexclusive: Optional[Union[str, str, str]] = None,
-                 maxinclusive: Optional[Union[str, str, str]] = None,
-                 maxexclusive: Optional[Union[str, str, str]] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 first: typing.List[str] = None,
+                 mininclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.Optional[typing.Union[str, str, str]] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -192,24 +188,25 @@ class optList(JSGObject):
         self.last = last
 
 
-class reqOpt(JSGObject):
+
+class reqOpt(jsg.JSGObject):
     _reference_types = [reqFacet]
-    _members = {'first': Optional[INTEGER],
-                'mininclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'minexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxinclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'maxexclusive': Optional[Union[INTEGER, DECIMAL, DOUBLE]],
-                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
+    _members = {'first': typing.Optional[INTEGER],
+                'mininclusive': typing.Optional[numericLiteral],
+                'minexclusive': typing.Optional[numericLiteral],
+                'maxinclusive': typing.Optional[numericLiteral],
+                'maxexclusive': typing.Optional[numericLiteral],
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
 
     def __init__(self,
-                 first: Optional[str] = None,
-                 mininclusive: Union[str, str, str] = None,
-                 minexclusive: Union[str, str, str] = None,
-                 maxinclusive: Union[str, str, str] = None,
-                 maxexclusive: Union[str, str, str] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 first: typing.Optional[str] = None,
+                 mininclusive: typing.Union[str, str, str] = None,
+                 minexclusive: typing.Union[str, str, str] = None,
+                 maxinclusive: typing.Union[str, str, str] = None,
+                 maxexclusive: typing.Union[str, str, str] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -219,24 +216,25 @@ class reqOpt(JSGObject):
         self.last = last
 
 
-class reqReq(JSGObject):
+
+class reqReq(jsg.JSGObject):
     _reference_types = [reqFacet]
-    _members = {'first': Integer,
-                'mininclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'minexclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'maxinclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'maxexclusive': Union[INTEGER, DECIMAL, DOUBLE],
-                'last': String}
+    _members = {'first': jsg.Integer,
+                'mininclusive': numericLiteral,
+                'minexclusive': numericLiteral,
+                'maxinclusive': numericLiteral,
+                'maxexclusive': numericLiteral,
+                'last': jsg.String}
     _strict = True
 
     def __init__(self,
                  first: int = None,
-                 mininclusive: Union[str, str, str] = None,
-                 minexclusive: Union[str, str, str] = None,
-                 maxinclusive: Union[str, str, str] = None,
-                 maxexclusive: Union[str, str, str] = None,
+                 mininclusive: typing.Union[str, str, str] = None,
+                 minexclusive: typing.Union[str, str, str] = None,
+                 maxinclusive: typing.Union[str, str, str] = None,
+                 maxexclusive: typing.Union[str, str, str] = None,
                  last: str = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -246,24 +244,25 @@ class reqReq(JSGObject):
         self.last = last
 
 
-class reqList(JSGObject):
+
+class reqList(jsg.JSGObject):
     _reference_types = [reqFacet]
-    _members = {'first': ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
-                'mininclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'minexclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'maxinclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'maxexclusive': ArrayFactory('{name}', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'last': ArrayFactory('last', _CONTEXT, STRING, 0, None)}
+    _members = {'first': jsg.ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
+                'mininclusive': jsg.ArrayFactory('mininclusive', _CONTEXT, numericLiteral, 0, None),
+                'minexclusive': jsg.ArrayFactory('minexclusive', _CONTEXT, numericLiteral, 0, None),
+                'maxinclusive': jsg.ArrayFactory('maxinclusive', _CONTEXT, numericLiteral, 0, None),
+                'maxexclusive': jsg.ArrayFactory('maxexclusive', _CONTEXT, numericLiteral, 0, None),
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 0, None)}
     _strict = True
 
     def __init__(self,
-                 first: List[str] = None,
-                 mininclusive: Union[str, str, str] = None,
-                 minexclusive: Union[str, str, str] = None,
-                 maxinclusive: Union[str, str, str] = None,
-                 maxexclusive: Union[str, str, str] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 first: typing.List[str] = None,
+                 mininclusive: typing.Union[str, str, str] = None,
+                 minexclusive: typing.Union[str, str, str] = None,
+                 maxinclusive: typing.Union[str, str, str] = None,
+                 maxexclusive: typing.Union[str, str, str] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -273,24 +272,25 @@ class reqList(JSGObject):
         self.last = last
 
 
-class listOpt(JSGObject):
+
+class listOpt(jsg.JSGObject):
     _reference_types = [listFacet]
-    _members = {'first': Optional[INTEGER],
-                'mininclusive': Optional[ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
-                'minexclusive': Optional[ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
-                'maxinclusive': Optional[ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
-                'maxexclusive': Optional[ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None)],
-                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
+    _members = {'first': typing.Optional[INTEGER],
+                'mininclusive': typing.Optional[jsg.ArrayFactory('mininclusive', _CONTEXT, numericLiteral, 0, None)],
+                'minexclusive': typing.Optional[jsg.ArrayFactory('minexclusive', _CONTEXT, numericLiteral, 0, None)],
+                'maxinclusive': typing.Optional[jsg.ArrayFactory('maxinclusive', _CONTEXT, numericLiteral, 0, None)],
+                'maxexclusive': typing.Optional[jsg.ArrayFactory('maxexclusive', _CONTEXT, numericLiteral, 0, None)],
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
 
     def __init__(self,
-                 first: Optional[str] = None,
-                 mininclusive: List[Union[str, str, str]] = None,
-                 minexclusive: List[Union[str, str, str]] = None,
-                 maxinclusive: List[Union[str, str, str]] = None,
-                 maxexclusive: List[Union[str, str, str]] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 first: typing.Optional[str] = None,
+                 mininclusive: typing.List[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -300,24 +300,25 @@ class listOpt(JSGObject):
         self.last = last
 
 
-class listReq(JSGObject):
+
+class listReq(jsg.JSGObject):
     _reference_types = [listFacet]
-    _members = {'first': Integer,
-                'mininclusive': ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'minexclusive': ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'maxinclusive': ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'maxexclusive': ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None),
-                'last': String}
+    _members = {'first': jsg.Integer,
+                'mininclusive': jsg.ArrayFactory('mininclusive', _CONTEXT, numericLiteral, 0, None),
+                'minexclusive': jsg.ArrayFactory('minexclusive', _CONTEXT, numericLiteral, 0, None),
+                'maxinclusive': jsg.ArrayFactory('maxinclusive', _CONTEXT, numericLiteral, 0, None),
+                'maxexclusive': jsg.ArrayFactory('maxexclusive', _CONTEXT, numericLiteral, 0, None),
+                'last': jsg.String}
     _strict = True
 
     def __init__(self,
                  first: int = None,
-                 mininclusive: List[Union[str, str, str]] = None,
-                 minexclusive: List[Union[str, str, str]] = None,
-                 maxinclusive: List[Union[str, str, str]] = None,
-                 maxexclusive: List[Union[str, str, str]] = None,
+                 mininclusive: typing.List[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.List[typing.Union[str, str, str]] = None,
                  last: str = None,
-                 **_kwargs: Dict[str, object]):
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive
@@ -327,24 +328,25 @@ class listReq(JSGObject):
         self.last = last
 
 
-class listList(JSGObject):
+
+class listList(jsg.JSGObject):
     _reference_types = [listFacet]
-    _members = {'first': ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
-                'mininclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('mininclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
-                'minexclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('minexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
-                'maxinclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('maxinclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
-                'maxexclusive': ArrayFactory('{name}', _CONTEXT, ArrayFactory('maxexclusive', _CONTEXT, Union[INTEGER, DECIMAL, DOUBLE], 0, None), 0, None),
-                'last': ArrayFactory('last', _CONTEXT, STRING, 0, None)}
+    _members = {'first': jsg.ArrayFactory('first', _CONTEXT, INTEGER, 0, None),
+                'mininclusive': jsg.ArrayFactory('mininclusive', _CONTEXT, jsg.ArrayFactory('mininclusive', _CONTEXT, numericLiteral, 0, None), 0, None),
+                'minexclusive': jsg.ArrayFactory('minexclusive', _CONTEXT, jsg.ArrayFactory('minexclusive', _CONTEXT, numericLiteral, 0, None), 0, None),
+                'maxinclusive': jsg.ArrayFactory('maxinclusive', _CONTEXT, jsg.ArrayFactory('maxinclusive', _CONTEXT, numericLiteral, 0, None), 0, None),
+                'maxexclusive': jsg.ArrayFactory('maxexclusive', _CONTEXT, jsg.ArrayFactory('maxexclusive', _CONTEXT, numericLiteral, 0, None), 0, None),
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 0, None)}
     _strict = True
 
     def __init__(self,
-                 first: List[str] = None,
-                 mininclusive: List[Union[str, str, str]] = None,
-                 minexclusive: List[Union[str, str, str]] = None,
-                 maxinclusive: List[Union[str, str, str]] = None,
-                 maxexclusive: List[Union[str, str, str]] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 first: typing.List[str] = None,
+                 mininclusive: typing.List[typing.Union[str, str, str]] = None,
+                 minexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxinclusive: typing.List[typing.Union[str, str, str]] = None,
+                 maxexclusive: typing.List[typing.Union[str, str, str]] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.mininclusive = mininclusive

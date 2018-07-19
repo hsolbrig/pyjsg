@@ -19,6 +19,11 @@ class PythonGeneratorElement(metaclass=ABCMeta):
         ...
 
     @abstractmethod
+    def reference_type(self) -> str:
+        """ Return how this type should be referenced from other types """
+        ...
+
+    @abstractmethod
     def mt_value(self) -> str:
         """ Return the empty (missing) value token fo rthis element """
 
@@ -33,7 +38,6 @@ class PythonGeneratorElement(metaclass=ABCMeta):
         ...
 
 
-
 class UndefinedElement(PythonGeneratorElement):
     def __init__(self, name) -> None:
         self.name = f"Undefined({name})"
@@ -46,6 +50,9 @@ class UndefinedElement(PythonGeneratorElement):
 
     def signature_type(self) -> str:
         return self.name
+
+    def reference_type(self) -> str:
+        return self.signature_type()
 
     def mt_value(self) -> str:
         return "None"
@@ -69,7 +76,7 @@ class JSGForwardRef:
 
     @property
     def label(self) -> str:
-        return '"{}"'.format(self._ref)
+        return f'"{self._ref}"'
 
 
 class JSGDocContext:
@@ -113,7 +120,6 @@ class JSGDocContext:
             return self.forward_refs[tkn]
         return typ.python_type()
 
-
     def signature_type(self, tkn: str) -> str:
         from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
 
@@ -121,6 +127,14 @@ class JSGDocContext:
         if tkn in self.forward_refs and isinstance(typ, JSGObjectExpr):
             return self.forward_refs[tkn]
         return typ.signature_type()
+
+    def reference_type(self, tkn: str) -> str:
+        if tkn in self.forward_refs:
+            return self.forward_refs[tkn]
+        typ = self.reference(tkn)
+        if isinstance(typ, UndefinedElement):
+            return typ.reference_type()
+        return tkn
 
     def dependency_list(self, tkn: str) -> List[str]:
         """Return a list all of the grammarelts that depend on tkn

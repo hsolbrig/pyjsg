@@ -1,50 +1,40 @@
-# Auto generated from JSGPython by PyJSG version 0.7.0
-# Generation date: 2018-07-17 11:12
+# Auto generated from JSGPython by PyJSG version 0.7b2
+# Generation date: 2018-07-18 18:06
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
 
-class doc(JSGObject):
+class doc(jsg.JSGObject):
     _reference_types = []
-    _members = {'opt': Optional[String],
-                'req': String,
-                'l0n': ArrayFactory('l0n', _CONTEXT, String, 0, None),
-                'l1n': ArrayFactory('l1n', _CONTEXT, String, 1, None),
-                'l01': ArrayFactory('l01', _CONTEXT, String, 0, 1),
-                'l11': ArrayFactory('l11', _CONTEXT, String, 0, None),
-                'l0na': ArrayFactory('l0na', _CONTEXT, String, 0, None),
-                'l1na': ArrayFactory('l1na', _CONTEXT, String, 1, None),
-                'optl0n': Optional[ArrayFactory('optl0n', _CONTEXT, String, 0, None)],
-                'optl1n': Optional[ArrayFactory('optl1n', _CONTEXT, String, 1, None)]}
+    _members = {'opt': typing.Optional[jsg.String],
+                'req': jsg.String,
+                'l0n': jsg.ArrayFactory('l0n', _CONTEXT, jsg.String, 0, None),
+                'l1n': jsg.ArrayFactory('l1n', _CONTEXT, jsg.String, 1, None),
+                'l01': jsg.ArrayFactory('l01', _CONTEXT, jsg.String, 0, 1),
+                'l11': jsg.ArrayFactory('l11', _CONTEXT, jsg.String, 0, None),
+                'l0na': jsg.ArrayFactory('l0na', _CONTEXT, jsg.String, 0, None),
+                'l1na': jsg.ArrayFactory('l1na', _CONTEXT, jsg.String, 1, None),
+                'optl0n': typing.Optional[jsg.ArrayFactory('optl0n', _CONTEXT, jsg.String, 0, None)],
+                'optl1n': typing.Optional[jsg.ArrayFactory('optl1n', _CONTEXT, jsg.String, 1, None)]}
     _strict = True
 
     def __init__(self,
-                 opt: Optional[str] = None,
+                 opt: typing.Optional[str] = None,
                  req: str = None,
-                 l0n: List[str] = None,
-                 l1n: List[str] = None,
-                 l01: List[str] = None,
-                 l11: List[str] = None,
-                 l0na: List[str] = None,
-                 l1na: List[str] = None,
-                 optl0n: Optional[List[str]] = None,
-                 optl1n: Optional[List[str]] = None,
-                 **_kwargs: Dict[str, object]):
+                 l0n: typing.List[str] = None,
+                 l1n: typing.List[str] = None,
+                 l01: typing.List[str] = None,
+                 l11: typing.List[str] = None,
+                 l0na: typing.List[str] = None,
+                 l1na: typing.List[str] = None,
+                 optl0n: typing.Optional[typing.List[str]] = None,
+                 optl1n: typing.Optional[typing.List[str]] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.opt = opt
         self.req = req

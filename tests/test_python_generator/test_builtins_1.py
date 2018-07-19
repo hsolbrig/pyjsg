@@ -72,7 +72,7 @@ class NotebooksSyntaxTestCase(unittest.TestCase):
            }''')
         self.assertFalse(r.success)
         # TODO: Fix this
-        print("FAIL - rating: at least 2 values required - element has 1 != {str(r)}")
+        print(f"FAIL - rating: at least 2 values required - element has 1 != {str(r)}")
         # self.assertEqual("FAIL - rating: at least 2 values required - element has 1", str(r))
         r = x.conforms('''
            { "last_name" : "snooter",
@@ -83,7 +83,7 @@ class NotebooksSyntaxTestCase(unittest.TestCase):
            }''')
         self.assertFalse(r.success)
         # TODO: Fix this
-        print("FAIL - spin: no more than 2 values permitted - element has 3 != {str(r)}")
+        print(f"FAIL - spin: no more than 2 values permitted - element has 3 != {str(r)}")
         # self.assertEqual("FAIL - spin: no more than 2 values permitted - element has 3", str(r))
 
     def test_builtins(self):

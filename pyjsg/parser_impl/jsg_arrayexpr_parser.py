@@ -31,17 +31,20 @@ class JSGArrayExpr(jsgParserVisitor, PythonGeneratorElement):
     def python_type(self) -> str:
         type_list = ', '.join([t.python_type() for t in self._types])
         if len(self._types) > 1:
-            type_list = f'Union[{type_list}]'
-        return f"List[{type_list}]"
+            type_list = f'typing.Union[{type_list}]'
+        return f"typing.List[{type_list}]"
 
     def _inner_signature(self) -> str:
         type_list = ', '.join([t.signature_type() for t in self._types])
         if len(self._types) > 1:
-            type_list = f'Union[{type_list}]'
+            type_list = f'typing.Union[{type_list}]'
         return type_list
 
     def signature_type(self) -> str:
-        return f"ArrayFactory('{{name}}', _CONTEXT, {self._inner_signature()}, {self._ebnf.min}, {self._ebnf.max})"
+        return f"jsg.ArrayFactory('{{name}}', _CONTEXT, {self._inner_signature()}, {self._ebnf.min}, {self._ebnf.max})"
+
+    def reference_type(self) -> str:
+        return self.signature_type()
 
     def mt_value(self) -> str:
         return "None"
@@ -51,9 +54,6 @@ class JSGArrayExpr(jsgParserVisitor, PythonGeneratorElement):
 
     def dependency_list(self) -> List[str]:
         return flatten_unique([t.dependency_list() for t in self._types])
-
-    def constructor(self, raw_name: str, getter: str) -> str:
-        return ""
 
     # ***************
     #   Visitors

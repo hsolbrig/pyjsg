@@ -25,17 +25,18 @@ class TestEntry:
 i0 = TestEntry(text='a {}', name='objectExpr: simple object', deps=[], sigs=[], membs=[], inits=[])
 i1 = TestEntry(text='a {,}', name='objectExpr: simple object', deps=[], sigs=[], membs=[], inits=[])
 i2 = TestEntry(text='a {a: @int}', name='objectExpr: simple object', deps=[], sigs=['a: int = None'], 
-               membs=[('a', 'Integer')], inits=['self.a = a'])
-i3 = TestEntry(text='a {b: .}', name='objectExpr: simple object', deps=[], sigs=['b: object = EmptyAny'], 
-               membs=[('b', 'AnyType')], inits=['self.b = b'])
+               membs=[('a', 'jsg.Integer')], inits=['self.a = a'])
+i3 = TestEntry(text='a {b: .}', name='objectExpr: simple object', deps=[], sigs=['b: object = jsg.EmptyAny'],
+               membs=[('b', 'jsg.AnyType')], inits=['self.b = b'])
 i4 = TestEntry(text='a {b: .? c: . d: .* e: .+ f: a}', 
                name='objectExpr: simple object', 
                deps=['a'], 
-               sigs=['b: Optional[object] = EmptyAny', 'c: object = EmptyAny', 'd: List[object] = None', 
-                     'e: List[object] = None', 'f: a = None'], 
-               membs=[('b', 'Optional[AnyType]'), ('c', 'AnyType'),
-                      ('d', "ArrayFactory('d', _CONTEXT, AnyType, 0, None)"),
-                      ('e', "ArrayFactory('e', _CONTEXT, AnyType, 1, None)"),
+               sigs=['b: typing.Optional[object] = jsg.EmptyAny', 'c: object = jsg.EmptyAny',
+                     'd: typing.List[object] = None',
+                     'e: typing.List[object] = None', 'f: a = None'],
+               membs=[('b', 'typing.Optional[jsg.AnyType]'), ('c', 'jsg.AnyType'),
+                      ('d', "jsg.ArrayFactory('d', _CONTEXT, jsg.AnyType, 0, None)"),
+                      ('e', "jsg.ArrayFactory('e', _CONTEXT, jsg.AnyType, 1, None)"),
                       ('f', 'a')], 
                inits=['self.b = b',
                       'self.c = c',
@@ -45,27 +46,27 @@ i4 = TestEntry(text='a {b: .? c: . d: .* e: .+ f: a}',
 i5 = TestEntry(text='a {b: @int c:@string |, }', 
                name='objectExpr: object choices', 
                deps=['a_1_', 'a_2_'], 
-               sigs=['opts_: Union[a_1_, a_2_] = None'], 
-               membs=[('b', 'Optional[Integer]'), ('c', 'Optional[String]')], 
+               sigs=['opts_: typing.Union[a_1_, a_2_] = None'],
+               membs=[('b', 'typing.Optional[jsg.Integer]'), ('c', 'typing.Optional[jsg.String]')],
                inits=['if opts_ is not None:', '    if isinstance(opts_, a_1_):', '        self.b = opts_.b',
                       '        self.c = opts_.c', '    elif isinstance(opts_, a_2_):', '        pass', '    else:',
                       '        raise ValueError(f"Unrecognized value type: {opts_}")'])
 i6 = TestEntry(text='a {b: . | c: .}', 
                name='objectExpr: object choices', 
                deps=['a_1_', 'a_2_'], 
-               sigs=['opts_: Union[a_1_, a_2_] = None'], 
-               membs=[('b', 'Optional[AnyType]'), ('c', 'Optional[AnyType]')], 
+               sigs=['opts_: typing.Union[a_1_, a_2_] = None'],
+               membs=[('b', 'typing.Optional[jsg.AnyType]'), ('c', 'typing.Optional[jsg.AnyType]')],
                inits=['if opts_ is not None:', '    if isinstance(opts_, a_1_):', '        self.b = opts_.b',
                       '    elif isinstance(opts_, a_2_):', '        self.c = opts_.c', '    else:',
                       '        raise ValueError(f"Unrecognized value type: {opts_}")'])
 i7 = TestEntry(text='a {b: .? c: . | d: .*, e: .+ | f: a, }', 
                name='objectExpr: object choices', 
                deps=['a_1_', 'a_2_', 'a', 'a_3_'], 
-               sigs=['opts_: Union[a_1_, a_2_, a_3_] = None'], 
-               membs=[('b', 'Optional[AnyType]'), ('c', 'Optional[AnyType]'),
-                      ('d', "Optional[ArrayFactory('d', _CONTEXT, AnyType, 0, None)]"),
-                      ('e', "Optional[ArrayFactory('e', _CONTEXT, AnyType, 1, None)]"),
-                      ('f', 'Optional[a]')],
+               sigs=['opts_: typing.Union[a_1_, a_2_, a_3_] = None'],
+               membs=[('b', 'typing.Optional[jsg.AnyType]'), ('c', 'typing.Optional[jsg.AnyType]'),
+                      ('d', "typing.Optional[jsg.ArrayFactory('d', _CONTEXT, jsg.AnyType, 0, None)]"),
+                      ('e', "typing.Optional[jsg.ArrayFactory('e', _CONTEXT, jsg.AnyType, 1, None)]"),
+                      ('f', 'typing.Optional[a]')],
                inits=['if opts_ is not None:', '    if isinstance(opts_, a_1_):', '        self.b = opts_.b',
                       '        self.c = opts_.c', '    elif isinstance(opts_, a_2_):', '        self.d = opts_.d',
                       '        self.e = opts_.e', '    elif isinstance(opts_, a_3_):', '        self.f = opts_.f',
@@ -76,17 +77,18 @@ i7 = TestEntry(text='a {b: .? c: . | d: .*, e: .+ | f: a, }',
 o0 = TestEntry(text='{}', name='objectExpr: simple object', deps=[], sigs=[], membs=[], inits=[])
 o1 = TestEntry(text='{,}', name='objectExpr: simple object', deps=[], sigs=[], membs=[], inits=[])
 o2 = TestEntry(text='{a: @int}', name='objectExpr: simple object', deps=[], sigs=['a: int = None'], 
-               membs=[('a', 'Integer')], inits=['self.a = a'])
-o3 = TestEntry(text='{b: .}', name='objectExpr: simple object', deps=[], sigs=['b: object = EmptyAny'], 
-               membs=[('b', 'AnyType')], inits=['self.b = b'])
+               membs=[('a', 'jsg.Integer')], inits=['self.a = a'])
+o3 = TestEntry(text='{b: .}', name='objectExpr: simple object', deps=[], sigs=['b: object = jsg.EmptyAny'],
+               membs=[('b', 'jsg.AnyType')], inits=['self.b = b'])
 o4 = TestEntry(text='{b: .? c: . d: .* e: .+ f: a}', 
                name='objectExpr: simple object', 
                deps=['a'], 
-               sigs=['b: Optional[object] = EmptyAny', 'c: object = EmptyAny', 'd: List[object] = None', 
-                     'e: List[object] = None', 'f: Undefined(a) = None'],
-               membs=[('b', 'Optional[AnyType]'), ('c', 'AnyType'),
-                      ('d', "ArrayFactory('d', _CONTEXT, AnyType, 0, None)"),
-                      ('e', "ArrayFactory('e', _CONTEXT, AnyType, 1, None)"),
+               sigs=['b: typing.Optional[object] = jsg.EmptyAny', 'c: object = jsg.EmptyAny',
+                     'd: typing.List[object] = None',
+                     'e: typing.List[object] = None', 'f: Undefined(a) = None'],
+               membs=[('b', 'typing.Optional[jsg.AnyType]'), ('c', 'jsg.AnyType'),
+                      ('d', "jsg.ArrayFactory('d', _CONTEXT, jsg.AnyType, 0, None)"),
+                      ('e', "jsg.ArrayFactory('e', _CONTEXT, jsg.AnyType, 1, None)"),
                       ('f', 'Undefined(a)')],
                inits=['self.b = b',
                       'self.c = c',
@@ -96,27 +98,27 @@ o4 = TestEntry(text='{b: .? c: . d: .* e: .+ f: a}',
 o5 = TestEntry(text='{b: @int c:@string |, }', 
                name='objectExpr: object choices', 
                deps=['_Anon1_1_', '_Anon1_2_'],
-               sigs=['opts_: Union[_Anon1_1_, _Anon1_2_] = None'],
-               membs=[('b', 'Optional[Integer]'), ('c', 'Optional[String]')], 
+               sigs=['opts_: typing.Union[_Anon1_1_, _Anon1_2_] = None'],
+               membs=[('b', 'typing.Optional[jsg.Integer]'), ('c', 'typing.Optional[jsg.String]')],
                inits=['if opts_ is not None:', '    if isinstance(opts_, _Anon1_1_):', '        self.b = opts_.b',
                       '        self.c = opts_.c', '    elif isinstance(opts_, _Anon1_2_):', '        pass', '    else:',
                       '        raise ValueError(f"Unrecognized value type: {opts_}")'])
 o6 = TestEntry(text='{b: . | c: .}', 
                name='objectExpr: object choices', 
                deps=['_Anon1_1_', '_Anon1_2_'], 
-               sigs=['opts_: Union[_Anon1_1_, _Anon1_2_] = None'], 
-               membs=[('b', 'Optional[AnyType]'), ('c', 'Optional[AnyType]')], 
+               sigs=['opts_: typing.Union[_Anon1_1_, _Anon1_2_] = None'],
+               membs=[('b', 'typing.Optional[jsg.AnyType]'), ('c', 'typing.Optional[jsg.AnyType]')],
                inits=['if opts_ is not None:', '    if isinstance(opts_, _Anon1_1_):', '        self.b = opts_.b',
                       '    elif isinstance(opts_, _Anon1_2_):', '        self.c = opts_.c', '    else:',
                       '        raise ValueError(f"Unrecognized value type: {opts_}")'])
 o7 = TestEntry(text='{b: .? c: . | d: .*, e: .+ | f: a, }', 
                name='objectExpr: object choices', 
                deps=['_Anon1_1_', '_Anon1_2_', 'a', '_Anon1_3_'], 
-               sigs=['opts_: Union[_Anon1_1_, _Anon1_2_, _Anon1_3_] = None'], 
-               membs=[('b', 'Optional[AnyType]'), ('c', 'Optional[AnyType]'),
-                      ('d', "Optional[ArrayFactory('d', _CONTEXT, AnyType, 0, None)]"),
-                      ('e', "Optional[ArrayFactory('e', _CONTEXT, AnyType, 1, None)]"),
-                      ('f', 'Optional[Undefined(a)]')],
+               sigs=['opts_: typing.Union[_Anon1_1_, _Anon1_2_, _Anon1_3_] = None'],
+               membs=[('b', 'typing.Optional[jsg.AnyType]'), ('c', 'typing.Optional[jsg.AnyType]'),
+                      ('d', "typing.Optional[jsg.ArrayFactory('d', _CONTEXT, jsg.AnyType, 0, None)]"),
+                      ('e', "typing.Optional[jsg.ArrayFactory('e', _CONTEXT, jsg.AnyType, 1, None)]"),
+                      ('f', 'typing.Optional[Undefined(a)]')],
                inits=['if opts_ is not None:', '    if isinstance(opts_, _Anon1_1_):', '        self.b = opts_.b',
                       '        self.c = opts_.c', '    elif isinstance(opts_, _Anon1_2_):', '        self.d = opts_.d',
                       '        self.e = opts_.e', '    elif isinstance(opts_, _Anon1_3_):', '        self.f = opts_.f',
@@ -140,7 +142,7 @@ class ObjectExprParserTestCase(unittest.TestCase):
         d = cast(JSGDocParser, parse('a ' + test_entries[0][0], "objectDef", JSGDocParser))
         t = d._context.reference('a')
         self.assertEqual("None", t.mt_value())
-        n = 0
+
         for te in test_entries:
             text = "a " + te[0]
             e = te[1]
@@ -164,7 +166,6 @@ class ObjectExprParserTestCase(unittest.TestCase):
             self.assertEqual('_Anon1', t.signature_type(), e.text)
             self.assertEqual('_Anon1', t.python_type(), e.text)
             self.assertEqual(e.deps, t.dependency_list(), e.text)
-            sigs = [sig.format(def_status='Undefined: ') for sig in e.sigs]
             self.assertEqual(e.sigs, t.signatures(), e.text)
             self.assertEqual(e.membs, t.members_entries(), e.text)
             self.assertEqual(e.inits, t.initializers(), e.text)
@@ -177,8 +178,8 @@ class ObjectExprParserTestCase(unittest.TestCase):
         self.assertEqual('_Anon1', t.signature_type(), text)
         self.assertEqual('_Anon1', t.python_type(), text)
         self.assertEqual(['_Anon1_1_', '_Anon1_2_'], t.dependency_list(), text)
-        self.assertEqual(['opts_: Union[_Anon1_1_, _Anon1_2_] = None'], t.signatures(), text)
-        self.assertEqual([('id', 'Optional[String]')], t.members_entries(), text)
+        self.assertEqual(['opts_: typing.Union[_Anon1_1_, _Anon1_2_] = None'], t.signatures(), text)
+        self.assertEqual([('id', 'typing.Optional[jsg.String]')], t.members_entries(), text)
         self.assertEqual([
             'if opts_ is not None:',
             '    if isinstance(opts_, _Anon1_1_):',

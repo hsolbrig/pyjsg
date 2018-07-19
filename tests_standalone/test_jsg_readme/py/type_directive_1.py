@@ -1,5 +1,5 @@
-# Auto generated from JSGPython by PyJSG version 0.7b2
-# Generation date: 2018-07-18 18:06
+# Auto generated from test_jsg_readme/jsg/type_directive_1.jsg by PyJSG version 0.7b2
+# Generation date: 2018-07-19 14:56
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -11,14 +11,14 @@ _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
 class doc(jsg.JSGObject):
     _reference_types = []
-    _members = {'l0nl0n': jsg.ArrayFactory('l0nl0n', _CONTEXT, jsg.ArrayFactory('l0nl0n', _CONTEXT, jsg.AnyType, 0, None), 0, None)}
+    _members = {'a': jsg.AnyType}
     _strict = True
 
     def __init__(self,
-                 l0nl0n: typing.List[typing.List[object]] = None,
+                 a: object = jsg.EmptyAny,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
-        self.l0nl0n = l0nl0n
+        self.a = a
 
 
 _CONTEXT.NAMESPACE = locals()

@@ -5,7 +5,7 @@ from typing import cast
 
 from jsonasobj import JsonObj
 
-from pyjsg.jsglib import JSGString, JSGPattern, String, Number, Boolean, Integer, JSGNull, Array
+import pyjsg.jsglib as jsg
 from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
 from tests.test_basics.parser import parse
 
@@ -14,7 +14,8 @@ from tests.test_basics.parser import parse
 # This is why the conditionals below
 
 # Force the needed imports
-_x = isinstance(1, (JSGPattern, JSGString, String, Number, Double, Boolean, Integer, JSGNull, Array, JsonObj))
+_x = isinstance(1, (jsg.JSGPattern, jsg.JSGString, jsg.String, jsg.Number, Double, jsg.Boolean, jsg.Integer,
+                    jsg.JSGNull, jsg.Array, JsonObj))
 
 
 # Required to get the lexer in the correct state
@@ -92,66 +93,66 @@ s23 = "pattern: r'[0]|([1-9][0-9]*)'"
 
 
 if sys.version_info < (3, 7):
-    r1 = r'''class IRI(JSGString):
-    pattern = JSGPattern(r'(({PN_CHARS})|\.|\:|\/|\\|\#|\@|\%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))'''
-    r2 = '''class BNODE(JSGString):
-    pattern = JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))'''
+    r1 = r'''class IRI(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'(({PN_CHARS})|\.|\:|\/|\\|\#|\@|\%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))'''
+    r2 = '''class BNODE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))'''
 else:
-    r1 = r'''class IRI(JSGString):
-    pattern = JSGPattern(r'(({PN_CHARS})|\.|:|/|\\|\#|@|%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))'''
-    r2 = '''class BNODE(JSGString):
-    pattern = JSGPattern(r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))'''
+    r1 = r'''class IRI(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'(({PN_CHARS})|\.|:|/|\\|\#|@|%|\&|({UCHAR}))*'.format(PN_CHARS=PN_CHARS.pattern, UCHAR=UCHAR.pattern))'''
+    r2 = '''class BNODE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))'''
 
-r3 = '''class BOOL(JSGString):
-    pattern = JSGPattern(r'true|false')'''
-r4 = '''class INTEGER(JSGString):
-    pattern = JSGPattern(r'[+-]?[0-9]+')'''
-r5 = '''class DECIMAL(JSGString):
-    pattern = JSGPattern(r'[+-]?[0-9]*\.[0-9]+')'''
-r6 = '''class DOUBLE(JSGString):
-    pattern = JSGPattern(r'[+-]?([0-9]+\.[0-9]*({EXPONENT})|\.[0-9]+({EXPONENT})|[0-9]+({EXPONENT}))'.format(EXPONENT=EXPONENT.pattern))'''
-r7 = '''class STRING(JSGString):
-    pattern = JSGPattern(r'.*')'''
-r8 = '''class PN_PREFIX(JSGString):
-    pattern = JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))'''
-r9 = '''class PN_CHARS_BASE(JSGString):
-    pattern = JSGPattern(r'[A-Z]|[a-z]|[À-Ö]|[Ø-ö]|[ø-˿]|[Ͱ-ͽ]|[Ϳ-῿]|[‌-‍]|[⁰-↏]|[Ⰰ-⿯]|[、-퟿]|[豈-﷏]|[ﷰ-�]|[က0-F]')'''
+r3 = '''class BOOL(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'true|false')'''
+r4 = '''class INTEGER(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[+-]?[0-9]+')'''
+r5 = '''class DECIMAL(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[+-]?[0-9]*\.[0-9]+')'''
+r6 = '''class DOUBLE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[+-]?([0-9]+\.[0-9]*({EXPONENT})|\.[0-9]+({EXPONENT})|[0-9]+({EXPONENT}))'.format(EXPONENT=EXPONENT.pattern))'''
+r7 = '''class STRING(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'.*')'''
+r8 = '''class PN_PREFIX(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))'''
+r9 = '''class PN_CHARS_BASE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[A-Z]|[a-z]|[À-Ö]|[Ø-ö]|[ø-˿]|[Ͱ-ͽ]|[Ϳ-῿]|[‌-‍]|[⁰-↏]|[Ⰰ-⿯]|[、-퟿]|[豈-﷏]|[ﷰ-�]|[က0-F]')'''
 if sys.version_info < (3, 7):
-    r10 = '''class PN_CHARS(JSGString):
-    pattern = JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|\·|[̀-ͯ]|[‿-⁀]'.format(PN_CHARS_U=PN_CHARS_U.pattern))'''
+    r10 = '''class PN_CHARS(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|\·|[̀-ͯ]|[‿-⁀]'.format(PN_CHARS_U=PN_CHARS_U.pattern))'''
 else:
-    r10 = '''class PN_CHARS(JSGString):
-    pattern = JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|·|[̀-ͯ]|[‿-⁀]'.format(PN_CHARS_U=PN_CHARS_U.pattern))'''
-r11 = '''class PN_CHARS_U(JSGString):
-    pattern = JSGPattern(r'({PN_CHARS_BASE})|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))'''
-r12 = '''class UCHAR(JSGString):
-    pattern = JSGPattern(r'\\\\u({HEX})({HEX})({HEX})({HEX})|\\\\U({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})'.format(HEX=HEX.pattern))'''
-r13 = '''class HEX(JSGString):
-    pattern = JSGPattern(r'[0-9]|[A-F]|[a-f]')'''
-r14 = '''class EXPONENT(JSGString):
-    pattern = JSGPattern(r'[eE][+-]?[0-9]+')'''
+    r10 = '''class PN_CHARS(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'({PN_CHARS_U})|\-|[0-9]|·|[̀-ͯ]|[‿-⁀]'.format(PN_CHARS_U=PN_CHARS_U.pattern))'''
+r11 = '''class PN_CHARS_U(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})|_'.format(PN_CHARS_BASE=PN_CHARS_BASE.pattern))'''
+r12 = '''class UCHAR(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\\\\u({HEX})({HEX})({HEX})({HEX})|\\\\U({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})({HEX})'.format(HEX=HEX.pattern))'''
+r13 = '''class HEX(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]|[A-F]|[a-f]')'''
+r14 = '''class EXPONENT(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[eE][+-]?[0-9]+')'''
 if sys.version_info < (3, 7):
-    r15 = '''class LANGTAG(JSGString):
-    pattern = JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')'''
+    r15 = '''class LANGTAG(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')'''
 else:
-    r15 = '''class LANGTAG(JSGString):
-    pattern = JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')'''
-r16 = '''class STR_(String):
-    pattern = JSGPattern(r'.*')'''
-r17 = '''class NUMBER_(Number):
-    pattern = JSGPattern(r'.*')'''
-r18 = '''class INT_(Integer):
-    pattern = JSGPattern(r'.*')'''
-r19 = '''class BOOL_(Boolean):
-    pattern = JSGPattern(r'.*')'''
-r20 = '''class NULL_(JSGNull):
-    pattern = JSGPattern(r'.*')'''
+    r15 = '''class LANGTAG(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')'''
+r16 = '''class STR_(jsg.String):
+    pattern = jsg.JSGPattern(r'.*')'''
+r17 = '''class NUMBER_(jsg.Number):
+    pattern = jsg.JSGPattern(r'.*')'''
+r18 = '''class INT_(jsg.Integer):
+    pattern = jsg.JSGPattern(r'.*')'''
+r19 = '''class BOOL_(jsg.Boolean):
+    pattern = jsg.JSGPattern(r'.*')'''
+r20 = '''class NULL_(jsg.JSGNull):
+    pattern = jsg.JSGPattern(r'.*')'''
 r21 = '''class ARRAY_(Array):
-    pattern = JSGPattern(r'.*')'''
+    pattern = jsg.JSGPattern(r'.*')'''
 r22 = '''class OBJECT_(JsonObj):
-    pattern = JSGPattern(r'.*')'''
-r23 = '''class POS_INT(Integer):
-    pattern = JSGPattern(r'[0]|([1-9][0-9]*)')'''
+    pattern = jsg.JSGPattern(r'.*')'''
+r23 = '''class POS_INT(jsg.Integer):
+    pattern = jsg.JSGPattern(r'[0]|([1-9][0-9]*)')'''
 
 
 exec(r13)

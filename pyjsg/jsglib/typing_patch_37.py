@@ -10,8 +10,8 @@ from collections.abc import Iterable
 def conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     if isinstance(element, str) and element == '_context':
         return True
-    elif is_forward(etype):
-        etype = etype._evaluate(namespace, namespace)
+    else:
+        etype = proc_forward(etype, namespace)
     if is_union(etype):
         return union_conforms(element, etype, namespace)
     elif is_dict(etype):
@@ -26,14 +26,8 @@ def is_typing_type(etype) -> bool:
     return is_union(etype) or is_dict(etype) or is_iterable(etype)
 
 
-def instantiate(element, etype, namespace: Dict[str, Any]):
-    if is_forward(etype):
-        etype = etype._evaluate(namespace, namespace)
-    return etype(element)
-
-
-def is_forward(etype) -> bool:
-    return type(etype) is ForwardRef
+def proc_forward(etype, namespace: Dict[str, Any]):
+    return etype._evaluate(namespace, namespace) if type(etype) is ForwardRef else etype
 
 
 def is_union(etype) -> bool:
@@ -55,7 +49,6 @@ def union_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
     return any(conforms(element, t, namespace) for t in union_vals)
 
 
-
 def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
         kt, vt = etype.__args__
         return all(conforms(k, kt, namespace) and
@@ -63,9 +56,6 @@ def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 
 def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    # TODO: Remove this
-    # if element is None and is_iterable(etype):
-    #     element = []
     if is_iterable(etype) and isinstance(element, Iterable):
         vt = etype.__args__[0]
         return all(conforms(e, vt, namespace) for e in element)
@@ -74,7 +64,10 @@ def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
 
 def element_conforms(element, etype) -> bool:
     from pyjsg.jsglib.jsg_base import EmptyAny, AnyType
-    if element is EmptyAny:
+    # TODO: Clean this up
+    if (element is None or element is EmptyAny) and issubclass(etype, type(None)):
+        return True
+    elif element is EmptyAny:
         return False
     elif element is None and (etype == object or etype is AnyType):
         return True

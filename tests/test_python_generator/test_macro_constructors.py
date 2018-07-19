@@ -36,6 +36,26 @@ Shape            {id:shapeExprLabel?}
         ]
         self.do_test(jsg2, 'macrotest_2', doc2, test_cases, {}, fail_cases)
 
+    def test_macro3(self):
+        import tests.test_python_generator.py.macrotest_3 as doc3
+        jsg3 = """
+shapeExprLabel   = IRIREF|BNODE ;
+Shape            {id:shapeExprLabel?}
+
+@terminals
+IRIREF           : [A-Z]+ ;
+BNODE            : '_:' [A-Z]+ ;\
+"""
+        test_cases = [
+            '{"id": "AAA"}',
+            '{"id": "_:AAA"}'
+        ]
+        fail_cases = [
+            '{"id": "aaa"}',
+            '{"id": "AAA", "j": 1}'
+        ]
+        self.do_test(jsg3, 'macrotest_3', doc3, test_cases, {}, fail_cases, print_python=False)
+
 
 if __name__ == '__main__':
     unittest.main()

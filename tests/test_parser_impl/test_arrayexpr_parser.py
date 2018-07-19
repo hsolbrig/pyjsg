@@ -15,28 +15,28 @@ class ArrayExprTestCase(unittest.TestCase):
         t = cast(JSGArrayExpr, parse("id [@string] ", "arrayDef", JSGArrayExpr))
         self.check(t,
               ('arrayExpr: [valueType: builtinValueType: @string]',
-               'List[str]',
+               'typing.List[str]',
                 [],
-                "ArrayFactory('{name}', _CONTEXT, String, 0, None)",
+                "jsg.ArrayFactory('{name}', _CONTEXT, jsg.String, 0, None)",
                 'None',
                 []))
 
         t = cast(JSGArrayExpr, parse("id [@int] ", "arrayDef", JSGArrayExpr))
         self.check(t,
               ('arrayExpr: [valueType: builtinValueType: @int]',
-               'List[int]',
+               'typing.List[int]',
                [],
-               "ArrayFactory('{name}', _CONTEXT, Integer, 0, None)",
+               "jsg.ArrayFactory('{name}', _CONTEXT, jsg.Integer, 0, None)",
                'None',
                [])
               )
 
         t = cast(JSGArrayExpr, parse("id [.] ", "arrayDef", JSGArrayExpr))
         self.check(t,
-              ('arrayExpr: [valueType: builtinValueType: AnyType]',
-               'List[object]',
+              ('arrayExpr: [valueType: builtinValueType: jsg.AnyType]',
+               'typing.List[object]',
                [],
-               "ArrayFactory('{name}', _CONTEXT, AnyType, 0, None)",
+               "jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyType, 0, None)",
                'None',
                [])
               )
@@ -44,9 +44,9 @@ class ArrayExprTestCase(unittest.TestCase):
         t = cast(JSGArrayExpr, parse("id [(Aa|BB|'foo')] ", "arrayDef", JSGArrayExpr))
         self.check(t,
               ("arrayExpr: [valueType: ((STRING: pattern: r'foo') | Undefined(Aa) | BB)]",
-               'List[Union[str, Undefined(Aa), str]]',
+               'typing.List[typing.Union[str, Undefined(Aa), str]]',
                ['_Anon1', 'Aa', 'BB'],
-               "ArrayFactory('{name}', _CONTEXT, Union[_Anon1, Undefined(Aa), BB], 0, None)",
+               "jsg.ArrayFactory('{name}', _CONTEXT, typing.Union[_Anon1, Undefined(Aa), BB], 0, None)",
                'None',
                [])
               )
@@ -54,9 +54,9 @@ class ArrayExprTestCase(unittest.TestCase):
         t = cast(JSGArrayExpr, parse("id [(Aa|BB|'foo'){0,}] ", "arrayDef", JSGArrayExpr))
         self.check(t,
               ("arrayExpr: [valueType: ((STRING: pattern: r'foo') | Undefined(Aa) | BB){0,}]",
-                'List[Union[str, Undefined(Aa), str]]',
+                'typing.List[typing.Union[str, Undefined(Aa), str]]',
                ['_Anon1', 'Aa', 'BB'],
-               "ArrayFactory('{name}', _CONTEXT, Union[_Anon1, Undefined(Aa), BB], 0, None)",
+               "jsg.ArrayFactory('{name}', _CONTEXT, typing.Union[_Anon1, Undefined(Aa), BB], 0, None)",
                'None',
                [])
               )
@@ -66,9 +66,9 @@ class ArrayExprTestCase(unittest.TestCase):
         t = cast(JSGArrayExpr, parse(txt, "arrayDef", JSGArrayExpr))
         self.check(t,
                    ('arrayExpr: [valueType: (Undefined(objectValue) | Undefined(LanguageStem))+]',
-                    'List[Union[Undefined(objectValue), Undefined(LanguageStem)]]',
+                    'typing.List[typing.Union[Undefined(objectValue), Undefined(LanguageStem)]]',
                     ['objectValue', 'LanguageStem'],
-                    "ArrayFactory('{name}', _CONTEXT, Union[Undefined(objectValue), Undefined(LanguageStem)], 1, None)",
+                    "jsg.ArrayFactory('{name}', _CONTEXT, typing.Union[Undefined(objectValue), Undefined(LanguageStem)], 1, None)",
                     'None',
                     [])
                    )
@@ -79,9 +79,9 @@ class ArrayExprTestCase(unittest.TestCase):
         self.check(t,
                    ('arrayExpr: [(valueType: ID: objectValue | valueType: ID: '
                     'languageStem){3,7}]',
-                    'List[Union[Undefined(objectValue), Undefined(languageStem)]]',
+                    'typing.List[typing.Union[Undefined(objectValue), Undefined(languageStem)]]',
                     ['objectValue', 'languageStem'],
-                    "ArrayFactory('{name}', _CONTEXT, Union[Undefined(objectValue), Undefined(languageStem)], 3, 7)",
+                    "jsg.ArrayFactory('{name}', _CONTEXT, typing.Union[Undefined(objectValue), Undefined(languageStem)], 3, 7)",
                     'None',
                     [])
                    )

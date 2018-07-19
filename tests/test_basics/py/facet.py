@@ -1,59 +1,49 @@
-# Auto generated from tests/test_basics/jsg/facet.jsg by PyJSG version 0.7.0
-# Generation date: 2018-07-18 09:39
+# Auto generated from test_basics/jsg/facet.jsg by PyJSG version 0.7b2
+# Generation date: 2018-07-19 14:55
 #
-import sys
-from typing import Optional, Dict, List, Union, Any
-from jsonasobj import JsonObj
-
-if sys.version_info < (3, 7):
-    from typing import _ForwardRef as ForwardRef
-    from pyjsg.jsglib import typing_patch_36
-else:
-    from typing import ForwardRef
-    from pyjsg.jsglib import typing_patch_37
-
-from pyjsg.jsglib import *
+import typing
+import pyjsg.jsglib as jsg
 
 # .TYPE and .IGNORE settings
-_CONTEXT = JSGContext()
+_CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE_EXCEPTIONS.append("stringFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("numericFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("xsFacet")
 _CONTEXT.TYPE_EXCEPTIONS.append("labeledNodeConstraint")
 
 
-class INTEGER(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class INTEGER(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class DECIMAL(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class DECIMAL(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class DOUBLE(JSGString):
-    pattern = JSGPattern(r'[0-9]*')
+class DOUBLE(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[0-9]*')
 
 
-class STRING(JSGString):
-    pattern = JSGPattern(r'[A-Z]*')
+class STRING(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'[A-Z]*')
 
 
-class stringFacet(JSGObject):
+class stringFacet(jsg.JSGObject):
     _reference_types = []
-    _members = {'length': Optional[INTEGER],
-                'minlength': Optional[INTEGER],
-                'maxlength': Optional[INTEGER],
+    _members = {'length': typing.Optional[INTEGER],
+                'minlength': typing.Optional[INTEGER],
+                'maxlength': typing.Optional[INTEGER],
                 'pattern': STRING,
-                'flags': Optional[STRING]}
+                'flags': typing.Optional[STRING]}
     _strict = True
 
     def __init__(self,
-                 length: Optional[str] = None,
-                 minlength: Optional[str] = None,
-                 maxlength: Optional[str] = None,
+                 length: typing.Optional[str] = None,
+                 minlength: typing.Optional[str] = None,
+                 maxlength: typing.Optional[str] = None,
                  pattern: str = None,
-                 flags: Optional[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 flags: typing.Optional[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.length = length
         self.minlength = minlength
@@ -62,24 +52,25 @@ class stringFacet(JSGObject):
         self.flags = flags
 
 
-class numericFacet(JSGObject):
+
+class numericFacet(jsg.JSGObject):
     _reference_types = []
-    _members = {'mininclusive': Optional[DOUBLE],
-                'minexclusive': Optional[DOUBLE],
-                'maxinclusive': Optional[DOUBLE],
-                'maxexclusive': Optional[DOUBLE],
-                'totaldigits': Optional[INTEGER],
-                'fractiondigits': Optional[INTEGER]}
+    _members = {'mininclusive': typing.Optional[DOUBLE],
+                'minexclusive': typing.Optional[DOUBLE],
+                'maxinclusive': typing.Optional[DOUBLE],
+                'maxexclusive': typing.Optional[DOUBLE],
+                'totaldigits': typing.Optional[INTEGER],
+                'fractiondigits': typing.Optional[INTEGER]}
     _strict = True
 
     def __init__(self,
-                 mininclusive: Optional[str] = None,
-                 minexclusive: Optional[str] = None,
-                 maxinclusive: Optional[str] = None,
-                 maxexclusive: Optional[str] = None,
-                 totaldigits: Optional[str] = None,
-                 fractiondigits: Optional[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 mininclusive: typing.Optional[str] = None,
+                 minexclusive: typing.Optional[str] = None,
+                 maxinclusive: typing.Optional[str] = None,
+                 maxexclusive: typing.Optional[str] = None,
+                 totaldigits: typing.Optional[str] = None,
+                 fractiondigits: typing.Optional[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.mininclusive = mininclusive
         self.minexclusive = minexclusive
@@ -89,34 +80,35 @@ class numericFacet(JSGObject):
         self.fractiondigits = fractiondigits
 
 
-class xsFacet(JSGObject):
+
+class xsFacet(jsg.JSGObject):
     _reference_types = [stringFacet, numericFacet]
-    _members = {'length': Optional[INTEGER],
-                'minlength': Optional[INTEGER],
-                'maxlength': Optional[INTEGER],
+    _members = {'length': typing.Optional[INTEGER],
+                'minlength': typing.Optional[INTEGER],
+                'maxlength': typing.Optional[INTEGER],
                 'pattern': STRING,
-                'flags': Optional[STRING],
-                'mininclusive': Optional[DOUBLE],
-                'minexclusive': Optional[DOUBLE],
-                'maxinclusive': Optional[DOUBLE],
-                'maxexclusive': Optional[DOUBLE],
-                'totaldigits': Optional[INTEGER],
-                'fractiondigits': Optional[INTEGER]}
+                'flags': typing.Optional[STRING],
+                'mininclusive': typing.Optional[DOUBLE],
+                'minexclusive': typing.Optional[DOUBLE],
+                'maxinclusive': typing.Optional[DOUBLE],
+                'maxexclusive': typing.Optional[DOUBLE],
+                'totaldigits': typing.Optional[INTEGER],
+                'fractiondigits': typing.Optional[INTEGER]}
     _strict = True
 
     def __init__(self,
-                 length: Optional[str] = None,
-                 minlength: Optional[str] = None,
-                 maxlength: Optional[str] = None,
+                 length: typing.Optional[str] = None,
+                 minlength: typing.Optional[str] = None,
+                 maxlength: typing.Optional[str] = None,
                  pattern: str = None,
-                 flags: Optional[str] = None,
-                 mininclusive: Optional[str] = None,
-                 minexclusive: Optional[str] = None,
-                 maxinclusive: Optional[str] = None,
-                 maxexclusive: Optional[str] = None,
-                 totaldigits: Optional[str] = None,
-                 fractiondigits: Optional[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 flags: typing.Optional[str] = None,
+                 mininclusive: typing.Optional[str] = None,
+                 minexclusive: typing.Optional[str] = None,
+                 maxinclusive: typing.Optional[str] = None,
+                 maxexclusive: typing.Optional[str] = None,
+                 totaldigits: typing.Optional[str] = None,
+                 fractiondigits: typing.Optional[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.length = length
         self.minlength = minlength
@@ -131,38 +123,39 @@ class xsFacet(JSGObject):
         self.fractiondigits = fractiondigits
 
 
-class labeledNodeConstraint(JSGObject):
+
+class labeledNodeConstraint(jsg.JSGObject):
     _reference_types = [xsFacet]
-    _members = {'first': Optional[INTEGER],
-                'length': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
-                'minlength': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
-                'maxlength': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
-                'pattern': ArrayFactory('{name}', _CONTEXT, STRING, 0, None),
-                'flags': ArrayFactory('{name}', _CONTEXT, Optional[STRING], 0, None),
-                'mininclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
-                'minexclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
-                'maxinclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
-                'maxexclusive': ArrayFactory('{name}', _CONTEXT, Optional[DOUBLE], 0, None),
-                'totaldigits': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
-                'fractiondigits': ArrayFactory('{name}', _CONTEXT, Optional[INTEGER], 0, None),
-                'last': ArrayFactory('last', _CONTEXT, STRING, 1, None)}
+    _members = {'first': typing.Optional[INTEGER],
+                'length': jsg.ArrayFactory('length', _CONTEXT, typing.Optional[INTEGER], 0, None),
+                'minlength': jsg.ArrayFactory('minlength', _CONTEXT, typing.Optional[INTEGER], 0, None),
+                'maxlength': jsg.ArrayFactory('maxlength', _CONTEXT, typing.Optional[INTEGER], 0, None),
+                'pattern': jsg.ArrayFactory('pattern', _CONTEXT, STRING, 0, None),
+                'flags': jsg.ArrayFactory('flags', _CONTEXT, typing.Optional[STRING], 0, None),
+                'mininclusive': jsg.ArrayFactory('mininclusive', _CONTEXT, typing.Optional[DOUBLE], 0, None),
+                'minexclusive': jsg.ArrayFactory('minexclusive', _CONTEXT, typing.Optional[DOUBLE], 0, None),
+                'maxinclusive': jsg.ArrayFactory('maxinclusive', _CONTEXT, typing.Optional[DOUBLE], 0, None),
+                'maxexclusive': jsg.ArrayFactory('maxexclusive', _CONTEXT, typing.Optional[DOUBLE], 0, None),
+                'totaldigits': jsg.ArrayFactory('totaldigits', _CONTEXT, typing.Optional[INTEGER], 0, None),
+                'fractiondigits': jsg.ArrayFactory('fractiondigits', _CONTEXT, typing.Optional[INTEGER], 0, None),
+                'last': jsg.ArrayFactory('last', _CONTEXT, STRING, 1, None)}
     _strict = True
 
     def __init__(self,
-                 first: Optional[str] = None,
-                 length: Optional[str] = None,
-                 minlength: Optional[str] = None,
-                 maxlength: Optional[str] = None,
+                 first: typing.Optional[str] = None,
+                 length: typing.Optional[str] = None,
+                 minlength: typing.Optional[str] = None,
+                 maxlength: typing.Optional[str] = None,
                  pattern: str = None,
-                 flags: Optional[str] = None,
-                 mininclusive: Optional[str] = None,
-                 minexclusive: Optional[str] = None,
-                 maxinclusive: Optional[str] = None,
-                 maxexclusive: Optional[str] = None,
-                 totaldigits: Optional[str] = None,
-                 fractiondigits: Optional[str] = None,
-                 last: List[str] = None,
-                 **_kwargs: Dict[str, object]):
+                 flags: typing.Optional[str] = None,
+                 mininclusive: typing.Optional[str] = None,
+                 minexclusive: typing.Optional[str] = None,
+                 maxinclusive: typing.Optional[str] = None,
+                 maxexclusive: typing.Optional[str] = None,
+                 totaldigits: typing.Optional[str] = None,
+                 fractiondigits: typing.Optional[str] = None,
+                 last: typing.List[str] = None,
+                 **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.first = first
         self.length = length
