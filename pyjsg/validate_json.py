@@ -78,8 +78,6 @@ class JSGPython:
             self.json_obj = loads(json, self.module)
         except ValueError as v:
             return ValidationResult(False, str(v), name, None)
-        except ValueError as v:
-            return ValidationResult(False, str(v), name, None)
         logfile = StringIO()
         logger = Logger(cast(TextIO, logfile))      # cast because of bug in ide
         if not is_valid(self.json_obj, logger):
