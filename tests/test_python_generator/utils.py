@@ -3,7 +3,7 @@ import re
 import unittest
 from typing import List, Dict, Any
 
-from pyjsg.jsglib.jsg_base import loads, is_valid, logger
+from pyjsg.jsglib.loader import loads, is_valid, logger
 from pyjsg.validate_json import JSGPython
 
 

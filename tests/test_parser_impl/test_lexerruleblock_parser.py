@@ -6,6 +6,7 @@ from typing import cast
 from jsonasobj import JsonObj
 
 import pyjsg.jsglib as jsg
+import pyjsg.jsglib.jsg_null
 from pyjsg.parser_impl.jsg_lexerruleblock_parser import JSGLexerRuleBlock
 from tests.test_basics.parser import parse
 
@@ -15,7 +16,7 @@ from tests.test_basics.parser import parse
 
 # Force the needed imports
 _x = isinstance(1, (jsg.JSGPattern, jsg.JSGString, jsg.String, jsg.Number, Double, jsg.Boolean, jsg.Integer,
-                    jsg.JSGNull, jsg.Array, JsonObj))
+                    pyjsg.jsglib.jsg_null.JSGNull, jsg.JSGArray, JsonObj))
 
 
 # Required to get the lexer in the correct state

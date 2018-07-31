@@ -9,10 +9,10 @@ builtin_tests = [("@string", "jsg.String", "str", "None"),
                  ("@number", "jsg.Number", "float", "None"),
                  ("@int", "jsg.Integer", "int", "None"),
                  ("@bool", "jsg.Boolean", "bool", "None"),
-                 ("@null", "jsg.JSGNull", "type(None)", "jsg.EmptyAny"),
+                 ("@null", "jsg.JSGNull", "type(None)", "jsg.Empty"),
                  ("@array", "jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyType, 0, None)", "list", "None"),
                  ("@object", "jsg.ObjectFactory('{name}', _CONTEXT, jsg.Object)", "object", "None"),
-                 (".", "jsg.AnyType", "object", "jsg.EmptyAny")]
+                 (".", "jsg.AnyTypeFactory('{name}', _CONTEXT)", "object", "jsg.Empty")]
 
 ref_tests = [("A", "ID"),
              ("a", "ID"),
@@ -29,7 +29,7 @@ constructor_tests = [
     ("@null", "jsg.JSGNull(getter('v 1', None))"),
     ("@array", "Array('k', self._context, jsg.AnyType, 0, None, getter('v 1', None))"),
     ("@object", "jsg.Object('k', self._context, getter('v 1', None))"),
-    (".", "jsg.AnyType(getter('v 1', None))")]
+    (".", "jsg.AnyType('k', self._context, getter('v 1', None))")]
 
 
 class ValueTypeTestCase(unittest.TestCase):
@@ -70,8 +70,8 @@ class ValueTypeTestCase(unittest.TestCase):
     def test_any(self):
         t = cast(JSGValueType, parse("id = .;", "valueTypeMacro", JSGValueType))
         self.assertEqual("object", t.python_type())
-        self.assertEqual("jsg.AnyType", t.signature_type())
-        self.assertEqual("jsg.EmptyAny", t.mt_value())
+        self.assertEqual("jsg.AnyTypeFactory('{name}', _CONTEXT)", t.signature_type())
+        self.assertEqual("jsg.Empty", t.mt_value())
         self.assertEqual([], t.members_entries())
         self.assertEqual([], t.dependency_list())
         self.assertEqual("valueType: builtinValueType: jsg.AnyType", str(t))
@@ -106,7 +106,8 @@ class ValueTypeTestCase(unittest.TestCase):
         self.assertEqual([], t.dependency_list())
         self.assertEqual([], t.members_entries())
         self.assertEqual('typing.List[object]', t.python_type())
-        self.assertEqual("jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyType, 0, None)", t.signature_type())
+        self.assertEqual("jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyTypeFactory('{name}', _CONTEXT), 0, None)",
+                         t.signature_type())
         self.assertEqual('None', t.mt_value())
 
         t = cast(JSGValueType, parse('id = [@int | "AB*" +] ;', "valueTypeMacro", JSGValueType))

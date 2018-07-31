@@ -1,5 +1,5 @@
-# Auto generated from JSGPython by PyJSG version 0.7b2
-# Generation date: 2018-07-18 18:06
+# Auto generated from JSGPython by PyJSG version 0.8b1
+# Generation date: 2018-07-31 11:27
 #
 import typing
 import pyjsg.jsglib as jsg

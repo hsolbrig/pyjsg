@@ -1,5 +1,5 @@
-# Auto generated from JSGPython by PyJSG version 0.7b2
-# Generation date: 2018-07-18 18:06
+# Auto generated from JSGPython by PyJSG version 0.8b1
+# Generation date: 2018-07-31 11:31
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -26,7 +26,7 @@ class doc(jsg.JSGObject):
                  v2: float = None,
                  v3: int = None,
                  v4: bool = None,
-                 v5: type(None) = jsg.EmptyAny,
+                 v5: type(None) = jsg.Empty,
                  v6: list = None,
                  v7: object = None,
                  **_kwargs: typing.Dict[str, object]):

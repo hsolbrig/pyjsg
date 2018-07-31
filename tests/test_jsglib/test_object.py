@@ -6,7 +6,7 @@ from dict_compare import dict_compare
 from io import StringIO
 from jsonasobj import loads as json_loads
 
-from pyjsg.jsglib import JSGNull, String, Integer, Boolean, Number, JSGContext, JSGObject, Null, EmptyAny
+from pyjsg.jsglib import JSGNull, String, Integer, Boolean, Number, JSGContext, JSGObject, Empty
 
 _CONTEXT = JSGContext()
 
@@ -30,7 +30,7 @@ class ObjectTestCase(unittest.TestCase):
                          age: int = None,
                          married: bool = None,
                          weight: float = None,
-                         tag: Optional[type(None)] = EmptyAny,
+                         tag: Optional[type(None)] = Empty,
                          **_kwargs: Dict[str, object]):
                 super().__init__(_CONTEXT, **_kwargs)
                 self.name = name
@@ -61,8 +61,10 @@ class ObjectTestCase(unittest.TestCase):
         x.weight = "112"
         self.assertTrue(x._is_valid())
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112}')
-        x.tag = Null
+        x.tag = None
         self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112, "tag": null}')
+        x.tag = Empty
+        self.check_json(x, '{"name": "Sally Pope", "age": 99, "married": false, "weight": 112}')
         with self.assertRaises(ValueError):
             x.age = "abc"
         del x.weight

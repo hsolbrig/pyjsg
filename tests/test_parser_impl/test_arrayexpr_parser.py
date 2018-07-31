@@ -36,7 +36,7 @@ class ArrayExprTestCase(unittest.TestCase):
               ('arrayExpr: [valueType: builtinValueType: jsg.AnyType]',
                'typing.List[object]',
                [],
-               "jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyType, 0, None)",
+               "jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyTypeFactory('{name}', _CONTEXT), 0, None)",
                'None',
                [])
               )

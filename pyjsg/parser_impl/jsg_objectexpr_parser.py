@@ -1,6 +1,5 @@
 from typing import Optional, Union, List, Tuple
 
-from pyjsg.jsglib.jsg_base import AnyType
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
@@ -100,6 +99,7 @@ class JSGObjectExpr(jsgParserVisitor, PythonGeneratorElement):
         return _class_template.format(**locals())
 
     def _gen_reference_types(self) -> str:
+        from pyjsg.jsglib import AnyType
         if self._map_valuetype:
             return self._map_valuetype if self._map_valuetype is not AnyType else ''
         elif self._choices:

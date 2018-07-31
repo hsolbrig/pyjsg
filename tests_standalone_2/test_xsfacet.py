@@ -4,7 +4,7 @@ from dict_compare import compare_dicts
 from jsonasobj.jsonobj import as_json, as_dict
 
 import tests.test_basics.py.ShExJ as ShExJ
-from pyjsg.jsglib.jsg_base import loads, is_valid, Logger
+from pyjsg.jsglib.loader import loads, is_valid, Logger
 from jsonasobj import loads as jao_loads
 
 

@@ -1,5 +1,5 @@
-# Auto generated from test_jsg_readme/jsg/ge2.jsg by PyJSG version 0.7b2
-# Generation date: 2018-07-19 14:56
+# Auto generated from test_jsg_readme/jsg/ge2.jsg by PyJSG version 0.8b1
+# Generation date: 2018-07-31 12:55
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -85,7 +85,7 @@ class object_options_2_(jsg.JSGObject):
     _strict = False
 
     def __init__(self,
-                 k: type(None) = jsg.EmptyAny,
+                 k: type(None) = jsg.Empty,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.k = k

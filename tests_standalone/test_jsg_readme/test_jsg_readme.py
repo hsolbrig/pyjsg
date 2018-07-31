@@ -4,7 +4,7 @@ import unittest
 
 from importlib import import_module
 
-from pyjsg.jsglib.jsg_base import load
+from pyjsg.jsglib.loader import load
 from pyjsg.jsglib.logger import Logger
 from pyjsg.parser_impl.generate_python import generate
 from jsonasobj import load as json_load

@@ -4,8 +4,13 @@ from typing import List, Dict, Any, cast, Type, Optional, Union, TextIO, Tuple
 
 from jsonasobj import JsonObj
 
-from pyjsg.jsglib import JSGArray, JSGString
-from pyjsg.jsglib.jsg_base import JSGValidateable, JSGContext, EmptyAny, AnyType
+from pyjsg.jsglib.jsg_array import JSGArray
+from pyjsg.jsglib.jsg_strings import JSGString
+from pyjsg.jsglib.jsg_context import JSGContext
+from pyjsg.jsglib.jsg_null import JSGNull
+from pyjsg.jsglib.jsg_validateable import JSGValidateable
+from pyjsg.jsglib.empty import Empty
+from pyjsg.jsglib import AnyType
 from pyjsg.jsglib.logger import Logger
 
 if sys.version_info < (3, 7):
@@ -30,10 +35,10 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
     Note that methods and variables in JSGObject should always begin with "_", as we currently restrict the set of
     JSON names to those that begin with [a-zA-Z]
     """
-    _reference_types: List["JSGObject"] = []
-    _reference_names: List[str] = []
-    _members: Dict[str, type] = {}      #
-    _strict: bool = True                # True means treat extra elements as errors
+    _reference_types: List["JSGObject"] = []        # Types that can be used as compound constructors
+    _reference_names: List[str] = []                # Names of the reference types for assignment testing
+    _members: Dict[str, type] = {}                  # Names of actual member elements
+    _strict: bool = True                            # True means no additional members allowed, False means "open"
 
     def __init__(self, context: JSGContext, **kwargs):
         """ Generic constructor
@@ -47,9 +52,6 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             self[context.TYPE] = self._class_name
         for k, v in kwargs.items():
             setattr(self, k, kwargs[k])
-        for k, v in self._members.items():
-            if k not in self.__dict__:
-                self[k] = None
 
     def __setattr__(self, key: str, value: Any) -> None:
         """ Attribute setter.  Any attribute that is part of the members list or not validated passes.  Otherwise
@@ -60,13 +62,18 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :return:
         """
         # Note: The initial startswith below is the only way we can SEE _members or _context...
-        from pyjsg.jsglib.jsg_strings import JSGString
 
         if key.startswith('_') or key in self._members or self._context.unvalidated_parm(key):
             if key in self._members:
                 vtype = self._members[key]
-                self[key] = value if value is None or value is EmptyAny else\
-                    self._jsg_type_for(key, value, vtype)
+                # Empty can be used to "remove" any type
+                if value is Empty:
+                    self[key] = Empty
+                # None is a valid value for some types (JSGNull, AnyType) but removes the other types
+                elif value is None:
+                    self[key] = self._map_jsg_type(key, value, vtype)
+                else:
+                    self[key] = self._jsg_type_for(key, value, vtype)
             else:
                 cur_val = self.__dict__.get(key)
                 if cur_val is None or not issubclass(type(cur_val), JSGString):
@@ -77,6 +84,14 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             raise ValueError("Unknown attribute: {}={}".format(key, value))
         else:
             super().__setattr__(key, value)
+
+    def __getattribute__(self, item) -> Any:
+        rval = super().__getattribute__(item)
+        return rval.val if type(rval) is AnyType else None if rval is JSGNull else rval
+
+    def __getitem__(self, item) -> Any:
+        rval = super().__getitem__(item)
+        return rval.val if type(rval) is AnyType else None if rval is JSGNull else rval
 
     def __delattr__(self, item):
         from pyjsg.jsglib.jsg_strings import JSGString
@@ -90,17 +105,16 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param d: Object with attributes
         :return: Object dictionary w/ Nones and underscores removed
         """
-        from pyjsg.jsglib.jsg_strings import JSGString, JSGNull
-        return OrderedDict({k: None if isinstance(v, JSGNull) and v.val is None else v for k, v in d.items()
-                            if not k.startswith("_") and v is not None and
+        return OrderedDict({k: None if isinstance(v, JSGNull) else v for k, v in d.items()
+                            if not k.startswith("_") and v is not None and v is not Empty and
                             (issubclass(type(v), JSGObject) or
-                                (not issubclass(type(v), JSGString) or v.val is not None) and
-                                (not issubclass(type(v), AnyType) or v.val is not EmptyAny))})
+                             (not issubclass(type(v), JSGString) or v.val is not None) and
+                             (not issubclass(type(v), AnyType) or v.val is not Empty))})
 
     @staticmethod
     def _test(entry, log: Logger) -> bool:
-        """
-        Test whether entry conforms to its type
+        """Test whether entry conforms to its type
+
         :param entry: entry to test
         :param log: place to record issues
         :return: True if it meets requirements
@@ -125,8 +139,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param obj: Object to be serialized
         :return: Serialized version of obj
         """
-        from pyjsg.jsglib.jsg_strings import JSGString, JSGNull
-        return None if isinstance(obj, JSGNull) else \
+        return None if obj is JSGNull else obj.val if type(obj) is AnyType else \
             JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
             else cast(JSGString, obj).val if issubclass(type(obj), JSGString) else str(obj)
 
@@ -138,14 +151,20 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             etype = self._members[name]
             if (etype is str or etype is int or etype is float or etype is bool or etype is object) and \
                     (issubclass(type(entry), (JSGString, AnyType)) or isinstance(entry, AnyType)):
-                val = getattr(entry, "val", None)
+                # TODO fix this
+                raise NotImplementedError("This path shouldn't work anymore")
+                # val = getattr(entry, "val", None)
             else:
                 val = entry
-            if val is not None and val is not EmptyAny and isinstance(entry, JSGArray):
+            if etype is JSGNull:
+                return val is JSGNull or val is None
+            if val is None and type(etype) is type(AnyType):
+                return False
+            if val is not None and val is not Empty and isinstance(entry, JSGArray):
                 if not entry._validate(cast(list, val), log)[0] and not log.logging:
                     return False
             elif not conforms(val, etype, self._context.NAMESPACE):        # Note: None and absent are equivalent
-                if val is None or val is EmptyAny:
+                if val is None or val is Empty:
                     if log.log("{}: Missing required field: '{}'".format(self.__class__.__name__, name)):
                         return False
                 else:
@@ -184,7 +203,9 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
 
     def _map_jsg_type(self, name: str, element: Any, poss_types: Union[type, Tuple[type]]) -> Optional[JSGValidateable]:
         def _wrap(ty, el):
-            return el if isinstance(el, JSGValidateable) else ty(el)
+            # The first option is when we are assigning already loaded types
+            # The second option addresses the optional situation
+            return el if isinstance(el, JSGValidateable) or ty is type(None) else ty(el)
 
         for typ in poss_types if isinstance(poss_types, tuple) else (poss_types, ):
             if isinstance(typ, str):
@@ -234,60 +255,6 @@ def ObjectFactory(name: str, context: JSGContext, typ: type) -> type(ObjectWrapp
     factory.context = context
     factory.typ = typ
     return factory
-
-
-class JSGObjectMap(JSGObject):
-    """
-    An object map is a JsonObj with constraints on the attribute names, value types of both
-    """
-    _name_filter: type(JSGString) = None
-    _value_type: JSGValidateable = AnyType
-
-    _min: int = 0
-    _max: Optional[int] = None
-
-    _strict = False
-
-    def __init__(self, _context, **_kwargs: Dict[str, Any]):
-        super().__init__(_context, **_kwargs)
-
-    def __setattr__(self, key: str, value: Any):
-        """
-        Screen attributes for name and type.  Anything starting with underscore ('_') goes, anything in the IGNORE list
-        and anything declared in the __init_ signature
-        :param key:
-        :param value:
-        :return:
-        """
-        from pyjsg.jsglib import Null
-
-        if not key.startswith("_") and not self._context.unvalidated_parm(key):
-            if self._name_filter is not None:
-                if not isinstance(key, self._name_filter):
-                    raise ValueError(f"Illegal Object Map key: {key}={value}")
-            if not conforms(value, self._value_type, self._context.NAMESPACE):
-                raise ValueError("Illegal value type {} = {}".format(key, value))
-        self[key] = value if value is not None else Null
-
-    def _is_valid_element(self, log: Logger, name: str, entry: Type[JSGValidateable]) -> bool:
-        if self._name_filter is not None:
-            if not self._name_filter.matches(name):
-                if log.log(f"Illegal Object Map key: {name}={entry}"):
-                    return False
-        return super()._is_valid_element(log, name, entry)
-
-    def _is_valid(self, log_file: Optional[Union[Logger, TextIO]] = None) -> bool:
-        log = Logger() if log_file is None else log_file if isinstance(log_file, Logger) else Logger(log_file)
-        nerrors = log.nerrors
-        nitems = len(self._strip_nones(self.__dict__))
-        if nitems < self._min:
-            if log.log(f"Number of elements is {nitems} which is less than the minimum number ({self._min})"):
-                return False
-        if self._max is not None and nitems > self._max:
-            if log.log(f"Number of elements is {nitems} which is greater than the minimum number ({self._max})"):
-                return False
-        super()._is_valid(log)
-        return nerrors == log.nerrors
 
 
 class Object(JSGObject):

@@ -6,7 +6,7 @@ from typing import cast, TextIO, NamedTuple, Optional
 
 import requests
 
-from pyjsg.jsglib.jsg_base import loads, Logger, is_valid
+from pyjsg.jsglib.loader import loads, Logger, is_valid
 from pyjsg.parser_impl.generate_python import parse
 
 

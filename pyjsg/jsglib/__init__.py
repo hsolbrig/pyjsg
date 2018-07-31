@@ -1,9 +1,15 @@
 import sys
 
-from .jsg_strings import JSGPattern, JSGString, JSGNull, Boolean, Integer, Number, String, Null, JSGPatternedValMeta
-from .jsg_array import JSGArray, Array, ArrayFactory
-from .jsg_object import JSGObject, Object, JSGObjectMap, ObjectFactory
-from .jsg_base import AnyType, EmptyAny, JSGValidateable, JSGContext, isinstance_
+from .jsg_strings import JSGPattern, JSGString, Boolean, Integer, Number, String, JSGPatternedValMeta
+from pyjsg.jsglib.jsg_anytype import AnyType, AnyTypeFactory
+from .jsg_array import JSGArray,ArrayFactory
+from .jsg_object import JSGObject, Object, ObjectFactory
+from pyjsg.jsglib.jsg_objectmap import JSGObjectMap
+from .loader import isinstance_
+from .jsg_validateable import JSGValidateable
+from .empty import Empty
+from .jsg_null import JSGNull
+from .jsg_context import JSGContext
 
 if sys.version_info < (3, 7):
     from typing import _ForwardRef as ForwardRef

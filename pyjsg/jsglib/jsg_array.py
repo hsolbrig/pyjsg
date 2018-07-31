@@ -1,8 +1,9 @@
 import sys
-from dataclasses import dataclass
-from typing import Optional, Union, TextIO, Any, List, Tuple
+from typing import Optional, List, Tuple
 
-from pyjsg.jsglib.jsg_base import JSGValidateable, Logger, JSGContext, JSGFactory, isinstance_
+from pyjsg.jsglib.jsg_context import JSGContext
+from pyjsg.jsglib.jsg_validateable import JSGValidateable
+from pyjsg.jsglib.loader import Logger
 
 if sys.version_info < (3, 7):
     from .typing_patch_36 import conforms
@@ -13,6 +14,15 @@ else:
 class JSGArray(list, JSGValidateable):
     def __init__(self, variable_name: str, context: JSGContext, typ, min_: int, max_: Optional[int],
                  value: Optional[list]) -> None:
+        """ Construct an array holder
+
+        :param variable_name: Name assigned to the variable.  Used for error reporting
+        :param context: Supporting context
+        :param typ: array type
+        :param min_: minimum number of elements
+        :param max_: maximum number of elements (None means '*')
+        :param value: Initializer
+        """
         self._variable_name = variable_name
         self._context = context
         self._type = typ
@@ -22,7 +32,7 @@ class JSGArray(list, JSGValidateable):
             isvalid, errors = self._validate(value)
             if not isvalid:
                 raise ValueError("\n".join(errors))
-        super().__init__([] if value is None else value)
+        super().__init__([] if value is None else value)    # Construct the actual list
 
     def _is_valid(self, log: Optional[Logger] = None) -> bool:
         """ Determine whether the current contents are valid """
@@ -30,6 +40,7 @@ class JSGArray(list, JSGValidateable):
 
     def _validate(self, val: list, log: Optional[Logger] = None) -> Tuple[bool, List[str]]:
         """ Determine whether val is a valid instance of this array
+
         :returns: Success indicator and error list """
         errors = []
         if not isinstance(val, list):
@@ -52,11 +63,6 @@ class JSGArray(list, JSGValidateable):
             for error in errors:
                 log.log(error)
         return not bool(errors), errors
-
-
-class Array(JSGArray):
-    """ Implementation of the '@array' and '[]' types """
-    _strict = False
 
 
 class ArrayWrapperMeta(type):

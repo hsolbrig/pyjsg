@@ -1,10 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple, Dict, List
 
-from jsonasobj import JsonObj
-
-from pyjsg.jsglib import String, Integer, Number, JSGNull, Boolean, AnyType, Array
-from pyjsg.jsglib.jsg_strings import JSGPatternedValMeta
 from pyjsg.parser.jsgParser import *
 from pyjsg.parser.jsgParserVisitor import jsgParserVisitor
 from pyjsg.parser_impl.jsg_doc_context import JSGDocContext, PythonGeneratorElement
@@ -23,10 +19,10 @@ class JSGBuiltinValueType(jsgParserVisitor, PythonGeneratorElement):
          "@object": TypeInfo("jsg.ObjectFactory('{name}', _CONTEXT, jsg.Object)", "jsg.JSGObject", object, "None"),
          "@int": TypeInfo("jsg.Integer", "jsg.Integer", int, "None"),
          "@number": TypeInfo("jsg.Number", "jsg.Number", float, "None"),
-         "@null": TypeInfo("jsg.JSGNull", "jsg.JSGNull", type(None), "jsg.EmptyAny"),
+         "@null": TypeInfo("jsg.JSGNull", "jsg.JSGNull", type(None), "jsg.Empty"),
          "@array": TypeInfo("jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyType, 0, None)", "jsg.JSGArray", list, "None"),
          "@bool": TypeInfo("jsg.Boolean", "jsg.Boolean", bool, "None"),
-         ".": TypeInfo("jsg.AnyType", "jsg.AnyType", object, "jsg.EmptyAny")}
+         ".": TypeInfo("jsg.AnyTypeFactory('{name}', _CONTEXT)", "jsg.AnyType", object, "jsg.Empty")}
 
     def __init__(self, context: JSGDocContext, ctx: Optional[jsgParser.BuiltinValueTypeContext] = None):
         self._context = context

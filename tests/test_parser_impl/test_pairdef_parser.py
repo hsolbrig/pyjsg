@@ -100,11 +100,11 @@ class PairDefTestCase(unittest.TestCase):
 
         text = "(x1 'v 2' 'class') : @null"
         t = cast(JSGPairDef, parse(text, "pairDef", JSGPairDef))
-        self.assertEqual(['x1: type(None) = jsg.EmptyAny', 'class_: type(None) = jsg.EmptyAny'], t.signatures())
+        self.assertEqual(['x1: type(None) = jsg.Empty', 'class_: type(None) = jsg.Empty'], t.signatures())
         self.assertEqual([
             'self.x1 = x1',
-             "setattr(self, 'v 2', _kwargs.get('v 2', jsg.EmptyAny))",
-             "setattr(self, 'class', class_ if class_ is not jsg.EmptyAny else _kwargs.get('class', jsg.EmptyAny))"],
+             "setattr(self, 'v 2', _kwargs.get('v 2', jsg.Empty))",
+             "setattr(self, 'class', class_ if class_ is not jsg.Empty else _kwargs.get('class', jsg.Empty))"],
             t.initializers())
         self.assertEqual("pairDef: (x1 | v 2 | class) : valueType: builtinValueType: @null", str(t))
         self.assertEqual([], t.dependency_list())
@@ -112,11 +112,11 @@ class PairDefTestCase(unittest.TestCase):
         text = "(def 'v 2' class) : @null"
         t = cast(JSGPairDef, parse(text, "pairDef", JSGPairDef))
         self.assertEqual([
-            "setattr(self, 'def', def_ if def_ is not jsg.EmptyAny else _kwargs.get('def', "
-             'jsg.EmptyAny))',
-             "setattr(self, 'v 2', _kwargs.get('v 2', jsg.EmptyAny))",
-             "setattr(self, 'class', class_ if class_ is not jsg.EmptyAny else "
-             "_kwargs.get('class', jsg.EmptyAny))"], t.initializers())
+            "setattr(self, 'def', def_ if def_ is not jsg.Empty else _kwargs.get('def', "
+             'jsg.Empty))',
+             "setattr(self, 'v 2', _kwargs.get('v 2', jsg.Empty))",
+             "setattr(self, 'class', class_ if class_ is not jsg.Empty else "
+             "_kwargs.get('class', jsg.Empty))"], t.initializers())
 
     def test_pairdef_valuetype_ref(self):
         text = "nonobj = {a:@string b:@number?};  obj = {nonobj}"

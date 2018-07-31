@@ -1,7 +1,8 @@
 import re
-from typing import Optional, Any, Union, TextIO, Type, Tuple
+from typing import Optional, Any, Union, Tuple
 
-from pyjsg.jsglib.jsg_base import JSGValidateable, Logger, EmptyAny
+from pyjsg.jsglib.jsg_validateable import JSGValidateable
+from pyjsg.jsglib.loader import Logger
 
 
 class JSGPattern:
@@ -103,18 +104,3 @@ class Boolean(JSGValidateable, metaclass=JSGPatternedValMeta):
 
     def _is_valid(self, log: Optional[Logger] = None) -> bool:
         return True
-
-
-class JSGNull(JSGPatterned):
-    pattern = JSGPattern(r'null|None')
-    python_type = (str, type(None))
-    _mt_type = EmptyAny
-
-    def __str__(self):
-        return 'null'
-
-    @property
-    def val(self):
-        return None
-
-Null = JSGNull(None)

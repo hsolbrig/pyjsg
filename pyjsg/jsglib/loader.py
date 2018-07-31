@@ -1,117 +1,22 @@
 import json
 import sys
 import types
-from abc import abstractmethod, ABCMeta
-from typing import Union, Any, Dict, List
+from typing import Union, Dict
 
-
+from pyjsg.jsglib.jsg_validateable import JSGValidateable
 from .logger import *
 
 if sys.version_info < (3, 7):
-    from .typing_patch_36 import conforms, is_union
+    from .typing_patch_36 import is_union
 else:
-    from .typing_patch_37 import conforms, is_union
-
-
-
-class JSGContext:
-    """ Context available to all JSG constructs """
-    def __init__(self):
-        # the object member name, if any, that identifies the type of object. If present, must match the name of
-        # a JSGObject
-        self.TYPE: str = ""
-
-        # Objects that lack type identifiers.  Any objects lacking a TYPE variable will be matched against
-        # the list below in order
-        self.TYPE_EXCEPTIONS: List[str] = []
-
-        # Object pair names that can always exist in an object
-        self.IGNORE: List[str] = []                    # type: List[str]
-
-        # True means that we allow JSON_LD constructs (parameters starting with "@")
-        self.JSON_LD = True
-
-        # NAMESPACE prevents references from being resolved against other JSG modules
-        self.NAMESPACE: Dict[str, Any] = None
-
-    def unvalidated_parm(self, parm: str) -> bool:
-        """Return true if the pair name should be ignored
-
-        :param parm: string part of pair string:value
-        :return: True if it should be accepted
-        """
-        return parm.startswith("_") or parm == self.TYPE or parm in self.IGNORE or \
-            (self.JSON_LD and parm.startswith('@'))
-
-
-class JSGValidateable:
-    """
-    Mixin -- any class with an _is_valid function
-    """
-    @abstractmethod
-    def _is_valid(self, log: Optional[Union[TextIO, Logger]] = None) -> bool:
-        """Mixin
-
-        :param log: Logger or IO device to record errors
-        :return: True if valid, false otherwise
-        """
-        raise NotImplementedError("_is_valid must be implemented")
-
-    @property
-    def _class_name(self) -> str:
-        return type(self).__name__
-
-
-# We have to be able to differentiate between AnyType with a valid None value ("x": null) and
-# an uninitialized AnyType.  EmptyAny is the default value for the latter case
-class _EmptyAny:
-    pass
-
-
-EmptyAny = _EmptyAny()
-
-
-class AnyTypeMeta(type):
-
-    def __instancecheck__(self, instance) -> bool:
-        return instance is not EmptyAny
-
-
-class AnyType(JSGValidateable, metaclass=AnyTypeMeta):
-    _strict = False
-
-    def __init__(self, val: Any, **kwargs):
-        """ Construct a wild card variable
-
-        :param val: value
-        :param kwargs: named arguments
-        """
-        self.val = val
-        super().__init__(**kwargs)
-
-    def _is_valid(self, log: Optional[Union[TextIO, Logger]] = None) -> bool:
-        return self.val is not EmptyAny
-
-    def _is_initialized(self) -> bool:
-        return self.val is not EmptyAny
-
+    from .typing_patch_37 import is_union
 
 UNKNOWN_TYPE_EXCEPTION = "Type '{}' is undefined"
 
 
-class JSGFactory(metaclass=ABCMeta):
-    @abstractmethod
-    def instance_(self, element: Any) -> bool:
-        ...
-
-    @abstractmethod
-    def factory(self, value: Any) -> JSGValidateable:
-        ...
-
-
 def loads_loader(load_module: types.ModuleType, pairs: Dict[str, str]) -> Optional[JSGValidateable]:
-    """
-    json loader objecthook.
+    """json loader objecthook
+
     :param load_module: Module that contains the various types
     :param pairs: key/value tuples (In our case, they are str/str)
     :return:
@@ -162,6 +67,7 @@ def loads(s: str, load_module: types.ModuleType, **kwargs):
 
 def load(fp: Union[TextIO, str], load_module: types.ModuleType, **kwargs):
     """ Convert a file name or file-like object containing stringified JSON into a JSGObject
+
     :param fp: file-like object to deserialize
     :param load_module: module that contains declarations for types
     :param kwargs: arguments see: json.load for details

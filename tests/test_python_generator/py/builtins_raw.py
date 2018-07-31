@@ -1,5 +1,5 @@
-# Auto generated from JSGPython by PyJSG version 0.7b2
-# Generation date: 2018-07-18 18:06
+# Auto generated from JSGPython by PyJSG version 0.8b1
+# Generation date: 2018-07-31 11:31
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -28,7 +28,7 @@ class doc(jsg.JSGObject):
         setattr(self, 'v 2', _kwargs.get('v 2', None))
         setattr(self, 'v 3', _kwargs.get('v 3', None))
         setattr(self, 'v 4', _kwargs.get('v 4', None))
-        setattr(self, 'v 5', _kwargs.get('v 5', jsg.EmptyAny))
+        setattr(self, 'v 5', _kwargs.get('v 5', jsg.Empty))
         setattr(self, 'v 6', _kwargs.get('v 6', None))
         setattr(self, 'v 7', _kwargs.get('v 7', None))
 

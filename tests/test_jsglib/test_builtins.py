@@ -1,7 +1,7 @@
 import unittest
 from typing import Union
 
-from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, JSGNull, Null
+from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, JSGNull
 
 
 class JSGBuiltinsTestCase(unittest.TestCase):
@@ -125,8 +125,7 @@ class JSGBuiltinsTestCase(unittest.TestCase):
 
     def test_null(self):
         self.assertIsNone(JSGNull(None).val)
-        self.assertIsNone(JSGNull('null').val)
-        self.assertIsNone(Null.val)
+        self.assertIsNone(JSGNull(JSGNull).val)
 
 if __name__ == '__main__':
     unittest.main()

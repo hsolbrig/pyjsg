@@ -9,7 +9,7 @@ from pyjsg.jsglib import isinstance_
 
 class IsInstanceTestCase(unittest.TestCase):
     def test_isinstance_issue(self):
-        from pyjsg.jsglib.jsg_base import isinstance_
+        from pyjsg.jsglib.loader import isinstance_
         x = Union[int, str]
         with self.assertRaises(TypeError):
             isinstance(17, x)

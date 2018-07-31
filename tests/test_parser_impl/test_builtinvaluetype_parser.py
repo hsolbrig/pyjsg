@@ -9,10 +9,10 @@ builtin_tests = [("@string", "jsg.String", "str", "None"),
                  ("@number", "jsg.Number", "float", "None"),
                  ("@int", "jsg.Integer", "int", "None"),
                  ("@bool", "jsg.Boolean", "bool", "None"),
-                 ("@null", "jsg.JSGNull", "type(None)", "jsg.EmptyAny"),
+                 ("@null", "jsg.JSGNull", "type(None)", "jsg.Empty"),
                  ("@array", "jsg.ArrayFactory('{name}', _CONTEXT, jsg.AnyType, 0, None)", "list", "None"),
                  ("@object", "jsg.ObjectFactory('{name}', _CONTEXT, jsg.Object)", "object", "None"),
-                 (".", "jsg.AnyType", "object", "jsg.EmptyAny")]
+                 (".", "jsg.AnyTypeFactory('{name}', _CONTEXT)", "object", "jsg.Empty")]
 
 
 class BuiltinValueTypeTestCase(unittest.TestCase):

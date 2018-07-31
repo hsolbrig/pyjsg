@@ -1,11 +1,10 @@
 
 import unittest
-from typing import List
 
 from jsonasobj import loads as jsonloads
 from jsonasobj.jsonobj import as_json
 
-from pyjsg.jsglib import JSGObjectMap, JSGContext, Null, Boolean, JSGArray
+from pyjsg.jsglib import JSGObjectMap, JSGContext, ArrayFactory, Integer
 from tests.test_jsglib.iri_defn import *
 
 _CONTEXT = JSGContext()
@@ -16,7 +15,7 @@ class ObjectMapTestCase(unittest.TestCase):
     def test_basic_map(self):
         class IntObjectMap(JSGObjectMap):
             _name_filter = HEX
-            _value_type = List[int]
+            _value_type = ArrayFactory('', _CONTEXT, Integer, 0, None)
 
             def __init__(self,
                          **_kwargs):
@@ -45,7 +44,7 @@ class ObjectMapTestCase(unittest.TestCase):
                          **_kwargs):
                 super().__init__(_CONTEXT, **_kwargs)
 
-        x = AnyKeyObjectMap(I1="a")
+        x = AnyKeyObjectMap(**dict(I1="a"))
         x["item 2"] = "b"
         self.assertTrue(x._is_valid())
         with self.assertRaises(ValueError):
@@ -59,11 +58,11 @@ class ObjectMapTestCase(unittest.TestCase):
                          **_kwargs):
                 super().__init__(_CONTEXT, **_kwargs)
 
-        x = IRIKey(**{"http://example.org": 42, "http://ex.org?id=1": Null})
+        x = IRIKey(**{"http://example.org": 42, "http://ex.org?id=1": None})
         self.assertEqual('{"http://example.org": 42, "http://ex.org?id=1": null}', as_json(x, indent=None))
         self.assertTrue(x._is_valid())
-        self.assertEqual(x["http://example.org"], 42)
-        self.assertEqual(x["http://ex.org?id=1"], Null)
+        self.assertEqual(42, x["http://example.org"])
+        self.assertIsNone(x["http://ex.org?id=1"])
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
-# Auto generated from test_basics/jsg/labeledShapeOr.jsg by PyJSG version 0.7b2
-# Generation date: 2018-07-23 12:17
+# Auto generated from test_basics/jsg/labeledShapeOr.jsg by PyJSG version 0.8b1
+# Generation date: 2018-07-31 12:55
 #
 import typing
 import pyjsg.jsglib as jsg

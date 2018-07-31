@@ -1,5 +1,5 @@
-# Auto generated from JSGPython by PyJSG version 0.7b2
-# Generation date: 2018-07-18 18:06
+# Auto generated from JSGPython by PyJSG version 0.8b1
+# Generation date: 2018-07-31 11:27
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -11,7 +11,7 @@ _CONTEXT.TYPE_EXCEPTIONS.append("doc")
 
 class doc(jsg.JSGObject):
     _reference_types = []
-    _members = {'l0nl0n': jsg.ArrayFactory('l0nl0n', _CONTEXT, jsg.ArrayFactory('l0nl0n', _CONTEXT, jsg.AnyType, 0, None), 0, None)}
+    _members = {'l0nl0n': jsg.ArrayFactory('l0nl0n', _CONTEXT, jsg.ArrayFactory('l0nl0n', _CONTEXT, jsg.AnyTypeFactory('l0nl0n', _CONTEXT), 0, None), 0, None)}
     _strict = True
 
     def __init__(self,

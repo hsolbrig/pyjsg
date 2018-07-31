@@ -1,5 +1,5 @@
-# Auto generated from JSGPython by PyJSG version 0.7b2
-# Generation date: 2018-07-18 18:06
+# Auto generated from JSGPython by PyJSG version 0.8b1
+# Generation date: 2018-07-31 11:31
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -26,7 +26,7 @@ class doc(jsg.JSGObject):
                  def_: float = None,
                  import_: int = None,
                  with_: bool = None,
-                 if_: type(None) = jsg.EmptyAny,
+                 if_: type(None) = jsg.Empty,
                  else_: list = None,
                  raise_: object = None,
                  **_kwargs: typing.Dict[str, object]):
@@ -35,7 +35,7 @@ class doc(jsg.JSGObject):
         setattr(self, 'def', def_ if def_ is not None else _kwargs.get('def', None))
         setattr(self, 'import', import_ if import_ is not None else _kwargs.get('import', None))
         setattr(self, 'with', with_ if with_ is not None else _kwargs.get('with', None))
-        setattr(self, 'if', if_ if if_ is not jsg.EmptyAny else _kwargs.get('if', jsg.EmptyAny))
+        setattr(self, 'if', if_ if if_ is not jsg.Empty else _kwargs.get('if', jsg.Empty))
         setattr(self, 'else', else_ if else_ is not None else _kwargs.get('else', None))
         setattr(self, 'raise', raise_ if raise_ is not None else _kwargs.get('raise', None))
 
