@@ -1,6 +1,7 @@
 from typing import Optional, Dict, Any, Type, Union, TextIO
 
-from pyjsg.jsglib.jsg_object import JSGObject, conforms
+from pyjsg.jsglib.jsg_object import JSGObject
+from pyjsg.jsglib.conformance import conforms
 from pyjsg.jsglib.jsg_strings import JSGString
 from pyjsg.jsglib.jsg_validateable import JSGValidateable
 from pyjsg.jsglib.jsg_anytype import AnyType

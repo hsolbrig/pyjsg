@@ -137,7 +137,7 @@ class ValueTypeTestCase(unittest.TestCase):
 
     def test_anon_typeid(self):
         t = cast(JSGValueType, parse("{a: @int b: @string+}", "valueType", JSGValueType))
-        self.assertEqual('valueType: (anonymous: _Anon2): objectExpr: simple object', str(t))
+        self.assertEqual('valueType: (anonymous: _Anon1): objectExpr: simple object', str(t))
         self.assertEqual('_Anon1', t.signature_type())
         self.assertEqual('_Anon1', t.python_type())
         self.assertEqual('None', t.mt_value())

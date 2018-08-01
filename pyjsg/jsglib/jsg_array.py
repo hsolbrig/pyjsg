@@ -4,11 +4,7 @@ from typing import Optional, List, Tuple
 from pyjsg.jsglib.jsg_context import JSGContext
 from pyjsg.jsglib.jsg_validateable import JSGValidateable
 from pyjsg.jsglib.loader import Logger
-
-if sys.version_info < (3, 7):
-    from .typing_patch_36 import conforms
-else:
-    from .typing_patch_37 import conforms
+from pyjsg.jsglib.conformance import conforms
 
 
 class JSGArray(list, JSGValidateable):

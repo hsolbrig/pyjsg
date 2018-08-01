@@ -51,7 +51,7 @@ class JSGPython:
     @staticmethod
     def is_json(s: str) -> bool:
         """ Determine whether s looks like JSON """
-        return s.strip().startswith('{')
+        return s.strip().startswith(('{', '['))
 
     @staticmethod
     def _to_string(inp: str) -> str:

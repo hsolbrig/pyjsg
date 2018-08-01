@@ -12,11 +12,12 @@ from pyjsg.jsglib.jsg_validateable import JSGValidateable
 from pyjsg.jsglib.empty import Empty
 from pyjsg.jsglib import AnyType
 from pyjsg.jsglib.logger import Logger
+from pyjsg.jsglib.conformance import conforms
 
 if sys.version_info < (3, 7):
-    from .typing_patch_36 import conforms, is_union, proc_forward
+    from .typing_patch_36 import is_union, proc_forward
 else:
-    from .typing_patch_37 import conforms, is_union, proc_forward
+    from .typing_patch_37 import is_union, proc_forward
 
 
 class JSGObjectMeta(type):
@@ -119,17 +120,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
         :param log: place to record issues
         :return: True if it meets requirements
         """
-        if isinstance(entry, dict):
-            for k, v in entry.items():
-                if isinstance(k, JSGValidateable) and not k._is_valid(log) and not log.logging:
-                    return False
-                if isinstance(v, JSGValidateable) and not v._is_valid(log) and not log.logging:
-                    return False
-        elif isinstance(entry, list):
-            for v in entry:
-                if isinstance(v, JSGValidateable) and not v._is_valid(log) and not log.logging:
-                    return False
-        elif isinstance(entry, JSGValidateable):
+        if isinstance(entry, JSGValidateable):
             if not entry._is_valid(log) and not log.logging:
                 return False
         return True
@@ -143,25 +134,17 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             JSGObject._strip_nones(obj.__dict__) if isinstance(obj, JsonObj) \
             else cast(JSGString, obj).val if issubclass(type(obj), JSGString) else str(obj)
 
-    def _is_valid_element(self, log: Logger, name: str, entry: Type[JSGValidateable]) -> bool:
-        from pyjsg.jsglib.jsg_strings import JSGString
+    def _is_valid_element(self, log: Logger, name: str, val: Type[JSGValidateable]) -> bool:
         if name not in self._members:
             return any(e._is_valid_element for e in self._reference_types)
         else:
             etype = self._members[name]
-            if (etype is str or etype is int or etype is float or etype is bool or etype is object) and \
-                    (issubclass(type(entry), (JSGString, AnyType)) or isinstance(entry, AnyType)):
-                # TODO fix this
-                raise NotImplementedError("This path shouldn't work anymore")
-                # val = getattr(entry, "val", None)
-            else:
-                val = entry
             if etype is JSGNull:
                 return val is JSGNull or val is None
             if val is None and type(etype) is type(AnyType):
                 return False
-            if val is not None and val is not Empty and isinstance(entry, JSGArray):
-                if not entry._validate(cast(list, val), log)[0] and not log.logging:
+            if val is not None and val is not Empty and isinstance(val, JSGArray):
+                if not val._validate(cast(list, val), log)[0] and not log.logging:
                     return False
             elif not conforms(val, etype, self._context.NAMESPACE):        # Note: None and absent are equivalent
                 if val is None or val is Empty:
@@ -169,7 +152,7 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
                         return False
                 else:
                     if log.log("{}: Type mismatch for {}. Expecting: {} Got: {}"
-                               .format(self.__class__.__name__, name, etype, type(entry))):
+                               .format(self.__class__.__name__, name, etype, type(val))):
                         return False
             elif val is not None and not self._test(val, log):  # Make sure that entry conforms to its own type
                 return False

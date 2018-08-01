@@ -1,10 +1,11 @@
 import sys
 
+from .conformance import conforms
 from .jsg_strings import JSGPattern, JSGString, Boolean, Integer, Number, String, JSGPatternedValMeta
-from pyjsg.jsglib.jsg_anytype import AnyType, AnyTypeFactory
+from .jsg_anytype import AnyType, AnyTypeFactory
 from .jsg_array import JSGArray,ArrayFactory
 from .jsg_object import JSGObject, Object, ObjectFactory
-from pyjsg.jsglib.jsg_objectmap import JSGObjectMap
+from .jsg_objectmap import JSGObjectMap
 from .loader import isinstance_
 from .jsg_validateable import JSGValidateable
 from .empty import Empty

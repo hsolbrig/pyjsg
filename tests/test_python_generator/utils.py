@@ -34,6 +34,7 @@ class PythonGeneratorUtils(unittest.TestCase):
                 with open(py_file, 'w') as f:
                     f.write(x.python)
                     print(f"***** {py_file} updated *****")
+            self.maxDiff = None
             self.assertEqual(expected, actual)
 
         for p in passing_json:

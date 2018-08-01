@@ -1,7 +1,7 @@
 import unittest
 from typing import Union
 
-from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, JSGNull
+from pyjsg.jsglib import String, JSGPattern, Number, Integer, Boolean, JSGNull, Empty
 
 
 class JSGBuiltinsTestCase(unittest.TestCase):
@@ -126,6 +126,14 @@ class JSGBuiltinsTestCase(unittest.TestCase):
     def test_null(self):
         self.assertIsNone(JSGNull(None).val)
         self.assertIsNone(JSGNull(JSGNull).val)
+        with self.assertRaises(ValueError):
+            JSGNull(Empty)
+        with self.assertRaises(ValueError):
+            JSGNull('null')
+
+    def test_empty_type(self):
+        """ Make sure that Empty is a class only thingie """
+        self.assertTrue(Empty is Empty())
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,82 +6,39 @@ import sys
 from types import ModuleType
 from collections import Iterable
 
+
 if sys.version_info < (3, 7):
-    from typing import GenericMeta, Dict, Any, List, Union, _ForwardRef
-
-
-# TODO: Pay attention to the goings on at the python development (http://bugs.python.org/issue29262) and #377
-
-def conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if isinstance(element, str) and element == '_context':
-        return True
-    else:
-        etype = proc_forward(etype, namespace)
-    if is_union(etype):
-        return union_conforms(element, etype, namespace)
-    elif is_dict(etype):
-        return dict_conforms(element, etype, namespace)
-    elif is_iterable(etype):
-        return iterable_conforms(element, etype, namespace)
-    else:
-        return element_conforms(element, etype)
-
-
-def is_typing_type(etype) -> bool:
-    return is_union(etype) or is_dict(etype) or is_iterable(etype)
+    from typing import GenericMeta, Dict, Any, List, Union, _ForwardRef, Callable
 
 
 def proc_forward(etype, namespace: Dict[str, Any]):
+    """ Resolve etype to an actual type if it is a forward reference """
     return etype._eval_type(namespace, namespace) if type(etype) is _ForwardRef else etype
 
 
 def is_union(etype) -> bool:
+    """ Determine whether etype is a Union """
     return type(etype) == type(Union)
 
 
 def is_dict(etype) -> bool:
+    """ Determine whether etype is a Dict """
     return type(etype) is GenericMeta and etype.__extra__ is dict
 
 
 def is_iterable(etype) -> bool:
+    """ Determine whether etype is a List or other iterable """
     return type(etype) is GenericMeta and issubclass(etype.__extra__, Iterable)
 
 
-def union_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if is_union(etype):
-        union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
-        return any(conforms(element, t, namespace) for t in union_vals)
-    return False
+def union_conforms(element: Union, etype, namespace: Dict[str, Any], conforms: Callable) -> bool:
+    """ Determine whether element conforms to at least one of the types in etype
 
-
-def dict_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if is_dict(etype) and isinstance(element, dict):
-        kt, vt = etype.__args__
-        return all(conforms(k, kt, namespace) and
-                   conforms(v, vt, namespace) for k, v in element.items())
-    return False
-
-
-def iterable_conforms(element, etype, namespace: Dict[str, Any]) -> bool:
-    if element is None and issubclass(etype, List):
-        element = []
-    if is_iterable(etype) and isinstance(element, Iterable):
-        vt = etype.__args__[0]
-        return all(conforms(e, vt, namespace) for e in element)
-    return False
-
-
-def element_conforms(element, etype) -> bool:
-    from pyjsg.jsglib.loader import AnyType
-    from pyjsg.jsglib import Empty
-    if (element is None or element is Empty) and issubclass(etype, type(None)):
-        return True
-    if element is Empty:
-        return False
-    elif element is None and (etype == object or etype is AnyType):
-        return True
-    elif isinstance(etype, type(type)) and (issubclass(etype, type(None))):
-        return element is None
-    elif element is None:
-        return False
-    return isinstance(element, etype)
+    :param element: element to test
+    :param etype: type to test against
+    :param namespace: Namespace to use for resolving forward references
+    :param conforms: conformance test function
+    :return: True if element conforms to at least one type in etype
+    """
+    union_vals = etype.__union_params__ if sys.version_info < (3, 6) else etype.__args__
+    return any(conforms(element, t, namespace) for t in union_vals)

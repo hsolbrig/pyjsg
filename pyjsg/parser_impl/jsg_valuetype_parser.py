@@ -45,7 +45,7 @@ class JSGValueType(jsgParserVisitor, PythonGeneratorElement):
         elif self._arrayDef:
             typ = str(self._arrayDef)
         else:
-            typ = "NONE"
+            raise NotImplementedError("Unknown Value Type")
         return "valueType: {}".format(typ)
 
     def _lexerid_str(self) -> str:
@@ -156,7 +156,7 @@ class JSGValueType(jsgParserVisitor, PythonGeneratorElement):
     def visitObjectExpr(self, ctx: jsgParser.ObjectExprContext):
         from pyjsg.parser_impl.jsg_objectexpr_parser import JSGObjectExpr
         oe = JSGObjectExpr(self._context, ctx)
-        self._typeid = self._context.anon_id()
+        self._typeid = oe.python_type()
         self._context.grammarelts[self._typeid] = oe
 
     def visitArrayExpr(self, ctx: jsgParser.ArrayExprContext):

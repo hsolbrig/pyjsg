@@ -58,9 +58,9 @@ class NotebooksSyntaxTestCase(unittest.TestCase):
           }''')
         self.assertFalse(r.success)
         # TODO: Get these error messages up and running
-        print(f"FAIL - first name element 0: 17 is not a String\n"
-                         "first name element 1: 12.3 is not a String\n"
-                         "first name element 2: False is not a String !=  {str(r)}")
+        print(f"TODO: first name element 0: 17 is not a String\n"
+                         f"first name element 1: 12.3 is not a String\n"
+                         f"first name element 2: False is not a String !=  {str(r)}")
         # self.assertEqual("FAIL - first name element 0: 17 is not a String\n")
         #                  "first name element 1: 12.3 is not a String\n"
         #                  "first name element 2: False is not a String", str(r))
@@ -72,7 +72,7 @@ class NotebooksSyntaxTestCase(unittest.TestCase):
            }''')
         self.assertFalse(r.success)
         # TODO: Fix this
-        print(f"FAIL - rating: at least 2 values required - element has 1 != {str(r)}")
+        print(f"TODO - rating: at least 2 values required - element has 1 != {str(r)}")
         # self.assertEqual("FAIL - rating: at least 2 values required - element has 1", str(r))
         r = x.conforms('''
            { "last_name" : "snooter",
@@ -83,7 +83,7 @@ class NotebooksSyntaxTestCase(unittest.TestCase):
            }''')
         self.assertFalse(r.success)
         # TODO: Fix this
-        print(f"FAIL - spin: no more than 2 values permitted - element has 3 != {str(r)}")
+        print(f"TODO - spin: no more than 2 values permitted - element has 3 != {str(r)}")
         # self.assertEqual("FAIL - spin: no more than 2 values permitted - element has 3", str(r))
 
     def test_builtins(self):
