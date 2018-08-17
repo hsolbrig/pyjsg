@@ -1,5 +1,5 @@
-# Auto generated from tests_standalone/test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.8b1
-# Generation date: 2018-07-31 15:29
+# Auto generated from test_jsg_readme/jsg/ge1.jsg by PyJSG version 0.8b3
+# Generation date: 2018-08-17 18:20
 #
 import typing
 import pyjsg.jsglib as jsg

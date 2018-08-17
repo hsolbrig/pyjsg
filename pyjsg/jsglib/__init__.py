@@ -6,7 +6,7 @@ from .jsg_anytype import AnyType, AnyTypeFactory
 from .jsg_array import JSGArray,ArrayFactory
 from .jsg_object import JSGObject, Object, ObjectFactory
 from .jsg_objectmap import JSGObjectMap
-from .loader import isinstance_
+from .loader import isinstance_, load, loads
 from .jsg_validateable import JSGValidateable
 from .empty import Empty
 from .jsg_null import JSGNull

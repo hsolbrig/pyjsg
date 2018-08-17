@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from dict_compare import compare_dicts
@@ -10,7 +11,9 @@ from jsonasobj import loads as jao_loads
 
 class XSFacetTestCase(unittest.TestCase):
     def test_facet(self):
-        with open('/Users/mrf7578/Development/git/shexSpec/shexTest/schemas/1bnodeLength.json')  as f:
+        file_loc = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shexSpec', 'shexTest', 'schemas',
+                                '1bnodeLength.json')
+        with open(file_loc)  as f:
             text = f.read()
         facets = loads(text, ShExJ)
         # print(as_json(facets))
