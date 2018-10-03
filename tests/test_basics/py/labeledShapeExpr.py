@@ -1,5 +1,5 @@
-# Auto generated from test_basics/jsg/labeledShapeExpr.jsg by PyJSG version 0.8b3
-# Generation date: 2018-09-06 13:05
+# Auto generated from test_basics/jsg/labeledShapeExpr.jsg by PyJSG version 0.8b4
+# Generation date: 2018-10-04 01:45
 #
 import typing
 import pyjsg.jsglib as jsg
