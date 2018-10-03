@@ -9,6 +9,7 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 * 0.7.0 -- Added array processing elements
 * 0.7b1 -- Beta Release -- mapping added
 * 0.8b1 -- Beta Release -- note that the 0.7 series are breaking changes, so will not roll into the mainstream until major consumers are updated.
+* 0.9.0 -- Next major release - tighter type checking
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
