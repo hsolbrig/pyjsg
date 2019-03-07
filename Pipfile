@@ -1,0 +1,15 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+yadict_compare = "*"
+
+[packages]
+antlr4-python3-runtime = "*"
+jsonasobj = "*"
+requests = "*"
+
+[requires]
+python_version = "3.7"
