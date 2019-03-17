@@ -87,10 +87,12 @@ class JSGObject(JsonObj, JSGValidateable, metaclass=JSGObjectMeta):
             super().__setattr__(key, value)
 
     def __getattribute__(self, item: str) -> Any:
-        if item.startswith('_') or item in self.__dict__:
+        if item[0] == '_':
+            return super().__getattribute__(item)
+        if item in super().__dict__:
             rval = super().__getattribute__(item)
         else:
-            rval = None
+            return None
         return rval.val if type(rval) is AnyType else None if rval is JSGNull else rval
 
     def __getitem__(self, item) -> Any:

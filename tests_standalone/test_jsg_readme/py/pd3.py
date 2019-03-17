@@ -1,5 +1,5 @@
-# Auto generated from tests_standalone/test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.9.0
-# Generation date: 2018-10-04 01:47
+# Auto generated from test_jsg_readme/jsg/pd3.jsg by PyJSG version 0.9.0
+# Generation date: 2019-03-17 15:24
 #
 import typing
 import pyjsg.jsglib as jsg
