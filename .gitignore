@@ -106,3 +106,6 @@ venv.bak/
 
 #PyCharm
 .idea/
+
+# Don't include locks in libraries
+Pipfile.lock

@@ -12,6 +12,7 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 * 0.9.0 -- Next major release - tighter type checking
 * 0.9.1 -- Add pipenv files.  Performance improvement in __getattr__
 * 0.9.2 -- Update urllib3 dependence to address security issue
+* 0.10.0 -- Change to CC0 license and antlr 4.8
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 

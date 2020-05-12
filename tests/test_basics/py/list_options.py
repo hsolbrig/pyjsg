@@ -1,5 +1,5 @@
-# Auto generated from test_basics/jsg/list_options.jsg by PyJSG version 0.9.0
-# Generation date: 2019-03-17 15:24
+# Auto generated from test_basics/jsg/list_options.jsg by PyJSG version 0.10.0
+# Generation date: 2020-05-12 12:31
 #
 import typing
 import pyjsg.jsglib as jsg

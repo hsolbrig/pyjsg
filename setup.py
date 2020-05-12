@@ -21,7 +21,7 @@ setup(
     license=__license__,
     author='Harold Solbrig',
     author_email='solbrig.harold@mayo.edu',
-    description='"PyJSG - Python JSON Schema Grammar bindings',
+    description='PyJSG - Python JSON Schema Grammar bindings',
     long_description='A tool to create Python classes that represent JSON objects defined in JSG',
     install_requires=requires,
     tests_require = ["yadict-compare>=1.1.2"],
@@ -33,5 +33,6 @@ setup(
         'Topic :: Software Development :: Code Generators',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.7']
 )

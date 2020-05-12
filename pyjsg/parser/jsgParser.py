@@ -1,9 +1,13 @@
-# Generated from jsgParser.g4 by ANTLR 4.7.1
+# Generated from jsgParser.g4 by ANTLR 4.8
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
-from typing.io import TextIO
 import sys
+if sys.version_info[1] > 5:
+	from typing import TextIO
+else:
+	from typing.io import TextIO
+
 
 def serializedATN():
     with StringIO() as buf:
@@ -269,9 +273,10 @@ class jsgParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.7.1")
+        self.checkVersion("4.8")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
+
 
 
 
@@ -371,6 +376,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class TypeDirectiveContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -432,6 +438,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class TypeExceptionsContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -488,6 +495,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class IgnoreDirectiveContext(ParserRuleContext):
 
@@ -548,6 +556,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class GrammarEltContext(ParserRuleContext):
 
@@ -624,6 +633,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class ObjectDefContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -666,6 +676,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class ObjectExprContext(ParserRuleContext):
 
@@ -779,6 +790,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class MembersDefContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -887,6 +899,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class AltMemberDefContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -936,6 +949,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class MemberContext(ParserRuleContext):
 
@@ -987,6 +1001,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LastCommaContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1023,6 +1038,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class PairDefContext(ParserRuleContext):
 
@@ -1152,6 +1168,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class NameContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1198,6 +1215,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class ArrayDefContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1240,6 +1258,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class ArrayExprContext(ParserRuleContext):
 
@@ -1323,6 +1342,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class ObjectMacroContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1375,6 +1395,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class ValueTypeMacroContext(ParserRuleContext):
 
@@ -1451,6 +1472,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class BuiltinValueTypeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1515,6 +1537,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class ValueTypeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1569,6 +1592,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class NonRefValueTypeContext(ParserRuleContext):
 
@@ -1669,6 +1693,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class TypeAlternativesContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1731,6 +1756,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class IdrefContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1767,6 +1793,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class EbnfSuffixContext(ParserRuleContext):
 
@@ -1875,6 +1902,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LexerRulesContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1930,6 +1958,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LexerRuleSpecContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1983,6 +2012,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LexerRuleBlockContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -2033,6 +2063,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class LexerAltListContext(ParserRuleContext):
 
@@ -2094,6 +2125,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LexerAltContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -2143,6 +2175,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class LexerElementsContext(ParserRuleContext):
 
@@ -2196,6 +2229,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class LexerElementContext(ParserRuleContext):
 
@@ -2273,6 +2307,7 @@ class jsgParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LexerBlockContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -2320,6 +2355,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class LexerAtomContext(ParserRuleContext):
 
@@ -2382,6 +2418,7 @@ class jsgParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class LexerTerminalContext(ParserRuleContext):
 

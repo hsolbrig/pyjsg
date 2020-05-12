@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Note: need antlr4.5.1 or later to run this!
+# Note: need antlr4.8 or later to run this!
 # see: http://www.antlr.org/download.html for details
 # Note: The output path follows the input path, so we need
 #       to make a local copy if we want the output in the

@@ -7,9 +7,7 @@ verify_ssl = true
 yadict_compare = "*"
 
 [packages]
-antlr4-python3-runtime = "*"
+antlr4-python3-runtime = "~=4.8"
 jsonasobj = "*"
 requests = "*"
-
-[requires]
-python_version = "3.7"
+yadict-compare = "*"
