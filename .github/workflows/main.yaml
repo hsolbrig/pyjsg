@@ -18,12 +18,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
+    - name: Install pipenv
+      uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
         pip install dataclasses
         pipenv install pbr
+
     - name: Test with unittest
       run: |
         python -m unittest discover -s tests/
