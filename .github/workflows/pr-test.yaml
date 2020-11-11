@@ -25,6 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
+        pip install dataclasses
         pipenv install pbr
 
     - name: Test with unittest
