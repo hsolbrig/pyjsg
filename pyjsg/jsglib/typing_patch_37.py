@@ -1,13 +1,15 @@
-from typing import Dict, Any, Union, ForwardRef, Callable, Type
+import sys
 from collections.abc import Iterable
 
-
 # Typing_patch module for Python 3.7
+
+if sys.version_info >= (3, 7):
+    from typing import Dict, Any, Union, ForwardRef, Callable, Type, _eval_type
 
 
 def proc_forward(etype, namespace: Dict[str, Any]):
     """ Resolve etype to an actual type if it is a forward reference """
-    return etype._evaluate(namespace, namespace) if type(etype) is ForwardRef else etype
+    return _eval_type(etype, namespace, namespace) if type(etype) is ForwardRef else etype
 
 
 def is_union(etype) -> bool:
