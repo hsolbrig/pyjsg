@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/listcardinalities.jsg by PyJSG version 0.10.0
-# Generation date: 2020-11-11 10:23
+# Auto generated from tests/test_basics/jsg/listcardinalities.jsg by PyJSG version 0.10.1
+# Generation date: 2020-11-11 13:38
 #
 import typing
 import pyjsg.jsglib as jsg
