@@ -1,5 +1,5 @@
-# Auto generated from tests/test_basics/jsg/ShExJ.jsg by PyJSG version 0.10.0
-# Generation date: 2020-11-11 10:23
+# Auto generated from tests/test_basics/jsg/ShExJ.jsg by PyJSG version 0.10.1
+# Generation date: 2020-11-11 13:53
 #
 import typing
 import pyjsg.jsglib as jsg
@@ -11,7 +11,7 @@ _CONTEXT.TYPE_EXCEPTIONS.append("ObjectLiteral")
 
 
 class _Anon1(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'http://www\.w3\.org/ns/shex\.jsonld')
+    pattern = jsg.JSGPattern(r'http\:\/\/www\.w3\.org\/ns\/shex\.jsonld')
 
 
 class _Anon2(jsg.JSGString):
@@ -47,7 +47,7 @@ class PN_CHARS(jsg.JSGString):
 
 
 class BNODE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
+    pattern = jsg.JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
 
 
 class PN_PREFIX(jsg.JSGString):
