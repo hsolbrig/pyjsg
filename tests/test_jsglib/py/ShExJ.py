@@ -1,6 +1,3 @@
-# Auto generated from test_basics/jsg/ShExJ.jsg by PyJSG version 0.10.1
-# Generation date: 2020-11-30 14:02
-#
 import typing
 import pyjsg.jsglib as jsg
 

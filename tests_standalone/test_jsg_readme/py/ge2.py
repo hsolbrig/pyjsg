@@ -1,6 +1,3 @@
-# Auto generated from tests_standalone/test_jsg_readme/jsg/ge2.jsg by PyJSG version 0.10.1
-# Generation date: 2020-11-30 09:58
-#
 import typing
 import pyjsg.jsglib as jsg
 
