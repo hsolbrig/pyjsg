@@ -35,15 +35,16 @@ class ParseErrorListener(ErrorListener):
         self.n_errors += 1
 
 
-def do_parse(infilename: str, outfilename: str, verbose: bool) -> bool:
+def do_parse(infilename: str, outfilename: str, verbose: bool, header: bool) -> bool:
     """
     Parse the jsg in infilename and save the results in outfilename
     :param infilename: file containing jsg
     :param outfilename: target python file
     :param verbose: verbose output flag
+    :param header: output header flag
     :return: true if success
     """
-    python = parse(FileStream(infilename, encoding="utf-8"), infilename)
+    python = parse(FileStream(infilename, encoding="utf-8"), infilename, emit_header=header)
     if python is not None:
         with open(outfilename, 'w') as outfile:
             outfile.write(python)
@@ -53,11 +54,12 @@ def do_parse(infilename: str, outfilename: str, verbose: bool) -> bool:
     return False
 
 
-def parse(input_: Union[str, FileStream], source: str) -> Optional[str]:
+def parse(input_: Union[str, FileStream], source: str, emit_header: bool=True) -> Optional[str]:
     """Parse the text in infile and save the results in outfile
 
     :param input_: string or stream to parse
     :param source: source name for python file header
+    :param emit_header: True means include header in python file
     :return: python text if successful
     """
 
@@ -88,7 +90,7 @@ def parse(input_: Union[str, FileStream], source: str) -> Optional[str]:
             print("Undefined token: " + tkn)
         return None
 
-    return parser.as_python(source)
+    return parser.as_python(source, emit_header=emit_header)
 
 
 def genargs() -> ArgumentParser:
@@ -101,6 +103,7 @@ def genargs() -> ArgumentParser:
     parser.add_argument("-o", "--outfile", help="Output python file (Default: {infile}.py)")
     parser.add_argument("-e", "--evaluate", help="Evaluate resulting python file as a test", action="store_true")
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
+    parser.add_argument("-nh", "--noheader", help="Omit date and version information from header", action="store_false")
     return parser
 
 
@@ -108,7 +111,8 @@ def evaluate(module_name: str, fname: str, verbose: bool):
     """
     Load fname as a module.  Will raise an exception if there is an error
     :param module_name: resulting name of module
-    :param fname: name to load 
+    :param fname: name to load
+    :param verbose: verbose houtput
     """
     if verbose:
         print("Testing {}".format(fname))
@@ -122,7 +126,7 @@ def generate(argv) -> bool:
     file_base = str(os.path.basename(opts.infile.rsplit('.', 1)[0]))
     if not opts.outfile:
         opts.outfile = os.path.join(os.path.dirname(opts.infile), file_base + ".py")
-    if do_parse(opts.infile, opts.outfile, opts.verbose):
+    if do_parse(opts.infile, opts.outfile, opts.verbose, opts.noheader):
         if opts.evaluate:
             evaluate("generate_python_namespace", opts.outfile, opts.verbose)               # Don't pollute namespace
         return True

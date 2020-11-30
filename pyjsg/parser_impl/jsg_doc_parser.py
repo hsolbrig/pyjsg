@@ -14,16 +14,19 @@ from .parser_utils import as_token, as_tokens
 
 # Outermost python template
 #
-_jsg_python_template = '''# Auto generated from {infile} by PyJSG version {version}
-# Generation date: {gendate}
-#
-import typing
+_jsg_python_template = '''{header}import typing
 import pyjsg.jsglib as jsg
 {original_shex}
 # .TYPE and .IGNORE settings
 _CONTEXT = jsg.JSGContext(){body}
 
 _CONTEXT.NAMESPACE = locals()
+'''
+
+# Header is used by template if requested
+_jsg_python_header = '''# Auto generated from {infile} by PyJSG version {version}
+# Generation date: {gendate}
+#
 '''
 
 
@@ -33,7 +36,7 @@ class JSGDocParser(jsgParserVisitor):
         self._context = JSGDocContext() if context is None else context
         self.text: str = ""
 
-    def as_python(self, infile, include_original_shex: bool=False):
+    def as_python(self, infile, include_original_shex: bool=False, emit_header: bool=True):
         """ Return the python representation of the document """
         self._context.resolve_circular_references()            # add forwards for any circular entries
         body = ''
@@ -52,10 +55,12 @@ class JSGDocParser(jsgParserVisitor):
             self._context.forward_refs.pop(k, None)
 
         body = '\n' + '\n'.join(self._context.directives) + body
-        return _jsg_python_template.format(infile=infile,
-                                           original_shex='# ' + self.text if include_original_shex else "",
+        header = _jsg_python_header.format(infile=infile,
                                            version=__version__,
-                                           gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                           gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M")) \
+            if emit_header else ''
+        return _jsg_python_template.format(header=header,
+                                           original_shex='# ' + self.text if include_original_shex else "",
                                            body=body)
 
     def undefined_tokens(self) -> List[str]:

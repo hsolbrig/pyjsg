@@ -12,11 +12,11 @@ class GeneratePythonTestCase(unittest.TestCase):
         badfile = os.path.join(basedir, 'py', 'badjsg.py')
 
         # Make sure that a simple generate works
-        self.assertTrue(generate([os.path.join(basedir, "jsg", "complexfacet.jsg"), "-o", goodfile, "-e"]))
+        self.assertTrue(generate([os.path.join(basedir, "jsg", "complexfacet.jsg"), "-o", goodfile, "-e", "-nh"]))
 
         # Make sure that we can detect exceptions and errors
         with open(badfile, 'w') as bf:
-            bf.write("i=1/0")
+            bf.write("i=1/0\n")
             with open(goodfile) as gf:
                 bf.write(gf.read())
         with self.assertRaises(ZeroDivisionError):

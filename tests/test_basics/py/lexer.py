@@ -1,6 +1,3 @@
-# Auto generated from tests/test_basics/jsg/lexer.jsg by PyJSG version 0.10.1
-# Generation date: 2020-11-11 13:53
-#
 import typing
 import pyjsg.jsglib as jsg
 
@@ -38,7 +35,7 @@ class EXPONENT(jsg.JSGString):
 
 
 class LANGTAG(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'\@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
+    pattern = jsg.JSGPattern(r'@[a-zA-Z]+(\-[a-zA-Z0-9]+)*')
 
 
 class DOUBLE(jsg.JSGString):
@@ -62,7 +59,7 @@ class PN_CHARS(jsg.JSGString):
 
 
 class BNODE(jsg.JSGString):
-    pattern = jsg.JSGPattern(r'_\:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
+    pattern = jsg.JSGPattern(r'_:(({PN_CHARS_U})|[0-9])((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_U=PN_CHARS_U.pattern))
 
 
 class PN_PREFIX(jsg.JSGString):
