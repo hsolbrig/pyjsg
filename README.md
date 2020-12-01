@@ -3,24 +3,13 @@ Translate [JSON Schema Grammar](http://github.com/ericprud/jsg) into Python obje
 
 This tool generates Python 3 objects that represent the JSON objects defined in a JSG schema.  It uses the [Python Typing library](https://docs.python.org/3/library/typing.html) to add type hints to Python IDE's and includes a library to validate the python objects against the library definitions.
 
-## History
-* 0.5.3 -- Simplified Logger - now uses StringIO instead of MemLogger
-* 0.6.0 -- Beginning of cleanup and jupyter documentation
-* 0.7.0 -- Added array processing elements
-* 0.7b1 -- Beta Release -- mapping added
-* 0.8b1 -- Beta Release -- note that the 0.7 series are breaking changes, so will not roll into the mainstream until major consumers are updated.
-* 0.9.0 -- Next major release - tighter type checking
-* 0.9.1 -- Add pipenv files.  Performance improvement in __getattr__
-* 0.9.2 -- Update urllib3 dependence to address security issue
-* 0.10.0 -- Change to CC0 license and antlr 4.8
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
 [![PyPi](https://img.shields.io/pypi/v/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
-![Test](https://github.com/hsolbrig/pyjsg/workflows/main/badge.svg)
+![Test](https://github.com/hsolbrig/pyjsg/workflows/build/badge.svg)
 
-![Publish](https://github.com/hsolbrig/pyjsg/workflows/pypi-publish/badge.svg)
 
 ## Examples
 
