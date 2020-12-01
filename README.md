@@ -18,6 +18,10 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 
 [![PyPi](https://img.shields.io/pypi/v/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
 
+![Test](https://github.com/hsolbrig/pyjsg/workflows/main/badge.svg)
+
+![Publish](https://github.com/hsolbrig/pyjsg/workflows/pypi-publish/badge.svg)
+
 ## Examples
 
 <table><thead>
