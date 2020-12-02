@@ -18,11 +18,13 @@ jobs:
           pip install pipenv-to-requirements
           pipenv_to_requirements
           git add requirements*.txt
-          if [[ -n $(git status -s requirements*.txt) ]]
+          pipenv lock
+          git add Pipfile.lock
+          if [[ -n $(git status -s requirements*.txt Pipfile.lock) ]]
           then
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            git commit -m 'Automatically generated requirements.txt and requirements-dev.txt' requirements*.txt
+            git commit -m 'Automatically generated requirements and updated Pipfile.lock' requirements*.txt Pipfile.lock
             git push
           fi
 

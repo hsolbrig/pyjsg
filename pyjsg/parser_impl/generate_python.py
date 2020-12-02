@@ -2,7 +2,7 @@ import importlib.abc
 import importlib.util
 import os
 from argparse import ArgumentParser
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import sys
 from antlr4 import CommonTokenStream
@@ -121,7 +121,7 @@ def evaluate(module_name: str, fname: str, verbose: bool):
     spec.loader.exec_module(mod)
 
 
-def generate(argv) -> bool:
+def generate(argv: Optional[List[str]] = None) -> bool:
     opts = genargs().parse_args(argv)
     file_base = str(os.path.basename(opts.infile.rsplit('.', 1)[0]))
     if not opts.outfile:

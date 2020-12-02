@@ -1,11 +1,21 @@
 CHANGES
 =======
 
+* Switch to PBR for publication
+* Automatically generated requirements.txt and requirements-dev.txt
 * Fix uses/run issue
 * Updated the workflow
+
+v0.11.1
+-------
+
 * Getting the hard coded number synced with the tag
 * Update the hard coded version number to 0.11.0
 * Update pypi-publish.yaml
+
+v0.11.0
+-------
+
 * Remove header from all the unit test files
 * Upgrade to antlr 4.9
 * Update main.yaml action
