@@ -121,7 +121,7 @@ def evaluate(module_name: str, fname: str, verbose: bool):
     spec.loader.exec_module(mod)
 
 
-def generate(argv: Optional[List[str]] = None) -> bool:
+def generate(argv: Optional[List[str]] = None) -> int:
     opts = genargs().parse_args(argv)
     file_base = str(os.path.basename(opts.infile.rsplit('.', 1)[0]))
     if not opts.outfile:
@@ -129,7 +129,7 @@ def generate(argv: Optional[List[str]] = None) -> bool:
     if do_parse(opts.infile, opts.outfile, opts.verbose, opts.noheader):
         if opts.evaluate:
             evaluate("generate_python_namespace", opts.outfile, opts.verbose)               # Don't pollute namespace
-        return True
+        return 0
     else:
         print("Conversion failed")
-        return False
+        return 1

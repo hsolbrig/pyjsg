@@ -18,7 +18,7 @@ class JSGTestCase(unittest.TestCase):
                     if fn.endswith(".jsg") and (not files or fn in files):
                         infile = os.path.relpath(os.path.join(dirpath, fn))
                         outfile = os.path.relpath(os.path.join(base, "py", fn.rsplit('.', 1)[0] + '.py'))
-                        self.assertTrue(generate([infile, "-o", outfile, "-e", "-nh"]))
+                        self.assertEqual(0, generate([infile, "-o", outfile, "-e", "-nh"]))
                         ntested += 1
         if files:
             print("WARNING: all jsg files were not tested")

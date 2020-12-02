@@ -13,7 +13,7 @@ class EOptionTestCase(unittest.TestCase):
         outf = StringIO()
         with redirect_stdout(outf):
             # Should not fail
-            generate([shexj_jsg, "-e"])
+            self.assertEqual(0, generate([shexj_jsg, "-e"]))
 
 
 if __name__ == '__main__':

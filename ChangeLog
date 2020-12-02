@@ -1,6 +1,22 @@
 CHANGES
 =======
 
+* Fix typo in publish script
+
+v0.11.4
+-------
+
+* Update to the publish and build workflows to address the issue of things happening more than once
+* Add commit for AUTHORS and ChangeLog after the setup is complete
+
+v0.11.3
+-------
+
+* Add additional badges to readme
+* Update Pipfile.lock BEFORE emitting requirements
+* Add requests to the tox dependencies
+* Automatically generated requirements and updated Pipfile.lock
+* Add Pipfile.lock to generated items
 * Switch to PBR for publication
 * Automatically generated requirements.txt and requirements-dev.txt
 * Fix uses/run issue
