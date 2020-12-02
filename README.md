@@ -5,10 +5,9 @@ This tool generates Python 3 objects that represent the JSON objects defined in 
 
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
-
 [![PyPi](https://img.shields.io/pypi/v/PyJSG.svg)](https://pypi.python.org/pypi/PyJSG)
-
-![Test](https://github.com/hsolbrig/pyjsg/workflows/build/badge.svg)
+![Build](https://github.com/hsolbrig/pyjsg/workflows/Build/badge.svg)
+![Publish](https://github.com/hsolbrig/pyjsg/workflows/Publish%20Python%20Package/badge.svg)
 
 
 ## Examples
