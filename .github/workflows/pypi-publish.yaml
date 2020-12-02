@@ -7,17 +7,14 @@ jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.8
 
     - name: Install dependencies
       run: |
@@ -27,6 +24,15 @@ jobs:
       run: |
         rm -rf dist
         python setup.py bdist_wheel sdist
+    - name: Add updated Authors and ChangeLog to git
+      git add AUTHORS ChangeLog
+      if [[ -n $(git status -s AUTHORS ChangeLog) ]]
+      then
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m 'Update AUTHORS and ChangeLog' AUTHORS ChangeLog
+        git push
+      fi
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@v1.2.2
       with:
