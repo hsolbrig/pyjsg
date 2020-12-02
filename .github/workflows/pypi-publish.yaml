@@ -1,7 +1,8 @@
 name: Publish Python Package
 
 on:
-  release
+  release:
+    types: [created]
 
 jobs:
   build-n-publish:
