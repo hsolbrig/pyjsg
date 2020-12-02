@@ -26,14 +26,15 @@ jobs:
         rm -rf dist
         python setup.py bdist_wheel sdist
     - name: Add updated Authors and ChangeLog to git
-      git add AUTHORS ChangeLog
-      if [[ -n $(git status -s AUTHORS ChangeLog) ]]
-      then
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m 'Update AUTHORS and ChangeLog' AUTHORS ChangeLog
-        git push
-      fi
+      run: |
+        git add AUTHORS ChangeLog
+        if [[ -n $(git status -s AUTHORS ChangeLog) ]]
+        then
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m 'Update AUTHORS and ChangeLog' AUTHORS ChangeLog
+          git push
+        fi
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@v1.2.2
       with:
