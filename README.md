@@ -162,6 +162,7 @@ from tests.py import ShExJ
         print("No attribute named 'closd'")
 
 ```
+
  ### Output 
  ```text
 type(Shema): Schema
