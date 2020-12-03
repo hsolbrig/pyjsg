@@ -48,26 +48,3 @@ jobs:
 
     - name: Run tox
       run: tox -e py
-
-  update-authors:
-      needs: test
-      name: Update Changelog and AUTHORS
-      runs-on: ubuntu-latest
-
-      steps:
-        - uses: actions/checkout@v2
-        - uses: actions/setup-python@v2
-          with:
-            python-version: 3.8
-
-        - name: Install dependencies
-          run: |
-            python setup.py sdist
-            git add AUTHORS ChangeLog
-            if [[ -n $(git status -s AUTHORS ChangeLog) ]]
-            then
-              git config --local user.email "action@github.com"
-              git config --local user.name "GitHub Action"
-              git commit -m 'Update AUTHORS and ChangeLog' AUTHORS ChangeLog
-              git push
-            fi
