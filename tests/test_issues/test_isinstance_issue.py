@@ -1,4 +1,4 @@
-
+import sys
 import unittest
 from typing import Union
 
@@ -11,8 +11,12 @@ class IsInstanceTestCase(unittest.TestCase):
     def test_isinstance_issue(self):
         from pyjsg.jsglib.loader import isinstance_
         x = Union[int, str]
-        with self.assertRaises(TypeError):
-            isinstance(17, x)
+        # Typing library seems to support Unions as of python 3.10
+        if sys.version_info < (3, 10):
+            with self.assertRaises(TypeError):
+                isinstance(17, x)
+        else:
+            self.assertTrue(isinstance(17, x))
         self.assertTrue(isinstance_(17, x))
 
     def test_issue_with_shexj(self):
