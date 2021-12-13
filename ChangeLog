@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Code refresh
 * ChangeLog update
 * Update to support python 3.10
 * Resolve Dependabot issue
