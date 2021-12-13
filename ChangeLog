@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* ChangeLog update
+* Update to support python 3.10
 * Resolve Dependabot issue
 * Update publish file to be a bit more selective
 * Remove Author and changelog update from workflow -- we can't get it to work

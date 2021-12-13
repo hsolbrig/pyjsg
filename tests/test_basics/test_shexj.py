@@ -11,23 +11,62 @@ from jsonasobj.jsonobj import as_dict, as_json
 
 from pyjsg.validate_json import JSGPython
 
-shexJSGSource = ""
-# shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=master"
-shexTestRepository = os.path.expanduser('~/Development/git/shexSpec/shexTest/schemas')
+CWD = os.path.abspath(os.path.dirname(__file__))
 
-shexTestJson = ""
+# Test configuration variables
+#     If you are going to be doing a lot of testing, it would be in your best interest to clone a copy of
+#     https://github.com/shexSpec/shexTest into a local directory.  The configuration below is intended to
+#     work with:
+#     <path> +---  hsolbrig/pyjsg/tests/test_basics/test_shexj.py
+#            |
+#            +---- shexSpec/shexTest/schemas/*.jsg
+#            |
+#            +---- hsolbrig/ShExJSG/ShExJSG/ShExJ.jsg
+#
+# If you set LOCAL_TEST_FILES to True, shexTestRepository will be set as above.  You can obviously point it somewhere
+# else if needed, but please don't check it in that way.
+#
+# USE_REL_TEST_PATHS = True attempts to hide absolute paths from logs and various things, but, as it makes debugging
+# difficult, you can set it to False whilst debugging.
+#
+# If you set LOCAL_TEST_FILES to False, the following locations will be used:
+#
+#  - - - - -
+#
+# SHEXJ_JSG should point at the image of ShExJ.jsg to be used in the testing process.  We keep a local copy in
+#    pyjsg/tests/test_basics/jsg/ShExJ.jsg to minimize the dependencies between ShExJSG and pyjsg.  One should
+#    try to keep this up to date with the master, which can be found in:
+#               https://github.com/hsolbrig/ShExJSG/ShExJSG/ShExJ.jsg
+#
+# ===== CHECKING IN =======
+# LOCAL_TEST_FILES = False
+# USE_REL_TEST_PATHS = True
+# ONLY_TEST_THIS = ""
+# STOP_ON_ERROR = False
 
-# If there is a path here, we use the local ShExJ.jsg rather than the one on the github site
-LOCAL_PARSER_IMAGE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'jsg', 'ShExJ.jsg')
+LOCAL_TEST_FILES = False              # True means use files that have been checked out from repository, False repository
+USE_REL_TEST_PATHS = True             # True means relative paths, false absolute
+ONLY_TEST_THIS = ""                   # If not empty, path to a single file you want to do a test on
+STOP_ON_ERROR = False                 # True means stop on first error.  False means test all jsg
 
-# You can't debug if you compile inline -- change to a static image if you have to test
-# LOCAL_PARSER_IMAGE = None
+if LOCAL_TEST_FILES:
+    # Files are local and stored relative to this directory
+    organization_root = os.path.join(CWD, '../../../')            # test_basic/tests/pyjsg/  HERE
+    shexJSGSource = os.path.relpath(os.path.join(organization_root, 'ShExJSG/ShExJSG/ShExJ.jsg'), CWD)
+    shexTestRepository = os.path.relpath(os.path.join(organization_root, '../shexSpec/shexTest/schemas'), CWD)
+    if not USE_REL_TEST_PATHS:
+        shexJSGSource = os.path.abspath(shexJSGSource)
+        shexTestRepository = os.path.abspath(shexTestRepository)
+    assert os.path.exists(shexJSGSource)
+    assert os.path.exists(shexTestRepository)
+else:
+    shexTestRepository = "https://api.github.com/repos/shexSpec/shexTest/contents/schemas?ref=main"
+    shexJSGSource = "https://raw.githubusercontent.com/hsolbrig/ShExJSG/master/ShExJSG/ShExJ.jsg"
+print(f"TESTING *.json from: {shexTestRepository} against {shexJSGSource}")
 
-
-STOP_ON_ERROR = False
 
 # Files to skip until we reintroduce a manifest reader
-skip = ['coverage.json', 'manifest.json']
+skip = ['coverage.json', 'manifest.json', 'representationTests.json']
 
 
 def compare_json(j1: str, j2: str, log: TextIO) -> bool:
@@ -102,7 +141,7 @@ def download_github_file(github_url: str) -> Optional[str]:
 
 
 def validate_shex_schemas(parser: JSGPython, validator: FileValidator) -> bool:
-    if not shexTestJson:
+    if not ONLY_TEST_THIS:
         filelist = []
         if '://' in shexTestRepository:
             resp = requests.get(shexTestRepository)
@@ -119,14 +158,14 @@ def validate_shex_schemas(parser: JSGPython, validator: FileValidator) -> bool:
         else:
             return all([validator.validate_file(f, parser) for f in filelist])
     else:
-        return validator.validate_file(shexTestJson, parser)
+        return validator.validate_file(ONLY_TEST_THIS, parser)
 
 
 class ShExJValidationTestCase(unittest.TestCase):
 
     @unittest.skipIf(False, "Schema tests disabled -- do not commit in this state")
     def test_shex_schema(self):
-        parser = JSGPython(LOCAL_PARSER_IMAGE if LOCAL_PARSER_IMAGE else shexJSGSource)
+        parser = JSGPython(shexJSGSource)
         log_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs', 'test_shex_schema.log')
         validator = FileValidator()
         with open(log_path, 'w') as logf:

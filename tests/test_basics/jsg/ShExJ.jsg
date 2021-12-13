@@ -8,18 +8,22 @@
 #   {TERMINAL->PROPTYPE} - a map from TERMINAL to PROPTYPE.
 #   (PROPTYPE1|PROPTYPE2...) - any of PROPTYPEn.
 
-.TYPE type - ObjectLiteral
+.TYPE type - ObjectLiteral InnerContext;
 
-; # All objects have a type property corresponding to the production name, e.g. "Schema"
+# All objects have a type property corresponding to the production name, e.g. "Schema"
 
 Schema           {
-  "@context":"http://www.w3.org/ns/shex.jsonld"
-imports:[IRIREF+]? startActs:[SemAct+]? start:shapeExpr? shapes:[shapeExpr+]? }
+  "@context":("http://www.w3.org/ns/shex.jsonld" | ["http://www.w3.org/ns/shex.jsonld"|InnerContext])
+   imports:[IRIREF+]? startActs:[SemAct+]? start:shapeExpr? shapes:[shapeExpr+]?
+}
 
+# Complex context
+InnerContext    {,}
 
 
 # Shape Expressions
-shapeExpr        = (ShapeOr | ShapeAnd | ShapeNot | NodeConstraint | Shape | shapeExprLabel | ShapeExternal) ;
+shapeExpr        = (ShapeDecl | ShapeOr | ShapeAnd | ShapeNot | NodeConstraint | Shape | shapeExprLabel | ShapeExternal) ;
+ShapeDecl        {id:shapeExprLabel? abstract:@bool? restricts:[shapeExprLabel+]? shapeExpr:shapeExpr }
 ShapeOr          {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
 ShapeAnd         {id:shapeExprLabel? shapeExprs:[shapeExpr{2,}] }
 ShapeNot         {id:shapeExprLabel? shapeExpr:shapeExpr }
@@ -44,17 +48,17 @@ IriStemRange     { stem:(IRIREF|Wildcard) exclusions:[(IRIREF | IriStem)+] }
 LiteralStem      { stem:@string }
 LiteralStemRange { stem:(@string|Wildcard) exclusions:[(@string | LiteralStem)+] }
 Language         { languageTag:LANGTAG }
-LanguageStem     { stem:LANGTAG }
-LanguageStemRange{ stem:(LANGTAG|Wildcard) exclusions:[(LANGTAG | LanguageStem) +] }
+LanguageStem     { stem:@string }
+LanguageStemRange{ stem:(@string|Wildcard) exclusions:[(LANGTAG | LanguageStem) +] }
 Wildcard         {  }
 
-Shape            {id:shapeExprLabel? closed:@bool? extra:[IRIREF+]? expression:tripleExpr? semActs:[SemAct+]? annotations:[Annotation+]? }
+Shape            {id:shapeExprLabel? extends:[shapeExprLabel+]? closed:@bool? extra:[IRIREF+]? expression:tripleExpr? semActs:[SemAct+]? annotations:[Annotation+]? }
 
 # Triple Expressions
 tripleExpr       = (EachOf | OneOf | TripleConstraint | tripleExprLabel) ;
 EachOf           { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
 OneOf            { id:tripleExprLabel? expressions:[tripleExpr{2,}] min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
-TripleConstraint { id:tripleExprLabel? inverse:@bool? predicate:IRIREF valueExpr:shapeExpr? min:@int? max:@int? semActs:[SemAct+]? annotations:[Annotation+]? }
+TripleConstraint { id:tripleExprLabel? inverse:@bool? predicate:IRIREF valueExpr:shapeExpr? min:@int? max:@int? onShapeExpression:shapeExpr? semActs:[SemAct+]? annotations:[Annotation+]? }
 # TODO: Figure out why this indirection causes issues (reference is from tripleExpr)
 # tripleExprRef    = tripleExprLabel ;
 tripleExprLabel  = IRIREF|BNODE ;
@@ -67,7 +71,7 @@ Annotation       { predicate:IRIREF object:objectValue }
 # Turtle IRIREF without enclosing "<>"s
 IRIREF           : ([^\u0000-\u0020\u005C\u007B\u007D<>"|^`] | UCHAR)*     ; # <http://www.w3.org/TR/turtle/#grammar-production-IRIREF> - "<>"s
 # Turtle BLANK_NODE_LABEL
-BNODE            : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; # <http://www.w.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>
+BNODE            : '_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)? ; # <http://www.w3.org/TR/turtle/#grammar-production-BLANK_NODE_LABEL>
 # BCP47 Language-Tag
 LANGTAG          : [a-zA-Z]+('-'([a-zA-Z0-9])+)* ;
 

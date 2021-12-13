@@ -5,6 +5,7 @@ import pyjsg.jsglib as jsg
 _CONTEXT = jsg.JSGContext()
 _CONTEXT.TYPE = "type"
 _CONTEXT.TYPE_EXCEPTIONS.append("ObjectLiteral")
+_CONTEXT.TYPE_EXCEPTIONS.append("InnerContext")
 
 
 class _Anon1(jsg.JSGString):
@@ -12,6 +13,10 @@ class _Anon1(jsg.JSGString):
 
 
 class _Anon2(jsg.JSGString):
+    pattern = jsg.JSGPattern(r'http://www\.w3\.org/ns/shex\.jsonld')
+
+
+class _Anon3(jsg.JSGString):
     pattern = jsg.JSGPattern(r'(iri)|(bnode)|(nonliteral)|(literal)')
 
 
@@ -49,6 +54,17 @@ class BNODE(jsg.JSGString):
 
 class PN_PREFIX(jsg.JSGString):
     pattern = jsg.JSGPattern(r'({PN_CHARS_BASE})((({PN_CHARS})|\.)*({PN_CHARS}))?'.format(PN_CHARS=PN_CHARS.pattern, PN_CHARS_BASE=PN_CHARS_BASE.pattern))
+
+
+class InnerContext(jsg.JSGObject):
+    _reference_types = []
+    _members = {}
+    _strict = False
+
+    def __init__(self,
+                 **_kwargs: typing.Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
+
 
 
 class stringFacet_1_(jsg.JSGObject):
@@ -115,6 +131,19 @@ class numericFacet(jsg.JSGObject):
 
 
 class LiteralStem(jsg.JSGObject):
+    _reference_types = []
+    _members = {'stem': jsg.String}
+    _strict = True
+
+    def __init__(self,
+                 stem: str = None,
+                 **_kwargs: typing.Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
+        self.stem = stem
+
+
+
+class LanguageStem(jsg.JSGObject):
     _reference_types = []
     _members = {'stem': jsg.String}
     _strict = True
@@ -221,16 +250,19 @@ class Language(jsg.JSGObject):
 
 
 
-class LanguageStem(jsg.JSGObject):
+class LanguageStemRange(jsg.JSGObject):
     _reference_types = []
-    _members = {'stem': LANGTAG}
+    _members = {'stem': typing.Union[jsg.String, Wildcard],
+                'exclusions': jsg.ArrayFactory('exclusions', _CONTEXT, typing.Union[LANGTAG, LanguageStem], 1, None)}
     _strict = True
 
     def __init__(self,
-                 stem: str = None,
+                 stem: typing.Union[str, Wildcard] = None,
+                 exclusions: typing.List[typing.Union[str, LanguageStem]] = None,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.stem = stem
+        self.exclusions = exclusions
 
 
 
@@ -257,22 +289,6 @@ class xsFacet_1_(jsg.JSGObject):
                 self.flags = opts_.flags
             else:
                 raise ValueError(f"Unrecognized value type: {opts_}")
-
-
-
-class LanguageStemRange(jsg.JSGObject):
-    _reference_types = []
-    _members = {'stem': typing.Union[LANGTAG, Wildcard],
-                'exclusions': jsg.ArrayFactory('exclusions', _CONTEXT, typing.Union[LANGTAG, LanguageStem], 1, None)}
-    _strict = True
-
-    def __init__(self,
-                 stem: typing.Union[str, Wildcard] = None,
-                 exclusions: typing.List[typing.Union[str, LanguageStem]] = None,
-                 **_kwargs: typing.Dict[str, object]):
-        super().__init__(_CONTEXT, **_kwargs)
-        self.stem = stem
-        self.exclusions = exclusions
 
 
 
@@ -427,7 +443,7 @@ class Annotation(jsg.JSGObject):
 class NodeConstraint(jsg.JSGObject):
     _reference_types = [xsFacet]
     _members = {'id': typing.Optional[shapeExprLabel],
-                'nodeKind': typing.Optional[_Anon2],
+                'nodeKind': typing.Optional[_Anon3],
                 'datatype': typing.Optional[IRIREF],
                 'length': typing.Optional[typing.Optional[jsg.Integer]],
                 'minlength': typing.Optional[typing.Optional[jsg.Integer]],
@@ -481,18 +497,18 @@ class NodeConstraint(jsg.JSGObject):
 
 class Schema(jsg.JSGObject):
     _reference_types = []
-    _members = {'@context': _Anon1,
+    _members = {'@context': typing.Union[_Anon2, jsg.ArrayFactory('@context', _CONTEXT, typing.Union[_Anon1, InnerContext], 0, None)],
                 'imports': typing.Optional[jsg.ArrayFactory('imports', _CONTEXT, IRIREF, 1, None)],
                 'startActs': typing.Optional[jsg.ArrayFactory('startActs', _CONTEXT, SemAct, 1, None)],
                 'start': typing.Optional["shapeExpr"],
-                'shapes': typing.Optional[jsg.ArrayFactory('shapes', _CONTEXT, typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[IRIREF, BNODE], ShapeExternal], 1, None)]}
+                'shapes': typing.Optional[jsg.ArrayFactory('shapes', _CONTEXT, typing.Union["ShapeDecl", "ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[IRIREF, BNODE], ShapeExternal], 1, None)]}
     _strict = True
 
     def __init__(self,
                  imports: typing.Optional[typing.List[str]] = None,
                  startActs: typing.Optional[typing.List[SemAct]] = None,
-                 start: typing.Optional[typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]] = None,
-                 shapes: typing.Optional[typing.List[typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]]] = None,
+                 start: typing.Optional[typing.Union["ShapeDecl", "ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]] = None,
+                 shapes: typing.Optional[typing.List[typing.Union["ShapeDecl", "ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]]] = None,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         setattr(self, '@context', _kwargs.get('@context', None))
@@ -503,15 +519,37 @@ class Schema(jsg.JSGObject):
 
 
 
-class ShapeOr(jsg.JSGObject):
+class ShapeDecl(jsg.JSGObject):
     _reference_types = []
     _members = {'id': typing.Optional[shapeExprLabel],
-                'shapeExprs': jsg.ArrayFactory('shapeExprs', _CONTEXT, typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[IRIREF, BNODE], ShapeExternal], 2, None)}
+                'abstract': typing.Optional[jsg.Boolean],
+                'restricts': typing.Optional[jsg.ArrayFactory('restricts', _CONTEXT, typing.Union[IRIREF, BNODE], 1, None)],
+                'shapeExpr': "shapeExpr"}
     _strict = True
 
     def __init__(self,
                  id: typing.Optional[typing.Union[str, str]] = None,
-                 shapeExprs: typing.List[typing.Union["ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]] = None,
+                 abstract: typing.Optional[bool] = None,
+                 restricts: typing.Optional[typing.List[typing.Union[str, str]]] = None,
+                 shapeExpr: typing.Union["ShapeDecl", "ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal] = None,
+                 **_kwargs: typing.Dict[str, object]):
+        super().__init__(_CONTEXT, **_kwargs)
+        self.id = id
+        self.abstract = abstract
+        self.restricts = restricts
+        self.shapeExpr = shapeExpr
+
+
+
+class ShapeOr(jsg.JSGObject):
+    _reference_types = []
+    _members = {'id': typing.Optional[shapeExprLabel],
+                'shapeExprs': jsg.ArrayFactory('shapeExprs', _CONTEXT, typing.Union[ShapeDecl, "ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[IRIREF, BNODE], ShapeExternal], 2, None)}
+    _strict = True
+
+    def __init__(self,
+                 id: typing.Optional[typing.Union[str, str]] = None,
+                 shapeExprs: typing.List[typing.Union[ShapeDecl, "ShapeOr", "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]] = None,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.id = id
@@ -522,12 +560,12 @@ class ShapeOr(jsg.JSGObject):
 class ShapeAnd(jsg.JSGObject):
     _reference_types = []
     _members = {'id': typing.Optional[shapeExprLabel],
-                'shapeExprs': jsg.ArrayFactory('shapeExprs', _CONTEXT, typing.Union[ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[IRIREF, BNODE], ShapeExternal], 2, None)}
+                'shapeExprs': jsg.ArrayFactory('shapeExprs', _CONTEXT, typing.Union[ShapeDecl, ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[IRIREF, BNODE], ShapeExternal], 2, None)}
     _strict = True
 
     def __init__(self,
                  id: typing.Optional[typing.Union[str, str]] = None,
-                 shapeExprs: typing.List[typing.Union[ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]] = None,
+                 shapeExprs: typing.List[typing.Union[ShapeDecl, ShapeOr, "ShapeAnd", "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal]] = None,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.id = id
@@ -543,7 +581,7 @@ class ShapeNot(jsg.JSGObject):
 
     def __init__(self,
                  id: typing.Optional[typing.Union[str, str]] = None,
-                 shapeExpr: typing.Union[ShapeOr, ShapeAnd, "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal] = None,
+                 shapeExpr: typing.Union[ShapeDecl, ShapeOr, ShapeAnd, "ShapeNot", NodeConstraint, "Shape", typing.Union[str, str], ShapeExternal] = None,
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.id = id
@@ -554,6 +592,7 @@ class ShapeNot(jsg.JSGObject):
 class Shape(jsg.JSGObject):
     _reference_types = []
     _members = {'id': typing.Optional[shapeExprLabel],
+                'extends': typing.Optional[jsg.ArrayFactory('extends', _CONTEXT, typing.Union[IRIREF, BNODE], 1, None)],
                 'closed': typing.Optional[jsg.Boolean],
                 'extra': typing.Optional[jsg.ArrayFactory('extra', _CONTEXT, IRIREF, 1, None)],
                 'expression': typing.Optional["tripleExpr"],
@@ -563,6 +602,7 @@ class Shape(jsg.JSGObject):
 
     def __init__(self,
                  id: typing.Optional[typing.Union[str, str]] = None,
+                 extends: typing.Optional[typing.List[typing.Union[str, str]]] = None,
                  closed: typing.Optional[bool] = None,
                  extra: typing.Optional[typing.List[str]] = None,
                  expression: typing.Optional[typing.Union["EachOf", "OneOf", "TripleConstraint", typing.Union[str, str]]] = None,
@@ -571,6 +611,7 @@ class Shape(jsg.JSGObject):
                  **_kwargs: typing.Dict[str, object]):
         super().__init__(_CONTEXT, **_kwargs)
         self.id = id
+        self.extends = extends
         self.closed = closed
         self.extra = extra
         self.expression = expression
@@ -646,6 +687,7 @@ class TripleConstraint(jsg.JSGObject):
                 'valueExpr': typing.Optional["shapeExpr"],
                 'min': typing.Optional[jsg.Integer],
                 'max': typing.Optional[jsg.Integer],
+                'onShapeExpression': typing.Optional["shapeExpr"],
                 'semActs': typing.Optional[jsg.ArrayFactory('semActs', _CONTEXT, SemAct, 1, None)],
                 'annotations': typing.Optional[jsg.ArrayFactory('annotations', _CONTEXT, Annotation, 1, None)]}
     _strict = True
@@ -654,9 +696,10 @@ class TripleConstraint(jsg.JSGObject):
                  id: typing.Optional[typing.Union[str, str]] = None,
                  inverse: typing.Optional[bool] = None,
                  predicate: str = None,
-                 valueExpr: typing.Optional[typing.Union[ShapeOr, ShapeAnd, ShapeNot, NodeConstraint, Shape, typing.Union[str, str], ShapeExternal]] = None,
+                 valueExpr: typing.Optional[typing.Union[ShapeDecl, ShapeOr, ShapeAnd, ShapeNot, NodeConstraint, Shape, typing.Union[str, str], ShapeExternal]] = None,
                  min: typing.Optional[int] = None,
                  max: typing.Optional[int] = None,
+                 onShapeExpression: typing.Optional[typing.Union[ShapeDecl, ShapeOr, ShapeAnd, ShapeNot, NodeConstraint, Shape, typing.Union[str, str], ShapeExternal]] = None,
                  semActs: typing.Optional[typing.List[SemAct]] = None,
                  annotations: typing.Optional[typing.List[Annotation]] = None,
                  **_kwargs: typing.Dict[str, object]):
@@ -667,11 +710,12 @@ class TripleConstraint(jsg.JSGObject):
         self.valueExpr = valueExpr
         self.min = min
         self.max = max
+        self.onShapeExpression = onShapeExpression
         self.semActs = semActs
         self.annotations = annotations
 
 
 
-shapeExpr = typing.Union[ShapeOr, ShapeAnd, ShapeNot, NodeConstraint, Shape, typing.Union[IRIREF, BNODE], ShapeExternal]
+shapeExpr = typing.Union[ShapeDecl, ShapeOr, ShapeAnd, ShapeNot, NodeConstraint, Shape, typing.Union[IRIREF, BNODE], ShapeExternal]
 
 _CONTEXT.NAMESPACE = locals()

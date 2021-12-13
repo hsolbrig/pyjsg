@@ -109,3 +109,4 @@ venv.bak/
 
 # Don't include locks in libraries
 Pipfile.lock
+/tests/test_basics/jsg/ShExJ.py
