@@ -2,7 +2,6 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
 
 jobs:
   update-requirements:
@@ -18,14 +17,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install pipenv-to-requirements
           pipenv lock
-          git add Pipfile.lock
           pipenv_to_requirements
           git add requirements*.txt
-          if [[ -n $(git status -s requirements*.txt Pipfile.lock) ]]
+          if [[ -n $(git status -s requirements*.txt) ]]
           then
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            git commit -m 'Automatically generated requirements and updated Pipfile.lock' requirements*.txt Pipfile.lock
+            git commit -m 'Automatically generated requirements' requirements*.txt
             git push
           fi
 

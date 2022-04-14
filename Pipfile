@@ -8,6 +8,6 @@ requests = "*"
 yadict_compare = "*"
 
 [packages]
-antlr4-python3-runtime = "==4.9.3"
+antlr4-python3-runtime = "~=4.9.3"
 jsonasobj = ">=1.2.1"
 
