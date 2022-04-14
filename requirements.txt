@@ -10,5 +10,5 @@
 # `Pipfile.lock` and then regenerate `requirements*.txt`.
 ################################################################################
 
-antlr4-python3-runtime==4.9.3
+antlr4-python3-runtime~=4.9.3
 jsonasobj>=1.2.1

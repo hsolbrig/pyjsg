@@ -1,6 +1,22 @@
 CHANGES
 =======
 
+* Automatically generated requirements and updated Pipfile.lock
+* Pinning antlr. Partially addresses #20
+
+v0.11.9
+-------
+
+* Update pypi-publish.yaml
+
+v0.11.8
+-------
+
+* Rename master to main
+
+v0.11.7
+-------
+
 * Code refresh
 * ChangeLog update
 * Update to support python 3.10
